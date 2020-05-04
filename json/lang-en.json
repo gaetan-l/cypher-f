@@ -1,0 +1,24 @@
+{
+  "general": {
+    "name-short": "Cypher",
+    "name-full": "Cypher F.",
+    "title": "Cypher",
+    "title-shadow": "Cÿpher",
+    "subtitle": "<span>七</span>転び<span>八</span>起き"
+  },
+  "nav": {
+    "main": "Home",
+    "favs": "Favorites",
+    "favs-movies": "Movies",
+    "favs-music": "Music",
+    "pins": "Pins",
+    "travels": "Travels",
+    "travels-au": "Australia",
+    "travels-nz": "New-Zealand",
+    "interests": "Interests"
+  },
+  "main": {
+    "aboutme": "About Me",
+    "aboutwebsite": "About Website"
+  }
+}

@@ -1,0 +1,204 @@
+:root {
+  --cy-blue: #0ca5b6;
+  --cy-grey: #777;
+  --cy-mediumgrey: #bbb;
+  --cy-lightgrey: #ddd;
+}
+
+.txt-blue {
+  color: var(--cy-blue);
+}
+
+* {
+  font-family: 'Yantra', Helvetica, sans-serif;
+  color: var(--cy-grey);
+}
+
+/*
+ * Fade in and fade out for whole body and main section:
+ *   both are invisible on page load, <body> fades in first
+ *   when PageBuilder finishes its work, then <main> fades
+ *   in later if specific work needs to be done that requi-
+ *   more time.
+ *   Body fades out on page unload.
+ */
+body, main {
+  opacity: 0;
+}
+
+.fade-in, .fade-out {
+  transition: opacity 0.25s ease-in-out;
+}
+
+main.fade-in, main.fade-out, {
+  transition: opacity 2.0s ease-in-out;
+}
+
+.fade-in {
+  opacity: 100%;
+}
+/* ----------------------------------------------------- */
+
+nav, footer {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#site-title {
+  text-align: center;
+  border-bottom-style: solid;
+  border-bottom-color: var(--cy-lightgrey);
+  font-family: 'Alata', Arial, sans-serif;
+  transition: color 0.25s ease-in-out;
+}
+
+#site-title-shadow {
+  text-align: center;
+  font-family: 'Alata', Arial, sans-serif;
+  color: var(--cy-blue);
+  transition: color 0.25s ease-in-out;
+}
+
+#site-title-div:hover > #site-title,
+#site-title-div:hover > #site-subtitle > span {
+  color: var(--cy-blue);
+  transition: color 0.25s ease-in-out;
+}
+
+#site-title-div:hover > #site-title-shadow {
+  color: var(--cy-grey);
+  transition: color 0.25s ease-in-out;
+}
+
+#site-title-div:hover > #site-subtitle {
+  letter-spacing: 5px;
+  transition: letter-spacing 0.25s ease-in-out;
+}
+
+#site-subtitle {
+  letter-spacing: 3px;
+  transition: all 0.25s ease-in-out;
+}
+
+nav ul {
+  list-style: none;
+}
+
+nav li {
+  border-left-style: solid;
+  border-left-color: transparent;
+}
+
+nav li {
+  border-bottom-style: solid;
+  border-bottom-color: var(--cy-lightgrey);
+}
+
+nav ul a {
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+nav ul i {
+  vertical-align: middle;
+}
+
+nav li.active {
+  background-color: var(--cy-blue);
+}
+
+nav li:not(.active) > i.material-icons {
+  color: var(--cy-blue);
+}
+
+nav li.active > a,
+nav li.active > i.material-icons,
+nav li:not(.active):hover > a,
+nav li:not(.active):hover > i.material-icons,
+body#travels > div#zoom-container > div#zoom-infos > p {
+  color: white;
+}
+
+nav li:not(.active):hover > a,
+nav li:not(.active):hover > i.material-icons {
+  transition: color 0.25s ease-in-out;
+}
+
+nav li:not(.active):hover {
+  background-color: var(--cy-mediumgrey);
+  border-left-color: var(--cy-blue);
+  transition: all 0.25s ease-in-out;
+}
+
+body > main {
+  border-left-style: solid;
+  border-left-color: var(--cy-lightgrey);
+}
+
+body#home > main {
+  background-image: url('../images/background.jpg');
+}
+
+footer > p {
+  text-align: center;
+  font-family: 'Alata', Arial, sans-serif;
+  background-color: var(--cy-blue);
+  color: white;
+}
+
+#menu-button,
+#language-button {
+  color: white;
+  cursor: pointer;
+}
+
+#menu-button,
+#language-button,
+#menu-button:hover,
+#language-button:hover {
+  transition: all 0.1s ease-in-out;
+}
+
+/* Page specific */
+body#travels > main > div#gallery > div.picture-frame {
+  border-style: solid;
+  border-color: var(--cy-lightgrey);
+  box-shadow: 6px 6px 6px;
+  transition: box-shadow 0.25s ease-in-out;
+  cursor: pointer;
+}
+
+body#travels > main > div#gallery > div.picture-frame:hover {
+  border-style: solid;
+  border-color: var(--cy-lightgrey);
+  box-shadow: 2px 2px 2px;
+  transition: box-shadow 0.25s ease-in-out;
+}
+
+body#travels > div#zoom-container {
+  background-color: black;
+  cursor: pointer;
+}
+
+body#travels > div#zoom-container {
+  opacity: 0;
+  height: 0;
+}
+
+body#travels > div#zoom-container.fade-out {
+  transition: opacity 0.25s ease-in-out, height 0s 0.25s;
+}
+
+body#travels > div#zoom-container.fade-in {
+  opacity: 100%;
+  height: 100%;
+  transition: opacity 0.25s ease-in-out;
+}
+
+body#travels > div#zoom-container > i {
+  color: white;
+  cursor: pointer;
+}
+/* ------------- */
