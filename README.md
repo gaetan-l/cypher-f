@@ -23,7 +23,7 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 - *css/structure.css, css/styles.css*: Improved responsive design
 
 ### Site template update and cleanup
-- *json/menu.json*: Remove **irrelevent items** in the menu
+- ~~*json/menu.json*: Remove **irrelevent items** in the menu~~
 - *json/menu.json*: Add **favorite** item with dedicated gallery
 - *json/menu.json*: Add ***Tears in Rain* Universe** item with a link to future dedicated subdomain
 

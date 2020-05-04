@@ -12,34 +12,10 @@
     "material-icon": "flight"
   },
   {
-    "parent": "/travels",
-    "href": "/travels/australia",
-    "data-i18n": "nav.travels-au",
-    "material-icon": "room"
-  },
-  {
-    "parent": "/travels",
-    "href": "/travels/new-zealand",
-    "data-i18n": "nav.travels-nz",
-    "material-icon": "room"
-  },
-  {
     "parent": "/",
     "href": "/favs",
     "data-i18n": "nav.favs",
     "material-icon": "favorite_border"
-  },
-  {
-    "parent": "/favs",
-    "href": "/favs/movies",
-    "data-i18n": "nav.favs-movies",
-    "material-icon": "local_movies"
-  },
-  {
-    "parent": "/favs",
-    "href": "/favs/music",
-    "data-i18n": "nav.favs-music",
-    "material-icon": "headset"
   },
   {
     "parent": "/",
