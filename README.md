@@ -18,6 +18,10 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 - *js/gallery-builder.js*: Replace raw country code with **curly-bracketed country code** to allow for translation
 - *js/onload-travels.js*: **Second call to translator** after main section is loaded to translate specific elements like country
 
+### Presentation
+- *js/page-builder.js*: Collapsable side menu
+- *css/structure.css, css/styles.css*: Improved responsive design
+
 ### Site template update and cleanup
 - *json/menu.json*: Remove **irrelevent items** in the menu
 - *json/menu.json*: Add **favorite** item with dedicated gallery
