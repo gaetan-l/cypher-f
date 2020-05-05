@@ -19,8 +19,8 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 - *js/onload-travels.js*: **Second call to translator** after main section is loaded to translate specific elements like country
 
 ### Utilities
-- Add **windows-install section** with programs to install on a fresh Windows install, grouped by type, and an interface to select which ones to download in one click
-- Add a **links section** with my favorite web links
+- Add **windows-install section** with programs to install on a fresh Windows install, grouped by type, and an interface to select which ones to **download in one click**
+- Add a **links section** with my favorite web links and an inteface to **select and export links** in Chrome and Firefox format
 
 ### Presentation
 - *js/page-builder.js*: **Collapsable side menu**
