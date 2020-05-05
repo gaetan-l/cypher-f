@@ -23,8 +23,8 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 - Add a **links section** with my favorite web links
 
 ### Presentation
-- *js/page-builder.js*: Collapsable side menu
-- *css/structure.css, css/styles.css*: Improved responsive design
+- *js/page-builder.js*: **Collapsable side menu**
+- *css/structure.css, css/styles.css*: Improved **responsive design**
 
 ### Site template update and cleanup
 - ~~*json/menu.json*: Remove **irrelevent items** in the menu~~
