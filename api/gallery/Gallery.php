@@ -3,6 +3,10 @@
     // Gallerie names
     const TRAVELS = "travels";
 
+    // Groupings
+    const DATE = "date";
+    const COUNTRY = "country";
+
     // Patterns
     const DATE_PATTERN        = "\[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]";
     const TAG_PATTERN         = "[a-z]+(?:-[a-z]+)*";
@@ -102,10 +106,10 @@
         case self::TRAVELS:
           $arrayItem = array(
               "fileName"    => $fileName,
-              "date"        => "$matches[4]/$matches[3]/$matches[1]",
+              self::DATE    => "$matches[4]/$matches[3]/$matches[1]",
               "regroupment" => $matches[5],
               "tags"        => $matches[6],
-              "country"     => $matches[7],
+              self::COUNTRY => $matches[7],
               "location"    => $matches[8],
               "description" => $matches[9],
               "extension"   => $matches[10]
@@ -114,6 +118,22 @@
       }
 
       return json_encode($arrayItem, JSON_FORCE_OBJECT);
+    }
+
+    /*
+     * Returns the groupings that are available for this
+     * type of gallery
+     */
+    public function getAvailableGroupings() {
+      $groupingsArray = [];
+
+      switch ($this->name) {
+        case self::TRAVELS:
+          $groupingsArray = array(self::DATE, self::COUNTRY);
+          break;
+      }
+
+      return $groupingsArray;
     }
   }
 ?>

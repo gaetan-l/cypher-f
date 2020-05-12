@@ -13,12 +13,14 @@
       $name = htmlspecialchars($_GET["name"]);
       $galleryObject = new Gallery($name);
       $gallery = $galleryObject->get();
+      $availableGroupings = $galleryObject->getAvailableGroupings();
 
       if (!($gallery === false)) {
         http_response_code(200);
         echo json_encode(array(
           "message" => "Gallery $name found.",
-          "content" => $gallery
+          "content" => $gallery,
+          "extra"   => array("availableGroupings" => $availableGroupings)
         ));
       }
       else {
