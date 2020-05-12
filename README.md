@@ -7,7 +7,7 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 ### Gallery grouping
 - ~~*js/gallery-builder.js*: **Create grouped galleries** using *null* + optional groupings passed as parameters, standard behavior should continue functioning even when no grouping is passed~~
 - *css/structure.css, css/styles.css*: **Display grouped gallery** with **sticky group headers**
-- *css/structure.css, css/styles.css*: **Fixed margins** between pitures
+- ~~*css/structure.css, css/styles.css*: **Fixed margins** between pitures~~
 - *js/gallery-builder.js*: **Group and order selector**
 
 ### Gallery search and tag function

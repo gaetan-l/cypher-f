@@ -14,7 +14,7 @@
                --button-size:  36px;
     --travel-gallery-columns:   3;
         --picture-frame-size: 200px;
-      --picture-frame-margin:   2vw;
+      --picture-frame-margin:  36px;
      --picture-frame-padding:  12px;
 --picture-frame-border-width:   1px;
                --zoom-margin:  12px;
@@ -166,15 +166,22 @@ body#travels > main {
 body#travels > main > div#gallery {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: flex-start;
+
+  /* 
+   * Picture frames have margins on the right and the
+   * bottom, so gallery container has margins on the top
+   * and the left
+   */
+  margin: var(--picture-frame-margin) 0 0 var(--picture-frame-margin);
 }
 
 body#travels > main > div#gallery > div.picture-frame {
   display: flex;
   width: var(--picture-frame-size);
   height: var(--picture-frame-size);
-  margin: var(--picture-frame-margin);
+  margin: 0 var(--picture-frame-margin) var(--picture-frame-margin) 0;
   padding: var(--picture-frame-padding);
   border-width: var(--picture-frame-border-width);
 }
