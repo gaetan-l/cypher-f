@@ -6,6 +6,7 @@ class GalleryBuilder {
     this._galleryContainer = galleryContainer;
     this._pageBuilder = pageBuilder;
     this._currentGallery = null;
+    this._availableGroupings = [];
   }
 
   /*
@@ -30,8 +31,10 @@ class GalleryBuilder {
       // JSON response
       var response = JSON.parse(request.response);
       var gallery = response.content;
+      var availableGroupings = response.extra.availableGroupings;
 
       this._currentGallery = gallery;
+      this._availableGroupings = availableGroupings;
     }
     return this._currentGallery;
   }
