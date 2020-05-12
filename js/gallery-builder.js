@@ -13,8 +13,8 @@ class GalleryBuilder {
    * Builds the current gallery in the specified HTML
    * container element, using the specified PageBuilder.
    */
-  buildGallery(container, pageBuilder) {
-    this._drawPictures(container, pageBuilder);
+  buildGallery(container, pageBuilder, grouping = null, order = `ASC`) {
+    this._drawPictures(container, pageBuilder, grouping, order);
     this._drawZoomContainer(pageBuilder);
   }
 
@@ -51,7 +51,38 @@ class GalleryBuilder {
    * Draws the pictures in the specified HTML container
    * element.
    */
-  _drawPictures(container, pageBuilder) {
+  _drawPictures(container, pageBuilder, grouping, order) {
+    // Loads gallery for the first time if not already done
+    this._getCurrentGallery();
+
+    // Revert to default grouping and order if parameters are wrong
+    if (!(this._availableGroupings.includes(grouping))) {
+      grouping = null;
+    }
+    if (!([`ASC`, `DESC`].includes(order))) {
+      order = `ASC`;
+    }
+
+    this._getCurrentGallery().sort(function (x, y) {
+      var jsonX = JSON.parse(x);
+      var jsonY = JSON.parse(y);
+
+      // Grouping always sorted alphabetically no matter the order...
+      if ((!(grouping === null)) && (!(grouping === 'date'))) {
+        var groupX = jsonX[grouping];
+        var groupY = jsonY[grouping];
+
+        if (!(groupX === groupY)) {
+          return groupX.localeCompare(groupY);
+        }
+      }
+
+      // Then items sorted chronologically depending on the order
+      var dateX = Date.parse(jsonX.date);
+      var dateY = Date.parse(jsonY.date);
+      return (order === `DESC` ? dateY - dateX : dateX - dateY);
+    });
+
     for (let i = 0 ; i < this._getCurrentGallery().length ; i++) {
       // Building picture frame.
       var frame = document.createElement(`div`);
@@ -72,7 +103,7 @@ class GalleryBuilder {
       var picture = JSON.parse(this._getCurrentGallery()[i]);
       var img = document.createElement(`img`);
       img.setAttribute(`index`, i);
-      img.setAttribute(`date`, picture.date);
+      img.setAttribute(`date`, picture.readableDate);
       img.setAttribute(`location`, picture.location);
       img.setAttribute(`description`, picture.description);
       img.src = this._getFilePath(picture);

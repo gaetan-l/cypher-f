@@ -105,14 +105,15 @@
       switch ($this->name) {
         case self::TRAVELS:
           $arrayItem = array(
-              "fileName"    => $fileName,
-              self::DATE    => "$matches[4]/$matches[3]/$matches[1]",
-              "regroupment" => $matches[5],
-              "tags"        => $matches[6],
-              self::COUNTRY => $matches[7],
-              "location"    => $matches[8],
-              "description" => $matches[9],
-              "extension"   => $matches[10]
+              "fileName"     => $fileName,
+              self::DATE     => "$matches[1]-$matches[3]-$matches[4]",
+              "readableDate" => "$matches[4]/$matches[3]/$matches[1]",
+              "regroupment"  => $matches[5],
+              "tags"         => $matches[6],
+              self::COUNTRY  => $matches[7],
+              "location"     => $matches[8],
+              "description"  => $matches[9],
+              "extension"    => $matches[10]
             );
           break;
       }
