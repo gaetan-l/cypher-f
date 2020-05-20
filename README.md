@@ -36,3 +36,6 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 - *js/*: Add **login feature** and allow private pages display only if connected
 - *js/gallery-builder.js*: Add **image upload form** to upload images with informations in any gallery
 - *js/gallery-builder.js*: Add **gallery page edit mode** to allow for information edition
+
+### Misc functions
+- *js/page-builder.js*: Add **download pdf option**, which is activated when an index.pdf file is present in the same folder as the web page, if so, it adds an icon on the page to download it in PDF format
