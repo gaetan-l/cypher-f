@@ -197,7 +197,6 @@ class PageBuilder {
         var escapedRoot = this._root.replace(/[.\/]/g, '\\$&'); // $& means the whole matched string
         var regexString = `(?<url>${escapedRoot}(?<href>(?<parent>[a-z\-\/]*\/)*[a-z\-]*\/))`;
         var regex       = new RegExp(regexString, `g`);
-        console.log(this._url);
         var matches     = regex.exec(this._url);
 
         /*
@@ -212,7 +211,6 @@ class PageBuilder {
          *
          * Values for current pages:
          */
-        console.log(matches);
         var currUrl    = matches.groups.url;
         var currHref   = matches.groups.href;
         var currParent = matches.groups.parent === undefined ? `` : matches.groups.parent;
