@@ -32,7 +32,7 @@ class PageBuilder {
     this._main       = document.getElementsByTagName(`main`)[0];
     this._footer     = document.getElementsByTagName(`footer`)[0];
 
-    /**
+    /*
      * Translator that will be used to translate the page
      * once built.
      */
@@ -83,6 +83,8 @@ class PageBuilder {
    *
    * First removes fade-out class then adds fade-in class.
    * Transition effects to be defined in css.
+   *
+   * @param  HTMLelement  element  the element to fade in
    */
   fadeIn(element) {
     element.classList.remove(`fade-out`);
@@ -94,17 +96,23 @@ class PageBuilder {
    *
    * First removes fade-in class then adds fade-out class.
    * Transition effects to be defined in css.
+   *
+   * @param  HTMLelement  element  the element to fade out
    */
   fadeOut(element) {
     element.classList.remove(`fade-in`);
     element.classList.add(`fade-out`);
   }
 
+  /**
+   * TODO: move in util class.
+   */
   _formatUrl(unformated) {
     return unformated.replace(/\/?$/, '/'); // Adds trailing slash
   }
 
-  /*
+  /**
+   * TODO: rewrite.
    * Draws document head.
    */
   _drawHead() {
@@ -174,6 +182,9 @@ class PageBuilder {
     }
    }
 
+   /**
+    * TODO: move in util class.
+    */
    _getTemplateText(templateName) {
     var templatePath = `${this._templates}/${templateName}.html`;
     return fetch(templatePath)
@@ -322,7 +333,8 @@ class PageBuilder {
       }) // end promise
    }
 
-  /*
+  /**
+   * TODO: rewrite.
    * Adds translation button onclick event.
    */
   _addLanguageButtonEvent(translator) {
@@ -331,7 +343,8 @@ class PageBuilder {
     };
   }
 
-  /*
+  /**
+   * TODO: rewrite.
    * Page fades out on unload.
    * Courtesy of: https://stackoverflow.com/questions/1760096/override-default-behaviour-for-link-a-objects-in-javascript
    */
