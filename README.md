@@ -40,3 +40,6 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 ### Misc functions
 - *js/page-builder.js*: **Parametrize add-button function** so that a container can be specified to adapt to different page structures
 - *js/page-builder.js*: Add **download pdf option**, which is activated when an index.pdf file is present in the same folder as the web page, if so, it adds an icon on the page to download it in PDF format
+
+### Code cleanup
+- **Naming**: builder/drawer, gallery/directory, etc.
