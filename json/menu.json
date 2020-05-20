@@ -1,24 +1,24 @@
 [
   {
-    "parent": "/",
+    "parent": "",
     "href": "/",
     "data-i18n": "nav.main",
     "material-icon": "home"
   },
   {
-    "parent": "/",
+    "parent": "",
     "href": "/travels",
     "data-i18n": "nav.travels",
     "material-icon": "flight"
   },
   {
-    "parent": "/",
+    "parent": "",
     "href": "/favs",
     "data-i18n": "nav.favs",
     "material-icon": "favorite_border"
   },
   {
-    "parent": "/",
+    "parent": "",
     "href": "/interests",
     "data-i18n": "nav.interests",
     "material-icon": "videogame_asset"

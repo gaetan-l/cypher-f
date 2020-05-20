@@ -39,14 +39,14 @@ main.fade-in, main.fade-out, {
 }
 /* ----------------------------------------------------- */
 
-nav, footer {
+aside, footer {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
 }
 
-#site-title {
+#page-title-normal {
   text-align: center;
   border-bottom-style: solid;
   border-bottom-color: var(--cy-lightgrey);
@@ -54,79 +54,79 @@ nav, footer {
   transition: color 0.25s ease-in-out;
 }
 
-#site-title-shadow {
+#page-title-shadow {
   text-align: center;
   font-family: 'Alata', Arial, sans-serif;
   color: var(--cy-blue);
   transition: color 0.25s ease-in-out;
 }
 
-#site-title-div:hover > #site-title,
-#site-title-div:hover > #site-subtitle > span {
+#page-title:hover > #page-title-normal,
+#page-title:hover > #page-subtitle > span {
   color: var(--cy-blue);
   transition: color 0.25s ease-in-out;
 }
 
-#site-title-div:hover > #site-title-shadow {
+#page-title:hover > #page-title-shadow {
   color: var(--cy-grey);
   transition: color 0.25s ease-in-out;
 }
 
-#site-title-div:hover > #site-subtitle {
+#page-title:hover > #page-subtitle {
   letter-spacing: 5px;
   transition: letter-spacing 0.25s ease-in-out;
 }
 
-#site-subtitle {
+#page-subtitle {
   letter-spacing: 3px;
   transition: all 0.25s ease-in-out;
 }
 
-nav ul {
+aside > nav ul {
   list-style: none;
 }
 
-nav li {
+aside > nav li {
   border-left-style: solid;
   border-left-color: transparent;
 }
 
-nav li {
+aside > nav li {
   border-bottom-style: solid;
   border-bottom-color: var(--cy-lightgrey);
 }
 
-nav ul a {
+aside > nav ul a {
   text-decoration: none;
   vertical-align: middle;
 }
 
-nav ul i {
+aside > nav ul i {
   vertical-align: middle;
 }
 
-nav li.active {
+aside > nav li.active {
   background-color: var(--cy-blue);
 }
 
-nav li:not(.active) > i.material-icons {
+aside > nav li:not(.active) > i.material-icons {
   color: var(--cy-blue);
 }
 
-nav li.active > a,
-nav li.active > i.material-icons,
-nav li:not(.active):hover > a,
-nav li:not(.active):hover > i.material-icons,
+aside > nav li.active > a,
+aside > nav li.active > i.material-icons,
+aside > nav li:not(.active):hover > a,
+aside > nav li:not(.active):hover > i.material-icons,
 body#travels > div#zoom-container > div#zoom-infos > p {
   color: white;
 }
 
-nav li:not(.active):hover > a,
-nav li:not(.active):hover > i.material-icons {
+aside > nav li:not(.active):hover > a,
+aside > nav li:not(.active):hover > i.material-icons {
   transition: color 0.25s ease-in-out;
 }
 
-nav li:not(.active):hover {
+aside > nav li:not(.active):hover {
   background-color: var(--cy-mediumgrey);
   border-left-color: var(--cy-blue);
   transition: all 0.25s ease-in-out;

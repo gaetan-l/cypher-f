@@ -2,53 +2,106 @@ import Translator  from "/js/translator.js";
 
 `use strict`
 
+/**
+ * Helper class used to build a page.
+ *
+ * Builds the basic HTML using templates which folder is
+ * specified. Then translates content using a Translator.
+ * Then binds common events. Finally fades the page in when
+ * everything is over.
+ */
 class PageBuilder {
-  constructor() {
-    this._translator = new Translator();
-    this._title      = `Cypher`;
+  /**
+   * PageBuilder constructor.
+   *
+   * @param title         title of the page
+   * @param root          root of the website
+   * @param templatesPath path to the folder containing
+   *                      the templates (without the root)
+   * @param menuPath      path to the json file describing
+   *                      the menu
+   */
+  constructor(title, root, templatesPath, menuPath) {
+    this._url        = this._formatUrl(window.location.href);
+    this._title      = title;
+    this._root       = root;
+    this._templates  = templatesPath;
+    this._menuPath   = menuPath;
     this._body       = document.body;
+    this._header     = document.getElementsByTagName(`header`)[0];
     this._main       = document.getElementsByTagName(`main`)[0];
-    this._url        = window.location.href;
+    this._footer     = document.getElementsByTagName(`footer`)[0];
+
+    /**
+     * Translator that will be used to translate the page
+     * once built.
+     */
+    this._translator = new Translator();
   }
 
-  /*
-   * Builds the various elements of the page using
-   * templates, adds buttons and events and translates
-   * it and fades it in when ready.
+  /**
+   * Builds the page.
+   *
+   * Builds the basic HTML using templates which folder is
+   * specified. Then translates content using a Translator.
+   * Then binds common events. Finally fades the page in when
+   * everything is over.
    */
   buildPage() {
     return this._drawHead()
-      .then(() => this._drawFooter())
-      .then(() => fetch(`/json/menu.json`))
-      .then((res) => res.json())
-      .then((jsonMenu) => this._drawNav(jsonMenu))
-      .then(() => this.translatePage())
+      /*
+       * Replacing placeholder elements with tags.
+       */
+      .then(() => this._drawElement(`header`))
+      .then(() => this._drawElement(`footer`))
+      .then(() => this._drawElement(`aside`))
+
+      /*
+       * Injecting json menu if specified.
+       */
+      .then(() => (this._menuPath === undefined) ? null : this._buildHtmlMenu().then((htmlMenu) => this._drawElement(`nav`, htmlMenu)))
+
+      /*
+       * Once all content is loaded, translating the page.
+       */
+      .then(() => this._translator.translatePage())
+
+      /*
+       * Binding events.
+       */
       .then(() => this._addLanguageButtonEvent(this._translator))
       .then(() => this._addFadeOutOnUnload(this))
+
+      /*
+       * Fading the page in once averything is ready.
+       */
       .then(() => this.fadeIn(this._body))
   }
 
-  /*
-   * Translates the page using the specified translator.
-   */
-  translatePage() {
-    return this._translator.translatePage();
-  }
-
-  /*
+  /**
    * Fades element in.
+   *
+   * First removes fade-out class then adds fade-in class.
+   * Transition effects to be defined in css.
    */
   fadeIn(element) {
     element.classList.remove(`fade-out`);
     element.classList.add(`fade-in`);
   }
 
-  /*
+  /**
    * Fades element out.
+   *
+   * First removes fade-in class then adds fade-out class.
+   * Transition effects to be defined in css.
    */
   fadeOut(element) {
     element.classList.remove(`fade-in`);
     element.classList.add(`fade-out`);
+  }
+
+  _formatUrl(unformated) {
+    return unformated.replace(/\/?$/, '/'); // Adds trailing slash
   }
 
   /*
@@ -78,80 +131,198 @@ class PageBuilder {
       })
   }
 
-  /*
-   * Draws document footer.
+  /**
+   * Fills a placeholder element with the content of a tem-
+   * plate.
+   *
+   * Fills the innerHTML of a placeholder element, for
+   * example <header></header>, with the html specified.
+   * The element is accessed using the specified selector.
+   * If no html is specified, will use the selector to
+   * fetch the template of the same name and return its
+   * html. Does nothing if the specified tag is not found,
+   * or if there are multiple elements returned with the
+   * selector. Does nothing either if the template is not
+   * found.
+   *
+   * @access  private
+   * @param   string   selector   selector used to find the
+   *                              element which html is to
+   *                              be replaced
+   * @param   string   html       the html to inject in the
+   *                              element, if null, it will
+   *                              be used to look for a
+   *                              template of the same name
    */
-  _drawFooter() {
-    return fetch(`/templates/footer.html`)
-      .then((res) => res.text())
-      .then((resText) => {
-        var newFooter = document.createElement('footer');
-        newFooter.innerHTML = resText;
-        this._body.appendChild(newFooter);
-      })
-  }
+   async _drawElement(selector, html) {
+    var tags = document.querySelectorAll(selector);
+    if (tags.length == 1) {
+      if (html === undefined) {
+        html = await this._getTemplateText(selector);
+      }
 
-  /*
-   * Draws document navigation.
-   */
-  _drawNav(jsonMenu) {
-    var htmlNav = ``;
-    return fetch(`/templates/site-title-div.html`)
-      .then((res) => res.text())
-      .then((resText) => {
-        htmlNav = resText;
-      })
+      var oldElement = tags[0];
+      var newElement = document.createElement(`div`);
+      newElement.innerHTML = html;
 
-      .then(() => {
-        htmlNav += `<ul>`;
-        var previousParent = `/`;
-        var ulOpen = false;
+      while (newElement.firstChild) {
+        oldElement.appendChild(newElement.firstChild);
+      }
+    }
+    else {
+      console.warn(`${tags.length} elements found with selector ${selector} (should be 1).`);
+    }
+   }
 
-        for(var i = 0; i < jsonMenu.length; i++) {
-          var jsonMenuItem = jsonMenu[i];
+   _getTemplateText(templateName) {
+    var templatePath = `${this._templates}/${templateName}.html`;
+    return fetch(templatePath)
+      .then((response) => response.ok ? response.text() : null)
+   }
 
-          var regexp = /http:\/\/cypher-f\.com((\/[a-z\-]*)?(\/[a-z\-]+)?)/g;
-          var match = regexp.exec(this._url);
-          var currentPageFullUrl  = match[0]; // Full URL
-          var currentPageFullHref = match[1]; // URL relative to root (used for href)
-          var currentPageParent   = match[2]; // Subdomain
-          var currentPageLevel2   = match[3]; // Sub-subdomain
+   /**
+    * Builds a menu with the specified json file.
+    *
+    * Builds an unordered nested list representing the web-
+    * site menu by browsing the specified json file.
+    */
+   _buildHtmlMenu() {
+    return fetch(this._menuPath)
+      .then((res)  => res.json())
+      .then((json) => {
+        /*
+         * Examining current URL to determine which menu
+         * options to display or hide. See below.
+         */
+        var escapedRoot = this._root.replace(/[.\/]/g, '\\$&'); // $& means the whole matched string
+        var regexString = `(?<url>${escapedRoot}(?<href>(?<parent>[a-z\-\/]*\/)*[a-z\-]*\/))`;
+        var regex       = new RegExp(regexString, `g`);
+        console.log(this._url);
+        var matches     = regex.exec(this._url);
 
-          var openingUl = ``;
-          var closingUl = ``;
-          var jsonParent = jsonMenuItem[`parent`];
+        /*
+         * All top-level menu items will be displayed, plus
+         * all `children` (items whose parent is the cur-
+         * rent page) and `siblings` (items whose parent is
+         * the same as current page's parent.
+         *
+         * if url = `http://website.com/sub/sub-sub/page`
+         * href   = `/sub/sub-sub/page`
+         * parent = `/sub/sub-sub`
+         *
+         * Values for current pages:
+         */
+        console.log(matches);
+        var currUrl    = matches.groups.url;
+        var currHref   = matches.groups.href;
+        var currParent = matches.groups.parent === undefined ? `` : matches.groups.parent;
 
-          if ((jsonParent === `/`) || (jsonParent === currentPageParent)) {
-            if (jsonParent != previousParent) {
-              if (ulOpen) {
-                htmlNav += `</ul>`;
-                ulOpen = false;
+        var menu = document.createElement(`ul`);
+
+        /*
+         * Keeps the parent of the previous menu item, used
+         * to know if the current item should be in the
+         * same submenu or not.
+         */
+        var prevParent = ``;
+
+        /*
+         * Current ul element, starts with base menu, but
+         * can become a nested ul in multi-level menus.
+         */
+        var ul = menu;
+        for(var i = 0 ; i < json.length ; i++) {
+          var item = json[i];
+          var itemParent = this._formatUrl(item[`parent`]);
+          var itemHref   = this._formatUrl(item[`href`]);
+
+          var base    = itemParent === ``;
+          var child   = itemParent === currHref;
+          var sibling = itemParent === currParent;
+
+          /*
+           * The json item is the page actually being dis-
+           * played.
+           */
+          var active  = itemHref   === currHref;
+          if (base || child || sibling) {
+            var levelChange = itemParent != prevParent;
+            var prevSubmenu = ul != menu;
+            var currSubmenu = itemParent != ``;
+
+            /*
+             * If we are changing menu level...
+             */
+            if (levelChange) {
+
+              /*
+               * If we were creating a submenu, we add it 
+               * to the main menu and reset ul to be the
+               * main menu...
+               */
+              if (prevSubmenu) {
+                while (ul.firstChild) {
+                  menu.appendChild(ul.firstChild);
+                }
+                ul = menu;
               }
-              if (jsonParent != `/`) {
-                htmlNav += `<ul>`;
-                ulOpen = true;
+
+              /*
+               * If current item is in a submenu as well,
+               * we open a new one.
+               */
+              if (currSubmenu) {
+                ul = document.createElement(`ul`);
               }
+            } // end if (levelChange)
+
+            /*
+             * Actually adding item to ul, which is either
+             * the base menu or the submenu currently being
+             * built. Items look like this:
+             * <li class=`active`><i class=`material-icon`>itemIcon</i><a href=itemHref data-i18n=itemI18n></a></li>
+             */
+            var itemIcon = item[`material-icon`];
+            var itemI18n = item[`data-i18n`];
+
+            var li = document.createElement(`li`);
+            if (active) {
+              li.classList.add(`active`);
             }
 
-            var material_icon = jsonMenuItem[`material-icon`];
-            var href = jsonMenuItem[`href`];
-            var i18n = jsonMenuItem[`data-i18n`];
-            var active = (currentPageFullHref === jsonMenuItem.href ? ` class="active"` : ``);
-            htmlNav += `<li${active}><i class="material-icons">${material_icon}</i><a href="${href}" data-i18n="${i18n}"></a></li>`;
-            previousParent = jsonParent;
+            var img = document.createElement(`i`);
+            img.classList.add(`material-icons`);
+            img.innerHTML = itemIcon;
+
+            var a = document.createElement(`a`);
+            a.setAttribute(`href`,      itemHref)
+            a.setAttribute(`data-i18n`, itemI18n);
+
+            li.appendChild(img);
+            li.appendChild(a);
+            ul.appendChild(li);
+
+            /*
+             * Now moving to the next item, so updating
+             * previous parent.
+             */
+            prevParent = itemParent;
+          } // end if (base || child || sibling)
+        } // end for
+
+        /*
+         * If we ended in a submenu we need to append it to
+         * the main menu before returning.
+         */
+        if (ul != menu) {
+          while (ul.firstChild) {
+            menu.appendChild(ul.firstChild);
           }
         }
 
-        if (ulOpen) {
-          htmlNav += `</ul>`;
-        }
-        htmlNav += `</ul>`;
-
-        var newNav = document.createElement('nav');
-        newNav.innerHTML = htmlNav;
-        document.body.insertBefore(newNav, this._main);
-      })
-  }
+        return menu.outerHTML;
+      }) // end promise
+   }
 
   /*
    * Adds translation button onclick event.

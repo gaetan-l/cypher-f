@@ -1,6 +1,6 @@
 :root {
                  --font-size:  24px;
-                 --nav-width: 300px;
+               --aside-width: 300px;
               --title-height:  96px;
              --title-padding:  24px;
         --title-border-width:   1px;
@@ -34,55 +34,55 @@ html, body {
   height: 100%;
 }
 
-nav, main {
+aside, main {
   height: calc(100% - var(--footer-height));
   overflow-y: auto;
 }
 
-nav {
+aside {
   float: left;
-  width: var(--nav-width);
+  width: var(--aside-width);
 }
 
-nav > ul {
+aside > nav > ul {
   height: calc(100% - (var(--title-height) + 2 * var(--title-padding) + var(--title-border-width)));
   overflow-y: auto; /* Vertical scrollbar when enough items */
 }
 
-nav li {
+aside > nav li {
   display: inline-block;
   line-height: var(--nav-li-line-height);
   border-left-width: var(--nav-li-border-left);
   border-bottom-width: var(--nav-li-border-bottom);
 }
 
-nav > ul > li {
+aside > nav > ul > li {
   width: calc(100% - var(--nav-li-border-left) - var(--nav-li-padding-left));
   padding-left: var(--nav-li-padding-left);
 }
 
-nav > ul > ul > li {
+aside > nav > ul > ul > li {
   width: calc(100% - var(--nav-li-border-left) - 2 * var(--nav-li-padding-left));
   padding-left: calc(2 * var(--nav-li-padding-left));
 }
 
-nav a {
+aside > nav a {
   display: inline-block;
   margin-left: var(--nav-a-margin-left);
 }
 
-nav > ul > li > a {
+aside > nav > ul > li > a {
   /* font-size for the material-icon size */
   width: calc(100% - var(--font-size) - var(--nav-a-margin-left));
 }
 
-nav > ul > ul > li > a {
+aside > nav > ul > ul > li > a {
   /* font-size for the material-icon size */
   width: calc(100% - var(--font-size) - 2 * var(--nav-a-margin-left));
 }
 
 main {
-  margin-left: var(--nav-width);
+  margin-left: var(--aside-width);
   border-left-width: var(--main-border-width);
 }
 
@@ -95,36 +95,36 @@ footer > p {
   font-size: var(--footer-font-size);
 }
 
-#site-title,
-#site-title-shadow {
+#page-title-normal,
+#page-title-shadow {
   line-height: var(--title-height);
   border-bottom-width: var(--title-border-width);
   padding: var(--title-padding);
   font-size: var(--title-font-size);
 }
 
-#site-title {
+#page-title-normal {
   position: relative;
   z-index: 2;
 }
 
-#site-title-shadow {
+#page-title-shadow {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 1;
-  width: calc(var(--nav-width) - 2 * var(--title-padding));
+  width: calc(var(--aside-width) - 2 * var(--title-padding));
   padding: var(--title-padding);
 }
 
-#site-subtitle {
+#page-subtitle {
   position: absolute;
   top: calc(var(--title-padding) + (var(--title-height) - var(--title-font-size)) / 2 + var(--title-font-size));
-  left: calc(0.5 * var(--nav-width));
+  left: calc(0.5 * var(--aside-width));
 }
 
-#site-subtitle, 
-#site-subtitle > span {
+#page-subtitle, 
+#page-subtitle > span {
   font-size: var(--subtitle-font-size);
 }
 
@@ -155,7 +155,7 @@ body#home > main {
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
-  background-position: calc(50% + var(--nav-width) / 2) calc(50% - var(--footer-height) / 2);
+  background-position: calc(50% + var(--aside-width) / 2) calc(50% - var(--footer-height) / 2);
 }
 
 body#travels > main {
