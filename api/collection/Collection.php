@@ -1,6 +1,12 @@
 <?php
   /**
+   * Object representing a collection of items.
    *
+   * A collection is a folder containing picture files. The
+   * name of the files follows a certain pattern in order
+   * to be used as a database. Depending on the collection,
+   * it contains certain attributes that can then be ex-
+   * tracted and displayed as the client sees fit.
    */
   class Collection {
     // Collection names
@@ -25,10 +31,25 @@
      */
     private $name;
 
+    /**
+     * Collection constructor.
+     *
+     * @param  string  name  the name of the connection,
+     *                       that will be used to fetch the
+     *                       corresponding folder and to
+     *                       determine what kind of collec-
+     *                       tion it represents
+     */
     function __construct($name) {
       $this->name = $name;
     }
 
+    /**
+     * Retruns the collection in an array.
+     *
+     * @return  array  the collection as an array of file
+     *                 names
+     */
     public function toArray() {
       $path = "../../images/$this->name";
       if (is_dir($path)) {
@@ -36,7 +57,10 @@
         $allFileNamesArray = preg_grep('/^([^.])/', $allFileNamesArray); // Removes ".", ".." and hidden files
         $filteredArray = array();
 
-        // Building regular expressions
+        /*
+         * Building regular expressions used to parse and
+         * exclude collection items.
+         */
         $fullPattern      = $this->buildParsePattern();
         $exclusionPattern = $this->buildExclusionPattern();
 
@@ -67,10 +91,14 @@
       }
     }
 
-    /*
-     * Returns the pattern used to parse file names, built
-     * depending on the type of collection (photos, music,
-     * etc.)
+    /**
+     * Returns the pattern used to parse file names.
+     *
+     * Built depending on the type of collection (photos,
+     * music, etc.)
+     *
+     * @return  string  the pattern used to parse collec-
+     *                  tion items
      */
     private function buildParsePattern() {
       $pattern = "";
@@ -83,10 +111,14 @@
       return $pattern;
     }
 
-    /*
-     * Returns the pattern used to exclude certain files,
-     * built depending on the type of collection (photos,
+    /**
+     * Returns the pattern used to exclude certain files.
+     *
+     * Built depending on the type of collection (photos,
      * music, etc.).
+     *
+     * @return  string  the pattern used to exclude col-
+     *                  lection items
      */
     private function buildExclusionPattern() {
       $pattern = "";
@@ -99,10 +131,24 @@
       return $pattern;
     }
 
-    /*
-     * Returns an array representing one item of the collec-
-     * tion, built differently depending on the type of
-     * collection (photos, music, etc.).
+    /**
+     * Returns a json object string representing one item
+     * of the collection.
+     *
+     * Built differently depending on the type of collection
+     * (photos, music, etc.).
+     *
+     * @param   string  fileName  name of the file corres-
+     *                            ponding to the item to
+     *                            build by
+     * @param   array   matches   the different matches ex-
+     *                            tracted via the execution
+     *                            of the relevant regex on
+     *                            the file name, used to
+     *                            extract the various in-
+     *                            formation about the item
+     * @return  string            the item in json obect
+     *                            string format
      */
     private function buildItem($fileName, $matches) {
       $arrayItem = [];
@@ -126,9 +172,18 @@
       return json_encode($arrayItem, JSON_FORCE_OBJECT);
     }
 
-    /*
+    /**
      * Returns the groupings that are available for this
      * type of collection.
+     *
+     * Note: a grouping is a property of the items of this
+     * type of collection that can actually be used to sort
+     * it and group it. Example if you use "country" as a
+     * grouping, the groups would be France, Italy, etc.
+     *
+     * @return  array  an array containing the various
+     *                 groupings available for this col-
+     *                 lection
      */
     public function getAvailableGroupings() {
       $groupingsArray = [];
