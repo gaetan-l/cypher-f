@@ -117,30 +117,62 @@ export default class PageBuilder {
     var title = document.createElement(`title`);
     title.innerHTML = this._title;
     head.appendChild(title);
+    /*
+     * We add both the head of the current page and the
+     * content of the template in the temporary head.
+     */
     head.innerHTML += document.head.innerHTML;
     head.innerHTML += await TextUtil.getFileText(`${this._templates}/head.html`);
 
+    /*
+     * elements is a NodeList it needs to be an array to be
+     * sorted.
+     */
     var elements = Array.from(head.querySelectorAll(`head *`));
-    var pb = this;
-    elements.sort(function (x, y) {
-      var orderX = pb._headOrder(x);
-      var orderY = pb._headOrder(y);
 
+    /*
+     * Explicit declaration so we can bind this to it.
+     */
+    function compareElements(x, y) {
+      var orderX = this._headOrder(x);
+      var orderY = this._headOrder(y);
+
+      /*
+       * Either those are two different type of elements
+       * and we order them using the _headOrder function...
+       */
       if (orderX != orderY) {
         return orderX - orderY;
       }
+      /*
+       * ...or we simply order them alphabetically if they
+       * are the same type.
+       */
       else {
         return x.outerHTML.localeCompare(y.outerHTML);
       }
-    });
+    }
+    elements.sort(compareElements.bind(this));
 
-    console.log(elements);
+    /*
+     * Finally we "clean" document head, an re-write it
+     * with the ordered elements.
+     */
     document.head.innerHTML = ``;
     for (let i = 0 ; i < elements.length ; i++) {
       document.head.appendChild(elements[i]);
     }
   }
 
+  /**
+   * Returns the expected order of head HTMLElements.
+   *
+   * Used to compare and sort HTMLElements.
+   * @see    PageBuilder._drawHead()
+   *
+   * @param  HTMLElement  element  the element which order we
+   *                               want to know
+   */
   _headOrder(element) {
     var order = 999;
     console.log(element);
