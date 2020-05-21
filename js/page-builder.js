@@ -107,31 +107,96 @@ export default class PageBuilder {
   }
 
   /**
-   * TODO: rewrite.
-   * Draws document head.
+   * Draws document head by adding template head to cur-
+   * rent page head.
+   *
+   * Also orders the different items.
    */
-  _drawHead() {
-    var temp = document.createElement(`div`);
-    return fetch(`/templates/head.html`)
-      .then((res) => res.text())
-      .then((templateHead) => {
-        var title = `<title>${this._title}</title>`;
-        var metaArray = document.getElementsByTagName(`meta`);
-        var scriptArray = document.getElementsByTagName(`script`);
-        temp.innerHTML = title;
-        for (let i = 0 ; i < metaArray.length ; i++) {
-          temp.innerHTML += metaArray[i].outerHTML
-        }
-        temp.innerHTML += templateHead;
-        for (let i = 0 ; i < scriptArray.length ; i++) {
-          temp.innerHTML += scriptArray[i].outerHTML
+  async _drawHead() {
+    var head = document.createElement(`head`);
+    var title = document.createElement(`title`);
+    title.innerHTML = this._title;
+    head.appendChild(title);
+    head.innerHTML += document.head.innerHTML;
+    head.innerHTML += await TextUtil.getFileText(`${this._templates}/head.html`);
+
+    var elements = Array.from(head.querySelectorAll(`head *`));
+    var pb = this;
+    elements.sort(function (x, y) {
+      var orderX = pb._headOrder(x);
+      var orderY = pb._headOrder(y);
+
+      if (orderX != orderY) {
+        return orderX - orderY;
+      }
+      else {
+        return x.outerHTML.localeCompare(y.outerHTML);
+      }
+    });
+
+    console.log(elements);
+    document.head.innerHTML = ``;
+    for (let i = 0 ; i < elements.length ; i++) {
+      document.head.appendChild(elements[i]);
+    }
+  }
+
+  _headOrder(element) {
+    var order = 999;
+    console.log(element);
+    console.log(element.tagName);
+
+    switch (element.tagName) {
+      case `TITLE`:
+        order = 100;
+        break;
+
+      case `META`:
+        switch (element.name) {
+          case `description`:
+            order = 101;
+            break;
+
+          case `author`:
+            order = 102;
+            break;
+
+          case ``:
+            order = 199;
+            break;
         }
 
-        document.head.innerHTML = ``;
-        while (temp.firstChild) {
-          document.head.appendChild(temp.firstChild);
+      case `LINK`:
+        switch (element.rel) {
+          case `stylesheet`:
+            order = 201;
+            break;
+
+          case `icon`:
+            order = 202;
+            break;
         }
-      })
+        break;
+
+      case `STYLE`:
+        order = 300;
+        break;
+
+      case `SCRIPT`:
+        switch (element.type) {
+          case `module`:
+            order = 401;
+            break;
+
+          case ``:
+            order = 499;
+            break;
+        }
+        break;
+    }
+
+    console.log(order);
+    return order;
   }
 
   /**
