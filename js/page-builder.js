@@ -66,7 +66,7 @@ export default class PageBuilder {
       /*
        * Binding events.
        */
-      .then(() => this._bindOnclick(`#btn-translate`, function() {translator.switchLanguage(translator)}))
+      .then(() => PageUtil.bindOnclick(`#btn-translate`, function() {translator.switchLanguage(translator)}))
 
       /*
        * Override default behavior when leaving a page.
@@ -257,7 +257,8 @@ export default class PageBuilder {
    * @param   string   html       the html to inject in the
    *                              element, if null, it will
    *                              be used to look for a
-   *                              template of the same name
+   *                              template whose name is
+   *                              the selector
    */
    async _drawElement(selector, html) {
     var oldElement = PageUtil.getUniqueElement(selector);
@@ -425,25 +426,4 @@ export default class PageBuilder {
         return menu.outerHTML;
       }) // end promise
    }
-
-  /**
-   * Binds a function to an element's onclick event.
-   *
-   * @access    private
-   * @selector  HTMLElement  selOrElem   the HTMLElement to
-   *             or                      which the function
-   *            string                   will be bound to,
-   *                                     or the selector
-   *                                     used to access it
-   * @event     function      triggered  the function to
-   *                                     bind to the ele-
-   *                                     ment's onclick
-   *                                     event
-   */
-  _bindOnclick(selOrElem, triggered) {
-    var uniqueElement = PageUtil.getUniqueElement(selOrElem);
-    if (uniqueElement) {
-      uniqueElement.onclick = triggered;
-    }
-  }
 }

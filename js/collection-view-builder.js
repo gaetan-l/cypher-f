@@ -1,4 +1,5 @@
 import PageUtil from "/js/page-util.js";
+import TextUtil from "/js/text-util.js";
 
 `use strict`
 
@@ -50,15 +51,12 @@ export default class CollectionViewBuilder {
    * @access  private
    * @return  JSONObject  the collection in json format
    */
-  _getCollection() {
+  async _getCollection() {
     if (this._collection === null) {
-      var request = new XMLHttpRequest();
-      request.open(`GET`, `/api/collection/get-collection.php?name=${this._name}`, false);
-      request.send();
-
-      var response = JSON.parse(request.response);
-      this._collection = response.content;
-      this._availableGroupings = response.extra.availableGroupings;
+      var response = await fetch(`/api/collection/get-collection.php?name=${this._name}`, {method: `GET`});
+      var json = await response.json();
+      this._collection = json.content;
+      this._availableGroupings = json.extra.availableGroupings;
     }
 
     return this._collection;
@@ -67,6 +65,9 @@ export default class CollectionViewBuilder {
   /**
    * Builds a view containing the collection.
    *
+   * @param  PageBuilder  pageBuilder  the pageBuilder used
+   *                                   to build the page
+   *                                   containing the view
    * @param  string       displayMode  the type of view
    *                                   that is to be drawn
    * @param  HTMLElement  elemOrSel    the HTMLElement to
@@ -83,13 +84,7 @@ export default class CollectionViewBuilder {
    *                                   tional, default:
    *                                   null
    */
-  drawView(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
-    /*
-     * Loads the collection for the first time if not al-
-     * ready done.
-     */
-    this._getCollection();
-
+  async drawView(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
     /*
      * Checks if order and grouping are valid or reverts to
      * default. Orders and groups the collection before
@@ -97,16 +92,16 @@ export default class CollectionViewBuilder {
      */
     grouping = this._availableGroupings.includes(grouping) ? grouping : null;
     order    = CollectionViewBuilder.DISPLAY_ORDER().includes(order) ? order : CollectionViewBuilder.ASC();
-    this._sort(order, grouping);
+    await this._sort(order, grouping);
 
     var collectionView;
     switch (displayMode) {
       case CollectionViewBuilder.GALLERY():
-        collectionView = this._buildGalleryView();
+        collectionView = await this._buildGalleryView();
         break;
 
       case CollectionViewBuilder.DETAILS():
-        collectionView = this._buildDetailsListView();
+        collectionView = await this._buildDetailsListView();
         break;
     }
 
@@ -121,8 +116,13 @@ export default class CollectionViewBuilder {
     /*
      * Adding fullscreen view to document body.
      */
-    var fullscreenView = this._buildFullscreenView();
-    document.body.appendChild(fullscreenView);
+    var fsView = document.createElement(`div`);
+    fsView.setAttribute(`id`, `div-fs`);
+    fsView.innerHTML = await TextUtil.getFileText(`/templates/div-fs.html`);
+    document.body.appendChild(fsView);
+    PageUtil.bindOnclick(`#btn-fs-close`,  function() {
+      PageUtil.fadeOut(`#div-fs`);
+    });
   }
 
   /**
@@ -137,8 +137,9 @@ export default class CollectionViewBuilder {
    *                             tion, optional, default:
    *                             null
    */
-   _sort(order, grouping) {
-    this._getCollection().sort(function (x, y) {
+   async _sort(order, grouping) {
+    await this._getCollection();
+    this._collection.sort(function (x, y) {
       var jsonX = JSON.parse(x);
       var jsonY = JSON.parse(y);
 
@@ -170,7 +171,7 @@ export default class CollectionViewBuilder {
    *
    * @access  private
    */
-  _buildGalleryView() {
+  async _buildGalleryView() {
     /*
      * Temporary container to hold the view.
      */
@@ -181,7 +182,8 @@ export default class CollectionViewBuilder {
      * overriding "this" which is needed in this context.
      */
     var cvb = this;
-    for (let i = 0 ; i < this._getCollection().length ; i++) {
+    var collection = await this._getCollection();
+    for (let i = 0 ; i < collection.length ; i++) {
       /*
        * Picture frame.
        */
@@ -190,15 +192,14 @@ export default class CollectionViewBuilder {
       frame.onclick = function() {
         var clickedImage = this.getElementsByTagName(`img`)[0];
         var index = parseInt(clickedImage.getAttribute(`index`));
-        cvb._displayPicture(index, cvb);
-        var zoomContainer = document.getElementById(`zoom-container`);
-        PageUtil.fadeIn(zoomContainer);
+        cvb._displayFullscreenPicture(index, cvb);
+        PageUtil.fadeIn(`#div-fs`);
       };
 
       /*
        * Picture.
        */
-      var picture = JSON.parse(this._getCollection()[i]);
+      var picture = JSON.parse(collection[i]);
       var img = document.createElement(`img`);
       img.setAttribute(`index`, i);
       img.setAttribute(`date`, picture.readableDate);
@@ -217,80 +218,50 @@ export default class CollectionViewBuilder {
   }
 
   /*
-   * Builds the view conaining the fullscreen picture when
-   * clicked.
-   *
-   * @access  private
-   * @return  HTMLElement  the view containing the full-
-   *                       screen picture
-   */
-  _buildFullscreenView() {
-    // Building zoom container, image, labels and buttons.
-    var zoomContainer = document.createElement(`div`);
-    zoomContainer.setAttribute(`id`, `zoom-container`);
-
-    var prevButton = document.createElement(`i`);
-    prevButton.setAttribute(`id`, `prev-button`);
-    prevButton.classList.add(`material-icons`);
-    prevButton.innerHTML = `navigate_before`;
-
-    var zoomImg = document.createElement(`img`);
-    zoomImg.setAttribute(`id`, `zoom-img`);
-
-    var nextButton = document.createElement(`i`);
-    nextButton.setAttribute(`id`, `next-button`);
-    nextButton.classList.add(`material-icons`);
-    nextButton.innerHTML = `navigate_next`;
-
-    var closeButton = document.createElement(`i`);
-    closeButton.setAttribute(`id`, `zoom-close`);
-    closeButton.classList.add(`material-icons`);
-    closeButton.innerHTML = `close`;
-
-    var zoomInfos = document.createElement(`div`);
-    zoomInfos.setAttribute(`id`, `zoom-infos`);
-
-    // Binding onclick event to close button.
-    closeButton.onclick = function() {
-      PageUtil.fadeOut(zoomContainer);
-    };
-
-    // Adding all elements to zoom container and zoom
-    // container to general container.
-    zoomContainer.appendChild(prevButton);
-    zoomContainer.appendChild(zoomImg);
-    zoomContainer.appendChild(nextButton);
-    zoomContainer.appendChild(zoomInfos);
-    zoomContainer.appendChild(closeButton);
-
-    return zoomContainer;
-  }
-
-  /*
    * Displays the full size picture once clicked on, with
    * navigation buttons and picture information labels.
    *
    * @access  private
    */
-  _displayPicture(index, galleryBuilder) {
-    var currentGallery = galleryBuilder._getCollection();
-    var picture = JSON.parse(currentGallery[index]);
-    document.getElementById(`zoom-img`).src = galleryBuilder._getFilePath(picture);
+  async _displayFullscreenPicture(index, cvb) {
+    var collection = await cvb._getCollection();
+    var jsonItem = JSON.parse(collection[index]);
 
-    document.getElementById(`zoom-infos`).innerHTML = `` +
-      ((picture.date        == ``) ? `` : `<p id="img-location">${picture.date}</p>`) +
-      ((picture.location    == ``) ? `` : `<p id="img-description">${picture.location}</p>`) +
-      ((picture.description == ``) ? `` : `<p id="img-description">${picture.description}</p>`);
+    /*
+     * Displaying actual picture.
+     */
+    document.getElementById(`img-fs`).src = cvb._getFilePath(jsonItem);
 
-    document.getElementById(`prev-button`).onclick = function() {
-      var prevIndex = (index + currentGallery.length - 1) % currentGallery.length;
-      galleryBuilder._displayPicture(prevIndex, galleryBuilder);
+    /*
+     * Displaying picture information
+     */
+    var infoDiv = document.getElementById(`div-fs-info`);
+    infoDiv.innerHTML = ``;
+    var jsonInfoArray = [`readableDate`, `location`,      `description`];
+    var htmlInfoArray = [`p-fs-date`,    `p-fs-location`, `p-fs-description`];
+    for (let i = 0 ; i < jsonInfoArray.length ; i++) {
+      var value = jsonItem[jsonInfoArray[i]];
+      if (value != null) {
+        var p = document.createElement(`p`);
+        p.setAttribute(`id`, htmlInfoArray[i]);
+        p.classList.add(`fs-info`);
+        p.innerHTML = value;
+        infoDiv.appendChild(p);
+      }
     }
 
-    document.getElementById(`next-button`).onclick = function() {
-      var nextIndex = (index + 1) % currentGallery.length;
-      galleryBuilder._displayPicture(nextIndex, galleryBuilder);
-    }
+    /*
+     * Binding prev/next button functions.
+     */
+    PageUtil.bindOnclick(`#btn-fs-prev`, function() {
+      var prevIndex = (index + collection.length - 1) % collection.length;
+      cvb._displayFullscreenPicture(prevIndex, cvb);
+    });
+
+    PageUtil.bindOnclick(`#btn-fs-next`, function() {
+      var nextIndex = (index + 1) % collection.length;
+      cvb._displayFullscreenPicture(nextIndex, cvb);
+    });
   }
 
   /*

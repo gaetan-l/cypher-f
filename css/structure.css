@@ -17,7 +17,7 @@
       --picture-frame-margin:  36px;
      --picture-frame-padding:  12px;
 --picture-frame-border-width:   1px;
-               --zoom-margin:  12px;
+                 --fs-margin:  12px;
 
            --title-font-size: calc(2.0 * var(--font-size));
         --subtitle-font-size: calc(0.5 * var(--font-size));
@@ -186,7 +186,7 @@ body#travels > main > div#gallery > div.picture-frame {
   border-width: var(--picture-frame-border-width);
 }
 
-body#travels > div#zoom-container {
+body#travels > div#div-fs {
   display: flex;
   z-index: 3;
   position: absolute;
@@ -201,34 +201,34 @@ body#travels > main > div#gallery > div.picture-frame > img {
   margin: auto;
 }
 
-body#travels > div#zoom-container > img {
-  max-width: calc(100% - 2 * var(--button-size) - 4 * var(--zoom-margin));
+body#travels > div#div-fs > img {
+  max-width: calc(100% - 2 * var(--button-size) - 4 * var(--fs-margin));
   max-height: 100%;
   margin: auto;
 }
 
-body#travels > div#zoom-container > div#zoom-infos,
-body#travels > div#zoom-container > i#zoom-close {
+body#travels > div#div-fs > div#div-fs-info,
+body#travels > div#div-fs > i#btn-fs-close {
   position: absolute;
-  margin: var(--zoom-margin);
+  margin: var(--fs-margin);
 
 }
 
-body#travels > div#zoom-container > div#zoom-infos {
+body#travels > div#div-fs > div#div-fs-info {
   left: 0;
   bottom: 0;
 }
 
-body#travels > div#zoom-container > i {
+body#travels > div#div-fs > i {
   font-size: var(--button-size);
 }
 
-body#travels > div#zoom-container > i#prev-button,
-body#travels > div#zoom-container > i#next-button {
-  margin: auto var(--zoom-margin);
+body#travels > div#div-fs > i#btn-fs-prev,
+body#travels > div#div-fs > i#btn-fs-next {
+  margin: auto var(--fs-margin);
 }
 
-body#travels > div#zoom-container > i#zoom-close {
+body#travels > div#div-fs > i#btn-fs-close {
   right: 0;
   top: 0;
 }

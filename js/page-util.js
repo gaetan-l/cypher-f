@@ -73,4 +73,24 @@ export default class PageUtil {
       return null;
     }
   }
+  
+  /**
+   * Binds a function to an element's onclick event.
+   *
+   * @selector  HTMLElement  selOrElem   the HTMLElement to
+   *             or                      which the function
+   *            string                   will be bound to,
+   *                                     or the selector
+   *                                     used to access it
+   * @event     function      triggered  the function to
+   *                                     bind to the ele-
+   *                                     ment's onclick
+   *                                     event
+   */
+  static bindOnclick(selOrElem, triggered) {
+    var uniqueElement = PageUtil.getUniqueElement(selOrElem);
+    if (uniqueElement) {
+      uniqueElement.onclick = triggered;
+    }
+  }
 }

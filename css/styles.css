@@ -117,7 +117,7 @@ aside > nav li.active > a,
 aside > nav li.active > i.material-icons,
 aside > nav li:not(.active):hover > a,
 aside > nav li:not(.active):hover > i.material-icons,
-body#travels > div#zoom-container > div#zoom-infos > p {
+body#travels > div#div-fs > div#div-fs-info > p {
   color: white;
 }
 
@@ -177,27 +177,27 @@ body#travels > main > div#gallery > div.picture-frame:hover {
   transition: box-shadow 0.25s ease-in-out;
 }
 
-body#travels > div#zoom-container {
+body#travels > div#div-fs {
   background-color: black;
   cursor: pointer;
 }
 
-body#travels > div#zoom-container {
+body#travels > div#div-fs {
   opacity: 0;
   height: 0;
 }
 
-body#travels > div#zoom-container.fade-out {
+body#travels > div#div-fs.fade-out {
   transition: opacity 0.25s ease-in-out, height 0s 0.25s;
 }
 
-body#travels > div#zoom-container.fade-in {
+body#travels > div#div-fs.fade-in {
   opacity: 100%;
   height: 100%;
   transition: opacity 0.25s ease-in-out;
 }
 
-body#travels > div#zoom-container > i {
+body#travels > div#div-fs > i {
   color: white;
   cursor: pointer;
 }
