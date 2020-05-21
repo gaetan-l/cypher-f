@@ -5,4 +5,4 @@ import PageBuilder from "/js/page-builder.js";
 var pageBuilder = new PageBuilder(`Cypher`, `http://cypher-f.com`, `/templates`, `/json/menu.json`);
 
 pageBuilder.buildPage()
-.then(() => pageBuilder.fadeIn(pageBuilder._main));
+.then(() => pageBuilder.fadeIn(document.getElementsByTagName(`main`)[0]));

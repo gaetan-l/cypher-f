@@ -1,3 +1,4 @@
+import TextUtil    from "/js/text-util.js";
 import Translator  from "/js/translator.js";
 
 `use strict`
@@ -10,7 +11,7 @@ import Translator  from "/js/translator.js";
  * Then binds common events. Finally fades the page in when
  * everything is over.
  */
-class PageBuilder {
+export default class PageBuilder {
   /**
    * PageBuilder constructor.
    *
@@ -22,20 +23,12 @@ class PageBuilder {
    *                      the menu
    */
   constructor(title, root, templatesPath, menuPath) {
-    this._url        = this._formatUrl(window.location.href);
+    this._url        = TextUtil.formatUrl(window.location.href);
     this._title      = title;
     this._root       = root;
     this._templates  = templatesPath;
     this._menuPath   = menuPath;
     this._body       = document.body;
-    this._header     = document.getElementsByTagName(`header`)[0];
-    this._main       = document.getElementsByTagName(`main`)[0];
-    this._footer     = document.getElementsByTagName(`footer`)[0];
-
-    /*
-     * Translator that will be used to translate the page
-     * once built.
-     */
     this._translator = new Translator();
   }
 
@@ -105,18 +98,11 @@ class PageBuilder {
   }
 
   /**
-   * TODO: move in util class.
-   */
-  _formatUrl(unformated) {
-    return unformated.replace(/\/?$/, '/'); // Adds trailing slash
-  }
-
-  /**
    * TODO: rewrite.
    * Draws document head.
    */
   _drawHead() {
-    var temp = document.createElement('div');
+    var temp = document.createElement(`div`);
     return fetch(`/templates/head.html`)
       .then((res) => res.text())
       .then((templateHead) => {
@@ -166,7 +152,7 @@ class PageBuilder {
     var tags = document.querySelectorAll(selector);
     if (tags.length == 1) {
       if (html === undefined) {
-        html = await this._getTemplateText(selector);
+        html = await TextUtil.getFileText(`${this._templates}/${selector}.html`);
       }
 
       var oldElement = tags[0];
@@ -208,7 +194,7 @@ class PageBuilder {
          * Examining current URL to determine which menu
          * options to display or hide. See below.
          */
-        var escapedRoot = this._root.replace(/[.\/]/g, '\\$&'); // $& means the whole matched string
+        var escapedRoot = this._root.replace(/[.\/]/g, `\\$&`); // $& means the whole matched string
         var regexString = `(?<url>${escapedRoot}(?<href>(?<parent>[a-z\-\/]*\/)*[a-z\-]*\/))`;
         var regex       = new RegExp(regexString, `g`);
         var matches     = regex.exec(this._url);
@@ -225,9 +211,9 @@ class PageBuilder {
          *
          * Values for current pages:
          */
-        var currUrl    = matches.groups.url;
-        var currHref   = matches.groups.href;
-        var currParent = matches.groups.parent === undefined ? `` : matches.groups.parent;
+        var currUrl    = TextUtil.formatUrl(matches.groups.url);
+        var currHref   = TextUtil.formatUrl(matches.groups.href);
+        var currParent = TextUtil.formatUrl(matches.groups.parent === undefined ? `` : matches.groups.parent);
 
         var menu = document.createElement(`ul`);
 
@@ -245,8 +231,8 @@ class PageBuilder {
         var ul = null;
         for(var i = 0 ; i < json.length ; i++) {
           var item = json[i];
-          var itemParent = this._formatUrl(item[`parent`]);
-          var itemHref   = this._formatUrl(item[`href`]);
+          var itemParent = TextUtil.formatUrl(item[`parent`]);
+          var itemHref   = TextUtil.formatUrl(item[`href`]);
 
           /*
            * Careful, using formatUrl, menu items having no
@@ -267,10 +253,7 @@ class PageBuilder {
           if (base || child || sibling) {
             var levelChange = itemParent != prevParent;
             var prevSubmenu = !(ul === null);
-            console.log(i);
-            console.log(itemParent);
             var currSubmenu = itemParent != `/`;
-            console.log(currSubmenu);
 
             /*
              * If we are changing menu level...
@@ -375,5 +358,3 @@ class PageBuilder {
     }
   }
 }
-
-export default PageBuilder;
