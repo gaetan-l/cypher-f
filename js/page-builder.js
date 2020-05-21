@@ -1,6 +1,6 @@
-import PageUtil    from "/js/page-util.js";
-import TextUtil    from "/js/text-util.js";
-import Translator  from "/js/translator.js";
+import PageUtil   from "/js/page-util.js";
+import TextUtil   from "/js/text-util.js";
+import Translator from "/js/translator.js";
 
 `use strict`
 
@@ -16,12 +16,13 @@ export default class PageBuilder {
   /**
    * PageBuilder constructor.
    *
-   * @param title         title of the page
-   * @param root          root of the website
-   * @param templatesPath path to the folder containing
-   *                      the templates (without the root)
-   * @param menuPath      path to the json file describing
-   *                      the menu
+   * @param  string  title          title of the page
+   * @param  string  root           root of the website
+   * @param  string  templatesPath  path to the folder con-
+   *                                taining the templates
+   *                                (without the root)
+   * @param  string  menuPath       path to the json file
+   *                                describing the menu
    */
   constructor(title, root, templatesPath, menuPath) {
     this._url        = TextUtil.formatUrl(window.location.href);
@@ -39,6 +40,8 @@ export default class PageBuilder {
    * specified. Then translates content using a Translator.
    * Then binds common events. Finally fades the page in when
    * everything is over.
+   *
+   * @return  Promise
    */
   buildPage() {
     var translator = this._translator;
@@ -111,6 +114,8 @@ export default class PageBuilder {
    * rent page head.
    *
    * Also orders the different items.
+   *
+   * @access  private
    */
   async _drawHead() {
     var head = document.createElement(`head`);
@@ -168,10 +173,13 @@ export default class PageBuilder {
    * Returns the expected order of head HTMLElements.
    *
    * Used to compare and sort HTMLElements.
-   * @see    PageBuilder._drawHead()
+   * @see     PageBuilder._drawHead()
    *
-   * @param  HTMLElement  element  the element which order we
-   *                               want to know
+   * @access  private
+   * @param   HTMLElement  element  the element which order
+   *                                we want to know
+   * @return  int                   the order of the ele-
+   *                                ment
    */
   _headOrder(element) {
     var order = 999;
@@ -275,6 +283,9 @@ export default class PageBuilder {
     *
     * TODO: Currently limited to a list of depth 2, update
     * code.
+    * @access  private
+    * @return  Promise(string)  a promise containing the
+    *                           menu in html/string format
     */
    _buildHtmlMenu() {
     return fetch(this._menuPath)
@@ -418,6 +429,7 @@ export default class PageBuilder {
   /**
    * Binds a function to an element's onclick event.
    *
+   * @access    private
    * @selector  HTMLElement  selOrElem   the HTMLElement to
    *             or                      which the function
    *            string                   will be bound to,

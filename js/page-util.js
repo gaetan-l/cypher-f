@@ -10,12 +10,12 @@ export default class PageUtil {
    * First removes fade-out class then adds fade-in class.
    * Transition effects to be defined in css.
    *
-   * @param  HTMLElement  selOrElem  the HTMLElement to
+   * @param  HTMLElement  elemOrSel  the HTMLElement to
    *          or                     fade in or the selec-
    *         string                  tor used to access it
    */
-  static fadeIn(selOrElem) {
-    var uniqueElement = PageUtil.getUniqueElement(selOrElem);
+  static fadeIn(elemOrSel) {
+    var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
     if (uniqueElement) {
       uniqueElement.classList.remove(`fade-out`);
       uniqueElement.classList.add(`fade-in`);
@@ -28,12 +28,12 @@ export default class PageUtil {
    * First removes fade-in class then adds fade-out class.
    * Transition effects to be defined in css.
    *
-   * @param  HTMLElement  selOrElem  the HTMLElement to
+   * @param  HTMLElement  elemOrSel  the HTMLElement to
    *          or                     fade out or the selec-
    *         string                  tor used to access it
    */
-  static fadeOut(selOrElem) {
-    var uniqueElement = PageUtil.getUniqueElement(selOrElem);
+  static fadeOut(elemOrSel) {
+    var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
     if (uniqueElement) {
       uniqueElement.classList.remove(`fade-in`);
       uniqueElement.classList.add(`fade-out`);
@@ -49,18 +49,20 @@ export default class PageUtil {
    * turns it, otherwise, if there is 0 or more than 1 ele-
    * ment, or if selector is another type, returns null.
    *
-   * @param  HTMLElement  selOrElem  the HTMLElement to
-   *          or                     access or the selector
-   *         string                  used to access it
+   * @param   HTMLElement  elemOrSel  the HTMLElement to
+   *           or                     access or the selec-
+   *          string                  tor used to access it
+   * @return  HTMLElement             the unique
+   *                                  HTMLElement, or null
    */
-  static getUniqueElement(selOrElem) {
-    if (typeof selOrElem === 'HTMLElement' || selOrElem instanceof HTMLElement) {
-      return selOrElem;
+  static getUniqueElement(elemOrSel) {
+    if (typeof elemOrSel === 'HTMLElement' || elemOrSel instanceof HTMLElement) {
+      return elemOrSel;
     }
-    else if (typeof selOrElem === 'string' || selOrElem instanceof String) {
-      var elements = document.querySelectorAll(selOrElem);
+    else if (typeof elemOrSel === 'string' || elemOrSel instanceof String) {
+      var elements = document.querySelectorAll(elemOrSel);
       if (!(elements.length == 1)) {
-        console.warn(`Tried to use PageUtil.getUniqueElement(selOrElem) with selector "${selOrElem}", found ${elements.length} element(s), should be 1.`);
+        console.warn(`Tried to use PageUtil.getUniqueElement(elemOrSel) with selector "${elemOrSel}", found ${elements.length} element(s), should be 1.`);
         return null;
       }
       else {

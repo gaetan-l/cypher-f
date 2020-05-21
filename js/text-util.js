@@ -10,7 +10,8 @@ export default class TextUtil {
    * For comparison purposes only. Does not check the vali-
    * dity of the url.
    *
-   * @param  string  unformatted  the url to format
+   * @param   string  unformatted  the url to format
+   * @return  string               the formatted url
    */
   static formatUrl(unformatted) {
     var formatted = unformatted;
@@ -25,8 +26,11 @@ export default class TextUtil {
    *
    * Returns null if file not found.
    *
-   * @param  string  filePath  the path used to access the
-   *                           file
+   * @param   string           filePath  the path used to
+   *                                     access the file
+   * @return  Promise(string)            a Promise contain-
+   *                                     ing the content of
+   *                                     the file in string
    */
   static getFileText(filePath) {
     return fetch(filePath)

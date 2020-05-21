@@ -8,5 +8,5 @@ var pageBuilder = new PageBuilder(`Cypher`, `http://cypher-f.com`, `/templates`,
 var cvBuilder = new CollectionViewBuilder(`travels`);
 
 pageBuilder.buildPage()
-.then(() => cvBuilder.buildGallery(document.getElementById(`gallery`), pageBuilder))
+.then(() => cvBuilder.drawView(CollectionViewBuilder.GALLERY(), document.getElementById(`gallery`)))
 .then(() => PageUtil.fadeIn(`main`))
