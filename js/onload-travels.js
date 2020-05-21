@@ -1,4 +1,5 @@
 import PageBuilder    from "/js/page-builder.js";
+import PageUtil       from "/js/page-util.js";
 import GalleryBuilder from "/js/gallery-builder.js";
 
 `use strict`
@@ -8,4 +9,4 @@ var galleryBuilder = new GalleryBuilder(`travels`);
 
 pageBuilder.buildPage()
 .then(() => galleryBuilder.buildGallery(document.getElementById(`gallery`), pageBuilder))
-.then(() => pageBuilder.fadeIn(document.getElementsByTagName(`main`)[0]))
+.then(() => PageUtil.fadeIn(`main`))

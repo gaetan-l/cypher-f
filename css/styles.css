@@ -149,15 +149,15 @@ footer > p {
 }
 
 #menu-button,
-#language-button {
+#btn-translate {
   color: white;
   cursor: pointer;
 }
 
 #menu-button,
-#language-button,
+#btn-translate,
 #menu-button:hover,
-#language-button:hover {
+#btn-translate:hover {
   transition: all 0.1s ease-in-out;
 }
 

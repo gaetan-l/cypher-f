@@ -1,3 +1,4 @@
+import PageUtil    from "/js/page-util.js";
 import TextUtil    from "/js/text-util.js";
 import Translator  from "/js/translator.js";
 
@@ -28,7 +29,6 @@ export default class PageBuilder {
     this._root       = root;
     this._templates  = templatesPath;
     this._menuPath   = menuPath;
-    this._body       = document.body;
     this._translator = new Translator();
   }
 
@@ -41,6 +41,7 @@ export default class PageBuilder {
    * everything is over.
    */
   buildPage() {
+    var translator = this._translator;
     return this._drawHead()
       /*
        * Replacing placeholder elements with tags.
@@ -62,39 +63,47 @@ export default class PageBuilder {
       /*
        * Binding events.
        */
-      .then(() => this._addLanguageButtonEvent(this._translator))
-      .then(() => this._addFadeOutOnUnload(this))
+      .then(() => this._bindOnclick(`#btn-translate`, function() {translator.switchLanguage(translator)}))
+
+      /*
+       * Override default behavior when leaving a page.
+       *
+       * @link https://stackoverflow.com/questions/1760096/override-default-behaviour-for-link-a-objects-in-javascript
+       */
+      .then(() => {
+        document.onclick = function (e) {
+          e = e || window.event;
+          var element = e.target || e.srcElement;
+
+          if (element.tagName == `A`) { // Capital `A`, not `a`.
+            /*
+             * Prevents default <a> behavior.
+             */
+            e.preventDefault();
+
+            /*
+             * Stores target url.
+             */
+            var goTo = element.href;
+            PageUtil.fadeOut(document.body);
+
+            /*
+             * Wait for a while to let css transition terminate.
+             */
+            setTimeout(function () {
+              /*
+               * Navigate to intended destination
+               */
+              window.location = goTo;
+            }, 250);
+          }
+        }
+      })
 
       /*
        * Fading the page in once averything is ready.
        */
-      .then(() => this.fadeIn(this._body))
-  }
-
-  /**
-   * Fades element in.
-   *
-   * First removes fade-out class then adds fade-in class.
-   * Transition effects to be defined in css.
-   *
-   * @param  HTMLelement  element  the element to fade in
-   */
-  fadeIn(element) {
-    element.classList.remove(`fade-out`);
-    element.classList.add(`fade-in`);
-  }
-
-  /**
-   * Fades element out.
-   *
-   * First removes fade-in class then adds fade-out class.
-   * Transition effects to be defined in css.
-   *
-   * @param  HTMLelement  element  the element to fade out
-   */
-  fadeOut(element) {
-    element.classList.remove(`fade-in`);
-    element.classList.add(`fade-out`);
+      .then(() => PageUtil.fadeIn(document.body))
   }
 
   /**
@@ -149,13 +158,12 @@ export default class PageBuilder {
    *                              template of the same name
    */
    async _drawElement(selector, html) {
-    var tags = document.querySelectorAll(selector);
-    if (tags.length == 1) {
+    var oldElement = PageUtil.getUniqueElement(selector);
+    if (oldElement) {
       if (html === undefined) {
         html = await TextUtil.getFileText(`${this._templates}/${selector}.html`);
       }
 
-      var oldElement = tags[0];
       var newElement = document.createElement(`div`);
       newElement.innerHTML = html;
 
@@ -163,18 +171,6 @@ export default class PageBuilder {
         oldElement.appendChild(newElement.firstChild);
       }
     }
-    else {
-      console.warn(`${tags.length} elements found with selector ${selector} (should be 1).`);
-    }
-   }
-
-   /**
-    * TODO: move in util class.
-    */
-   _getTemplateText(templateName) {
-    var templatePath = `${this._templates}/${templateName}.html`;
-    return fetch(templatePath)
-      .then((response) => response.ok ? response.text() : null)
    }
 
    /**
@@ -326,35 +322,22 @@ export default class PageBuilder {
    }
 
   /**
-   * TODO: rewrite.
-   * Adds translation button onclick event.
+   * Binds a function to an element's onclick event.
+   *
+   * @selector  HTMLElement  selOrElem   the HTMLElement to
+   *             or                      which the function
+   *            string                   will be bound to,
+   *                                     or the selector
+   *                                     used to access it
+   * @event     function      triggered  the function to
+   *                                     bind to the ele-
+   *                                     ment's onclick
+   *                                     event
    */
-  _addLanguageButtonEvent(translator) {
-    document.getElementById(`language-button`).onclick = function() {
-      translator.switchLanguage(translator);
-    };
-  }
-
-  /**
-   * TODO: rewrite.
-   * Page fades out on unload.
-   * Courtesy of: https://stackoverflow.com/questions/1760096/override-default-behaviour-for-link-a-objects-in-javascript
-   */
-  _addFadeOutOnUnload(pageBuilder) {
-    /* Courtesy of: https://stackoverflow.com/questions/1760096/override-default-behaviour-for-link-a-objects-in-javascript */
-    document.onclick = function (e) {
-      e = e || window.event;
-      var element = e.target || e.srcElement;
-
-      if (element.tagName == `A`) { // capital `A`, not `a`
-        e.preventDefault(); // prevent default anchor behavior
-        var goTo = element.href; // store target url
-        pageBuilder.fadeOut(pageBuilder._body);;
-
-        setTimeout(function () {
-          window.location = goTo; // navigate to destination
-        }, 250);
-      }
+  _bindOnclick(selOrElem, triggered) {
+    var uniqueElement = PageUtil.getUniqueElement(selOrElem);
+    if (uniqueElement) {
+      uniqueElement.onclick = triggered;
     }
   }
 }

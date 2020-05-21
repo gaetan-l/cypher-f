@@ -129,7 +129,7 @@ footer > p {
 }
 
 #menu-button,
-#language-button {
+#btn-translate {
   position: absolute;
   bottom: 0;
   font-size: var(--button-size);
@@ -140,12 +140,12 @@ footer > p {
   left: 0;
 }
 
-#language-button {
+#btn-translate {
   right: 0;
 }
 
 #menu-button:hover,
-#language-button:hover {
+#btn-translate:hover {
   font-size: calc(1.3 * var(--button-size));
   margin: calc((var(--footer-height) - 1.3 * var(--button-size)) / 2);
 }
