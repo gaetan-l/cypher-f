@@ -8,17 +8,10 @@
   },
   "nav": {
     "main": "Home",
-    "favs": "Favorites",
-    "favs-movies": "Movies",
-    "favs-music": "Music",
     "pins": "Pins",
+    "pins-media": "Media",
+    "pins-misc": "Misc",
     "travels": "Travels",
-    "travels-au": "Australia",
-    "travels-nz": "New-Zealand",
     "interests": "Interests"
-  },
-  "main": {
-    "aboutme": "About Me",
-    "aboutwebsite": "About Website"
   }
 }

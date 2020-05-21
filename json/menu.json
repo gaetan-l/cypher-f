@@ -13,9 +13,21 @@
   },
   {
     "parent": "",
-    "href": "/favs",
-    "data-i18n": "nav.favs",
-    "material-icon": "favorite_border"
+    "href": "/pins",
+    "data-i18n": "nav.pins",
+    "material-icon": "bookmark"
+  },
+  {
+    "parent": "/pins",
+    "href": "/pins/media",
+    "data-i18n": "nav.pins-media",
+    "material-icon": "movie"
+  },
+  {
+    "parent": "/pins",
+    "href": "/pins/misc",
+    "data-i18n": "nav.pins-misc",
+    "material-icon": "casino"
   },
   {
     "parent": "",

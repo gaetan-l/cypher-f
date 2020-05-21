@@ -196,6 +196,9 @@ class PageBuilder {
     *
     * Builds an unordered nested list representing the web-
     * site menu by browsing the specified json file.
+    *
+    * TODO: Currently limited to a list of depth 2, update
+    * code.
     */
    _buildHtmlMenu() {
     return fetch(this._menuPath)
@@ -236,16 +239,23 @@ class PageBuilder {
         var prevParent = ``;
 
         /*
-         * Current ul element, starts with base menu, but
-         * can become a nested ul in multi-level menus.
+         * Temporary ul element used t ocreate nested me-
+         * nus.
          */
-        var ul = menu;
+        var ul = null;
         for(var i = 0 ; i < json.length ; i++) {
           var item = json[i];
           var itemParent = this._formatUrl(item[`parent`]);
           var itemHref   = this._formatUrl(item[`href`]);
 
-          var base    = itemParent === ``;
+          /*
+           * Careful, using formatUrl, menu items having no
+           * parent (empty string) will instead have `/` as
+           * parent. But the homepage's href is also `/`,
+           * so some items will be considered as both chil-
+           * dren and sibling. Watch out for side effects.
+           */
+          var base    = itemParent === `/`;
           var child   = itemParent === currHref;
           var sibling = itemParent === currParent;
 
@@ -256,8 +266,11 @@ class PageBuilder {
           var active  = itemHref   === currHref;
           if (base || child || sibling) {
             var levelChange = itemParent != prevParent;
-            var prevSubmenu = ul != menu;
-            var currSubmenu = itemParent != ``;
+            var prevSubmenu = !(ul === null);
+            console.log(i);
+            console.log(itemParent);
+            var currSubmenu = itemParent != `/`;
+            console.log(currSubmenu);
 
             /*
              * If we are changing menu level...
@@ -270,10 +283,8 @@ class PageBuilder {
                * main menu...
                */
               if (prevSubmenu) {
-                while (ul.firstChild) {
-                  menu.appendChild(ul.firstChild);
-                }
-                ul = menu;
+                menu.appendChild(ul);
+                ul = null;
               }
 
               /*
@@ -309,7 +320,7 @@ class PageBuilder {
 
             li.appendChild(img);
             li.appendChild(a);
-            ul.appendChild(li);
+            (ul === null) ? menu.appendChild(li) : ul.appendChild(li);
 
             /*
              * Now moving to the next item, so updating
@@ -323,10 +334,8 @@ class PageBuilder {
          * If we ended in a submenu we need to append it to
          * the main menu before returning.
          */
-        if (ul != menu) {
-          while (ul.firstChild) {
-            menu.appendChild(ul.firstChild);
-          }
+        if (!(ul === null)) {
+          menu.appendChild(ul);
         }
 
         return menu.outerHTML;
