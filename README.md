@@ -43,3 +43,6 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 
 ### Code cleanup
 - **Naming**: builder/drawer, gallery/directory, etc.
+- Harmonize **HTMLElement creation** (innerHTML vs firstChild)
+- Harmonize **asyncronous execution** (async+await vs .then())
+- Update **jsdoc** (@return Promise)
