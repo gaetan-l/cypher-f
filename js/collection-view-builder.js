@@ -1,6 +1,10 @@
 `use strict`
 
-class GalleryBuilder {
+/**
+ * Helper class to build views able to display collections
+ * (list, gallery, etc.).
+ */
+export default class CollectionViewBuilder {
   constructor(name, galleryContainer, pageBuilder) {
     this._name = name;
     this._galleryContainer = galleryContainer;
@@ -25,7 +29,7 @@ class GalleryBuilder {
   _getCurrentGallery() {
     if (this._currentGallery === null) {
       var request = new XMLHttpRequest();
-      request.open(`GET`, `/api/gallery/get-file-names.php?name=${this._name}`, false);
+      request.open(`GET`, `/api/collection/get-collection.php?name=${this._name}`, false);
       request.send();
 
       // JSON response
@@ -184,5 +188,3 @@ class GalleryBuilder {
     }
   }
 }
-
-export default GalleryBuilder;

@@ -1,6 +1,9 @@
 <?php
-  class Gallery {
-    // Gallerie names
+  /**
+   *
+   */
+  class Collection {
+    // Collection names
     const TRAVELS = "travels";
 
     // Groupings
@@ -17,14 +20,16 @@
     const EXTENSION_PATTERN   = "\.(jpg|png)";
     const REPETITION_PATTERN  = "(?:\(\d+\))?";
 
-    // Name of the gallery, used to build folder path
+    /*
+     * Name of the collection, used to build folder path
+     */
     private $name;
 
     function __construct($name) {
       $this->name = $name;
     }
 
-    public function get() {
+    public function toArray() {
       $path = "../../images/$this->name";
       if (is_dir($path)) {
         $allFileNamesArray = scandir($path, SCANDIR_SORT_ASCENDING);
@@ -46,7 +51,7 @@
           $excluded = preg_match($exclusionPattern, $tags);
 
           if ($doMatch && !$excluded) {
-            $filteredArray[] = $this->buildJsonItem($fileName, $matches);
+            $filteredArray[] = $this->buildItem($fileName, $matches);
             $nbMatches += 1;
           }
           else {
@@ -64,7 +69,7 @@
 
     /*
      * Returns the pattern used to parse file names, built
-     * depending on the type of gallery (photos, music,
+     * depending on the type of collection (photos, music,
      * etc.)
      */
     private function buildParsePattern() {
@@ -80,8 +85,8 @@
 
     /*
      * Returns the pattern used to exclude certain files,
-     * built depending on the type of gallery (photos,
-     * music, etc.)
+     * built depending on the type of collection (photos,
+     * music, etc.).
      */
     private function buildExclusionPattern() {
       $pattern = "";
@@ -95,11 +100,11 @@
     }
 
     /*
-     * Returns a JSON object representing one item of the
-     * gallery, built differently depending on the type of
-     * gallery (photos, music, etc.)
+     * Returns an array representing one item of the collec-
+     * tion, built differently depending on the type of
+     * collection (photos, music, etc.).
      */
-    private function buildJsonItem($fileName, $matches) {
+    private function buildItem($fileName, $matches) {
       $arrayItem = [];
 
       switch ($this->name) {
@@ -123,7 +128,7 @@
 
     /*
      * Returns the groupings that are available for this
-     * type of gallery
+     * type of collection.
      */
     public function getAvailableGroupings() {
       $groupingsArray = [];

@@ -6,21 +6,32 @@
   try {
     include_once "../Error400.php";
     include_once "../Error404.php";
-    include_once "Gallery.php";
+    include_once "Collection.php";
 
     if (!empty($_GET["name"])) {
-      // Retrieving gallery name from URL
+      /*
+       * Retrieving gallery name from url parameters.
+       */
       $name = htmlspecialchars($_GET["name"]);
-      $galleryObject = new Gallery($name);
-      $gallery = $galleryObject->get();
-      $availableGroupings = $galleryObject->getAvailableGroupings();
 
-      if (!($gallery === false)) {
+      /*
+       * Creating Collection object.
+       */
+      $collection = new Collection($name);
+
+      /*
+       * If collection is created correctly, retrieving ar-
+       * ray content and extra information and encoding
+       * everything in json format. Main content is placed
+       * in "content" variable, the rest is in an array in
+       * variable "extra".
+       */
+      if (!($collection === false)) {
         http_response_code(200);
         echo json_encode(array(
           "message" => "Gallery $name found.",
-          "content" => $gallery,
-          "extra"   => array("availableGroupings" => $availableGroupings)
+          "content" => $collection->toArray(),
+          "extra"   => array("availableGroupings" => $collection->getAvailableGroupings())
         ));
       }
       else {
@@ -36,7 +47,7 @@
     echo json_encode(array(
       "message" => $e->getMessage(),
       "file"    => $e->getFile(),
-      "line"    => $e-> getLine(),
+      "line"    => $e->getLine(),
       "trace"   => $e->getTrace()
     ));
   }

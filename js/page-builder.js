@@ -175,8 +175,6 @@ export default class PageBuilder {
    */
   _headOrder(element) {
     var order = 999;
-    console.log(element);
-    console.log(element.tagName);
 
     switch (element.tagName) {
       case `TITLE`:
@@ -227,7 +225,6 @@ export default class PageBuilder {
         break;
     }
 
-    console.log(order);
     return order;
   }
 
