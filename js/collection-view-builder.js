@@ -1,5 +1,4 @@
 import PageUtil from "/js/page-util.js";
-import TextUtil from "/js/text-util.js";
 
 `use strict`
 
@@ -118,8 +117,8 @@ export default class CollectionViewBuilder {
      */
     var fsView = document.createElement(`div`);
     fsView.setAttribute(`id`, `div-fs`);
-    fsView.innerHTML = await TextUtil.getFileText(`/templates/div-fs.html`);
     document.body.appendChild(fsView);
+    await PageUtil.replaceElementWithTemplate(`#div-fs`, `div-fs`);
     PageUtil.bindOnclick(`#btn-fs-close`,  function() {
       PageUtil.fadeOut(`#div-fs`);
     });

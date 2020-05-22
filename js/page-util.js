@@ -1,9 +1,13 @@
+import TextUtil from "/js/text-util.js";
+
 `use strict`
 
 /**
  * Utility class for page operations.
  */
 export default class PageUtil {
+  static TEMPLATE_PATH() {return `/templates`;}
+
   /**
    * Fades element in.
    *
@@ -73,11 +77,112 @@ export default class PageUtil {
       return null;
     }
   }
+
+  /**
+   * Replaces a placeholder element with html
+   *
+   * Replaces the specified element with the specified
+   * html. The element can be directly passed as an
+   * HTMLElement or as a string selector. Does nothing if
+   * the specified tag is not found, or if there are multi-
+   * ple elements returned with the selector. Does nothing
+   * either if html is null.
+   *
+   * @access  private
+   * @param   HTMLElement  elemOrSel     the HTMLElement to
+   *           or                        that has to be re-
+   *          string                     replaced, or the
+   *                                     selector used to
+   *                                     access it
+   * @param   string       html          the replacement
+   *                                     html
+   */
+  static async replaceElementWithHtml(elemOrSel, html) {
+    var oldElement = PageUtil.getUniqueElement(elemOrSel);
+    if (document.body.contains(oldElement)) {
+      if (oldElement) {
+        if (html != null) {
+          oldElement.outerHTML = html;
+        }
+      }
+    }
+    else {
+      console.warn(`PageUtil.replaceElementWithHtml(...) tried to replace element not attached to document.body!`)
+    }
+  }
+
+  /**
+   * Replaces a placeholder element with a template.
+   *
+   * Replaces the specified element with the content of the
+   * specified template. If no template name is specified,
+   * uses the selector passed as the template name, but
+   * only if it is a string. Does nothing if the specified
+   * element is not found, or if there are multiple elements
+   * returned with the selector. Does nothing either if the
+   * template is not found.
+   *
+   * @access  private
+   * @param   HTMLElement  elemOrSel     the HTMLElement to
+   *           or                        that has to be re-
+   *          string                     replaced, or the
+   *                                     selector used to
+   *                                     access it
+   * @param   string       html          the replacement
+   *                                     html, if null, the
+   *                                     selector will be
+   *                                     used to look for a
+   *                                     template instead
+   * @param  string        templatePath  allows to specify
+   *                                     a different temp-
+   *                                     late path
+   */
+  static async replaceElementWithTemplate(elemOrSel, templateName = null, templatePath = null) {
+    var oldElement = PageUtil.getUniqueElement(elemOrSel);
+    if (oldElement) {
+      /*
+       * If a template path is specify we use it, otherwise
+       * we use the default one.
+       */
+      templatePath = (templatePath === null) ? PageUtil.TEMPLATE_PATH() : templatePath;
+
+      /*
+       * If a template name is specified, we use it, other-
+       * wise we use the selector name, but only if it is a
+       * string.
+       */
+      if (templateName === null) {
+        if (typeof elemOrSel === 'string' || elemOrSel instanceof String) {
+          templateName = elemOrSel;
+        }
+      }
+
+      if (templateName != null) {
+        var html = await TextUtil.getFileText(`${templatePath}/${templateName}.html`);
+
+        PageUtil.replaceElementWithHtml(elemOrSel, html);
+      }
+    }
+  }
+
+  /**
+   * Returns the content of a template, or null if not
+   * found.
+   *
+   * @param  string  templateName  the template name
+   * @param  string  templatePath  the template path, if
+   *                               null the default path
+   *                               will be used
+   */
+  static async getTemplateText(templateName, templatePath = null) {
+    templatePath = (templatePath === null) ? PageUtil.TEMPLATE_PATH() : templatePath;
+    return await TextUtil.getFileText(`${templatePath}/${templateName}.html`);
+  }
   
   /**
    * Binds a function to an element's onclick event.
    *
-   * @selector  HTMLElement  selOrElem   the HTMLElement to
+   * @selector  HTMLElement  elemOrSel   the HTMLElement to
    *             or                      which the function
    *            string                   will be bound to,
    *                                     or the selector
@@ -87,8 +192,8 @@ export default class PageUtil {
    *                                     ment's onclick
    *                                     event
    */
-  static bindOnclick(selOrElem, triggered) {
-    var uniqueElement = PageUtil.getUniqueElement(selOrElem);
+  static bindOnclick(elemOrSel, triggered) {
+    var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
     if (uniqueElement) {
       uniqueElement.onclick = triggered;
     }

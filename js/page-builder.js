@@ -49,9 +49,9 @@ export default class PageBuilder {
       /*
        * Replacing placeholder elements with tags.
        */
-      .then(() => this._drawElement(`header`))
-      .then(() => this._drawElement(`footer`))
-      .then(() => this._drawElement(`aside`))
+      .then(() => PageUtil.replaceElementWithTemplate(`header`))
+      .then(() => PageUtil.replaceElementWithTemplate(`footer`))
+      .then(() => PageUtil.replaceElementWithTemplate(`aside`))
 
       /*
        * Injecting json menu if specified.
@@ -125,9 +125,11 @@ export default class PageBuilder {
     /*
      * We add both the head of the current page and the
      * content of the template in the temporary head.
+     * PageUtil.replaceElementWithTemplate cannot be used
+     * here because head is outside DOM. 
      */
+    head.innerHTML = await PageUtil.getTemplateText(`head`);
     head.innerHTML += document.head.innerHTML;
-    head.innerHTML += await TextUtil.getFileText(`${this._templates}/head.html`);
 
     /*
      * elements is a NodeList it needs to be an array to be

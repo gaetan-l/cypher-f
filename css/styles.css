@@ -5,10 +5,6 @@
   --cy-lightgrey: #ddd;
 }
 
-.txt-blue {
-  color: var(--cy-blue);
-}
-
 * {
   font-family: 'Yantra', Helvetica, sans-serif;
   color: var(--cy-grey);
