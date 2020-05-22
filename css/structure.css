@@ -36,17 +36,18 @@ html, body {
 
 aside, main {
   height: calc(100% - var(--footer-height));
-  overflow-y: auto;
+  /*overflow-y: auto;*/
 }
 
 aside {
   float: left;
   width: var(--aside-width);
+  overflow-y: hidden;
 }
 
-aside > nav > ul {
-  height: calc(100% - (var(--title-height) + 2 * var(--title-padding) + var(--title-border-width)));
+aside > nav {
   overflow-y: auto; /* Vertical scrollbar when enough items */
+  height: calc(100% - (var(--title-height) + 2 * var(--title-padding) + var(--title-border-width)));
 }
 
 aside > nav li {
@@ -84,6 +85,7 @@ aside > nav > ul > ul > li > a {
 main {
   margin-left: var(--aside-width);
   border-left-width: var(--main-border-width);
+  overflow-y: auto;
 }
 
 footer {
