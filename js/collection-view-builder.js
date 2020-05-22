@@ -190,8 +190,8 @@ export default class CollectionViewBuilder {
       var frame = document.createElement(`div`);
       frame.classList.add(`picture-frame`);
       frame.onclick = function() {
-        var clickedImage = this.getElementsByTagName(`img`)[0];
-        var index = parseInt(clickedImage.getAttribute(`index`));
+        var clicked = this.getElementsByTagName(`img`)[0];
+        var index = parseInt(clicked.getAttribute(`index`));
         cvb._displayFullscreenPicture(index, cvb);
         PageUtil.fadeIn(`#div-fs`);
       };
@@ -201,10 +201,11 @@ export default class CollectionViewBuilder {
        */
       var picture = JSON.parse(collection[i]);
       var img = document.createElement(`img`);
+      /*
+       * Index is used to retrieve info from collection
+       * when clicked (see onclick above).
+       */
       img.setAttribute(`index`, i);
-      img.setAttribute(`date`, picture.readableDate);
-      img.setAttribute(`location`, picture.location);
-      img.setAttribute(`description`, picture.description);
       img.src = this._getFilePath(picture);
 
       /*
