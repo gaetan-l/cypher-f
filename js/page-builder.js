@@ -297,7 +297,7 @@ export default class PageBuilder {
          * options to display or hide. See below.
          */
         var escapedRoot = this._root.replace(/[.\/]/g, `\\$&`); // $& means the whole matched string
-        var regexString = `(?<url>${escapedRoot}(?<href>(?<parent>[a-z\-\/]*\/)*[a-z\-]*\/))`;
+        var regexString = `${escapedRoot}(([a-z\-\/]*\/)*[a-z\-]*\/)`;
         var regex       = new RegExp(regexString, `g`);
         var matches     = regex.exec(this._url);
 
@@ -313,9 +313,9 @@ export default class PageBuilder {
          *
          * Values for current pages:
          */
-        var currUrl    = TextUtil.formatUrl(matches.groups.url);
-        var currHref   = TextUtil.formatUrl(matches.groups.href);
-        var currParent = TextUtil.formatUrl(matches.groups.parent === undefined ? `` : matches.groups.parent);
+        var currUrl    = TextUtil.formatUrl(matches[0]);
+        var currHref   = TextUtil.formatUrl(matches[1]);
+        var currParent = TextUtil.formatUrl(matches[2] === undefined ? `` : matches[2]);
 
         var menu = document.createElement(`ul`);
 

@@ -35,7 +35,7 @@ main.fade-in, main.fade-out, {
 }
 
 .fade-in {
-  opacity: 100%;
+  opacity: 1;
 }
 /* ----------------------------------------------------- */
 
@@ -192,7 +192,7 @@ body#travels > div#div-fs.fade-out {
 }
 
 body#travels > div#div-fs.fade-in {
-  opacity: 100%;
+  opacity: 1;
   height: 100%;
   transition: opacity 0.25s ease-in-out;
 }
