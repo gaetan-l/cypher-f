@@ -25,8 +25,6 @@ export default class TextUtil {
    * Fetches file and returns its content.
    *
    * Returns null if file not found.
-   * /!\ TODO: escape "#"" in url because otherwise, it
-   * returns the directory listing!
    *
    * @param   string           filePath  the path used to
    *                                     access the file
@@ -36,7 +34,8 @@ export default class TextUtil {
    */
   static async getFileText(filePath) {
     var text = null;
-    var response = await fetch(filePath);
+    var escaped = encodeURI(filePath).replace("#", "%23");
+    var response = await fetch(escaped);
     return response.ok ? await response.text() : null;
   }
 }

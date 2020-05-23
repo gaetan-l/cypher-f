@@ -118,7 +118,7 @@ export default class CollectionViewBuilder {
     var fsView = document.createElement(`div`);
     fsView.setAttribute(`id`, `div-fs`);
     document.body.appendChild(fsView);
-    await PageUtil.replaceElementWithTemplate(`#div-fs`, `div-fs`);
+    await PageUtil.replaceElementWithTemplate(`#div-fs`);
     PageUtil.bindOnclick(`#btn-fs-close`,  function() {
       PageUtil.fadeOut(`#div-fs`);
     });
