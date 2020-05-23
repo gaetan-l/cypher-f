@@ -1,10 +1,9 @@
-/*
- * Courtesy of: https://codeburst.io/translating-your-website-in-pure-javascript-98b9fa4ce427
- */
 `use strict`
 
 /**
  * Class used to reanslate content using a json dictionary.
+ *
+ * @link  https://codeburst.io/translating-your-website-in-pure-javascript-98b9fa4ce427
  */
 class Translator {
   /**
