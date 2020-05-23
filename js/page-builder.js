@@ -407,17 +407,19 @@ export default class PageBuilder {
         var itemI18n = item[`data-i18n`];
 
         var li = document.createElement(`li`);
-        li.classList.add(`menu-entry`);
+        li.classList.add(`menu-item`);
         if (active) {
           li.classList.add(`active`);
         }
 
         var img = document.createElement(`i`);
         img.classList.add(`material-icons`);
+        img.classList.add(`menu-icon`);
         img.innerHTML = itemIcon;
 
         var a = document.createElement(`a`);
-        a.setAttribute(`href`,      itemHref)
+        a.classList.add(`menu-link`);
+        a.setAttribute(`href`, itemHref)
         a.setAttribute(`data-i18n`, itemI18n);
 
         li.appendChild(img);

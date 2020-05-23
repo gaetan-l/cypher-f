@@ -1,28 +1,60 @@
-:root {
-                 --font-size:  24px;
-               --aside-width: 300px;
-              --title-height:  96px;
-             --title-padding:  24px;
-        --title-border-width:   1px;
-        --nav-li-line-height:  60px;
-       --nav-li-padding-left:  24px;
-        --nav-li-border-left:  12px;
-      --nav-li-border-bottom:   1px;
-         --nav-a-margin-left:  12px;
-         --main-border-width:   1px;
-             --footer-height:  96px;
-               --button-size:  36px;
-              --picture-size: 200px;
-      --picture-frame-margin:  36px;
-     --picture-frame-padding:  12px;
---picture-frame-border-width:   1px;
-                 --fs-margin:  12px;
+/*
+ * ========================================================
+ * ================= TABLE OF CONTENTS ====================
+ * ========================================================
+ * 1.  VARIABLES
+ * 2.  DEFAULT VALUES/RESET
+ * 3.  GENERAL STYLES
+ * 4.  MAIN STRUCTURE
+ * 5.  SITE TITLE DIV
+ * 6.  MENU
+ * 7.  BUTTONS
+ * 8.  COLLECTIONS
+ * 8.1 Picture gallery
+ * 8.2 Fullscreen view
+ * 9.  PAGE-SPECIFIC
+ * 9.1 Homepage
+ */
 
-           --title-font-size: calc(2.0 * var(--font-size));
-        --subtitle-font-size: calc(0.5 * var(--font-size));
-          --footer-font-size: calc(1.5 * var(--font-size));
+
+
+/*
+ * ========================================================
+ * ============= 1.  VARIABLES ============================
+ * ========================================================
+ */
+:root {
+--font-size:                   24px;
+ --aside-width:               300px;
+--title-height:                96px;
+--title-padding:               24px;
+--title-border-width:           1px;
+--nav-li-line-height:          60px;
+--nav-li-padding-left:         24px;
+--nav-li-border-left:          12px;
+--nav-li-border-bottom:         1px;
+--nav-a-margin-left:           12px;
+--main-border-width:            1px;
+--footer-height:               96px;
+ --button-size:                36px;
+--picture-size:               200px;
+--picture-frame-margin:        36px;
+--picture-frame-padding:       12px;
+--picture-frame-border-width:   1px;
+--fs-margin:                   12px;
+
+--title-font-size:    calc(2.0 * var(--font-size));
+--subtitle-font-size: calc(0.5 * var(--font-size));
+--footer-font-size:   calc(1.5 * var(--font-size));
 }
 
+
+
+/*
+ * ========================================================
+ * ============= 2.  DEFAULT VALUES/RESET =================
+ * ========================================================
+ */
 * {
   margin: 0;
   padding: 0;
@@ -33,49 +65,35 @@ html, body {
   height: 100%;
 }
 
+
+
+/*
+ * ========================================================
+ * ============= 3.  GENERAL STYLES =======================
+ * ========================================================
+ */
+
+
+
+/*
+ * ========================================================
+ * ============= 4.  MAIN STRUCTURE =======================
+ * ========================================================
+ */
 #side-panel, #main-panel {
   height: calc(100% - var(--footer-height));
-}
-
-#side-panel {
-  float: left;
-  width: var(--aside-width);
-  overflow-y: hidden;
-}
-
-#menu {
-  overflow-y: auto; /* Vertical scrollbar when enough items */
-  height: calc(100% - (var(--title-height) + 2 * var(--title-padding) + var(--title-border-width)));
-}
-
-.menu-entry {
-  display: inline-block;
-  line-height: var(--nav-li-line-height);
-  border-left-width: var(--nav-li-border-left);
-  border-bottom-width: var(--nav-li-border-bottom);
-}
-
-#menu > .menu-level > .menu-entry {
-  width: calc(100% - var(--nav-li-border-left) - var(--nav-li-padding-left));
-  padding-left: var(--nav-li-padding-left);
-}
-
-#menu > .menu-level > .menu-level > .menu-entry {
-  width: calc(100% - var(--nav-li-border-left) - 2 * var(--nav-li-padding-left));
-  padding-left: calc(2 * var(--nav-li-padding-left));
-}
-
-.menu-entry a {
-  display: inline-block;
-  margin-left: var(--nav-a-margin-left);
-  /* font-size for the material-icon size */
-  width: calc(100% - var(--font-size) - var(--nav-a-margin-left));
 }
 
 #main-panel {
   margin-left: var(--aside-width);
   border-left-width: var(--main-border-width);
   overflow-y: auto;
+}
+
+#side-panel {
+  float: left;
+  width: var(--aside-width);
+  overflow-y: hidden;
 }
 
 #site-footer {
@@ -87,6 +105,13 @@ html, body {
   font-size: var(--footer-font-size);
 }
 
+
+
+/*
+ * ========================================================
+ * ============= 5.  SITE TITLE DIV =======================
+ * ========================================================
+ */
 #site-title-normal,
 #site-title-shadow {
   line-height: var(--title-height);
@@ -120,8 +145,53 @@ html, body {
   font-size: var(--subtitle-font-size);
 }
 
-#btn-menu,
-#btn-translate {
+
+
+/*
+ * ========================================================
+ * ============= 6.  MENU =================================
+ * ========================================================
+ */
+#menu {
+  overflow-y: auto;
+  height: calc(100% - (var(--title-height) + 2 * var(--title-padding) + var(--title-border-width)));
+}
+
+.menu-item {
+  display: inline-block;
+  line-height: var(--nav-li-line-height);
+  border-left-width: var(--nav-li-border-left);
+  border-bottom-width: var(--nav-li-border-bottom);
+}
+
+#menu > .menu-level > .menu-item {
+  width: calc(100% - var(--nav-li-border-left) - var(--nav-li-padding-left));
+  padding-left: var(--nav-li-padding-left);
+}
+
+#menu > .menu-level > .menu-level > .menu-item {
+  width: calc(100% - var(--nav-li-border-left) - 2 * var(--nav-li-padding-left));
+  padding-left: calc(2 * var(--nav-li-padding-left));
+}
+
+.menu-link {
+  display: inline-block;
+  margin-left: var(--nav-a-margin-left);
+  /*
+   * Font-size is here to compensate for the material-icon
+   * size.
+   */
+  width: calc(100% - var(--font-size) - var(--nav-a-margin-left));
+}
+
+
+
+/*
+ * ========================================================
+ * ============= 7.  BUTTONS ==============================
+ * ========================================================
+ */
+.button {
   position: absolute;
   bottom: 0;
   font-size: var(--button-size);
@@ -136,21 +206,21 @@ html, body {
   right: 0;
 }
 
-#btn-menu:hover,
-#btn-translate:hover {
+.button:hover {
   font-size: calc(1.3 * var(--button-size));
   margin: calc((var(--footer-height) - 1.3 * var(--button-size)) / 2);
 }
 
-/* Page specific */
-body#home > main {
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
-  background-position: calc(50% + var(--aside-width) / 2) calc(50% - var(--footer-height) / 2);
-}
 
-.picture-gallery {
+
+/*
+ * ========================================================
+ * ============= 8.  COLLECTIONS ==========================
+ * ========================================================
+ *
+ * ------------- 8.1 Picture gallery ----------------------
+ */
+ .picture-gallery {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
@@ -182,10 +252,10 @@ body#home > main {
 .picture-shadow::before {
     content: "";
     position: absolute;
-    top:    0;
+    top: 0;
     bottom: 0;
-    left:   0;
-    right:  0;
+    left: 0;
+    right: 0;
 }
 
 .picture-image {
@@ -193,7 +263,10 @@ body#home > main {
   max-height: var(--picture-size);
 }
 
-#div-fs {
+/*
+ * ------------- 8.2 Fullscreen view ----------------------
+ */
+ #div-fs {
   display: flex;
   z-index: 3;
   position: absolute;
@@ -232,4 +305,19 @@ body#home > main {
   right: 0;
   top: 0;
 }
-/* ------------- */
+
+
+
+/*
+ * ========================================================
+ * ============= 9.  PAGE-SPECIFIC ========================
+ * ========================================================
+ *
+ * ------------- 9.1 Homepage -----------------------------
+ */
+#home > main {
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: calc(50% + var(--aside-width) / 2) calc(50% - var(--footer-height) / 2);
+}

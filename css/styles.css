@@ -1,3 +1,29 @@
+/*
+ * ========================================================
+ * ================= TABLE OF CONTENTS ====================
+ * ========================================================
+ * 1.  VARIABLES
+ * 2.  DEFAULT VALUES/RESET
+ * 3.  GENERAL STYLES
+ * 3.1 Fade-in/fade-out
+ * 4.  MAIN STRUCTURE
+ * 5.  SITE TITLE DIV
+ * 6.  MENU
+ * 7.  BUTTONS
+ * 8.  COLLECTIONS
+ * 8.1 Picture gallery
+ * 8.2 Fullscreen view
+ * 9.  PAGE-SPECIFIC
+ * 9.1 Homepage
+ */
+
+
+
+/*
+ * ========================================================
+ * ============= 1.  VARIABLES ============================
+ * ========================================================
+ */
 :root {
   --cy-blue: #0ca5b6;
   --cy-grey: #777;
@@ -5,18 +31,31 @@
   --cy-lightgrey: #ddd;
 }
 
+
+
+/*
+ * ========================================================
+ * ============= 2.  DEFAULT VALUES/RESET =================
+ * ========================================================
+ */
 * {
   font-family: 'Yantra', Helvetica, sans-serif;
   color: var(--cy-grey);
 }
 
+
+
 /*
+ * ========================================================
+ * ============= 3.  GENERAL STYLES =======================
+ * ========================================================
+ *
+ * ------------- 3.1 Fade-in/fade-out ---------------------
  * Fade in and fade out for whole body and main section:
- *   both are invisible on page load, <body> fades in first
- *   when PageBuilder finishes its work, then <main> fades
- *   in later if specific work needs to be done that requi-
- *   more time.
- *   Body fades out on page unload.
+ * both are invisible on page load, <body> fades in first
+ * when PageBuilder finishes its work, then <main> fades in
+ * later if specific work needs to be done that requires
+ * more time. Body fades out on page unload.
  */
 body, main {
   opacity: 0;
@@ -33,15 +72,40 @@ main.fade-in, main.fade-out, {
 .fade-in {
   opacity: 1;
 }
-/* ----------------------------------------------------- */
 
-aside, footer {
+
+
+/*
+ * ========================================================
+ * ============= 4.  MAIN STRUCTURE =======================
+ * ========================================================
+ */
+#side-panel, #site-footer {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
 }
 
+#main-panel {
+  border-left-style: solid;
+  border-left-color: var(--cy-lightgrey);
+}
+
+#site-footer p {
+  text-align: center;
+  font-family: 'Alata', Arial, sans-serif;
+  background-color: var(--cy-blue);
+  color: white;
+}
+
+
+
+/*
+ * ========================================================
+ * ============= 5.  SITE TITLE DIV =======================
+ * ========================================================
+ */
 #site-title-normal {
   text-align: center;
   border-bottom-style: solid;
@@ -78,72 +142,66 @@ aside, footer {
   transition: all 0.25s ease-in-out;
 }
 
-aside > nav ul {
+
+
+/*
+ * ========================================================
+ * ============= 6.  MENU =================================
+ * ========================================================
+ */
+.menu-level {
   list-style: none;
 }
 
-aside > nav li {
+.menu-item {
   border-left-style: solid;
   border-left-color: transparent;
-}
-
-aside > nav li {
   border-bottom-style: solid;
   border-bottom-color: var(--cy-lightgrey);
 }
 
-aside > nav ul a {
+.menu-item * {
+  vertical-align: middle;
+}
+
+.menu-link {
   text-decoration: none;
-  vertical-align: middle;
+
 }
 
-aside > nav ul i {
-  vertical-align: middle;
-}
-
-aside > nav li.active {
+.menu-item.active {
   background-color: var(--cy-blue);
 }
 
-aside > nav li:not(.active) > i.material-icons {
+.menu-item:not(.active) > .material-icons {
   color: var(--cy-blue);
 }
 
-aside > nav li.active > a,
-aside > nav li.active > i.material-icons,
-aside > nav li:not(.active):hover > a,
-aside > nav li:not(.active):hover > i.material-icons,
-#div-fs > div#div-fs-info > p {
+.menu-item.active > .menu-link,
+.menu-item.active > .menu-icon,
+.menu-item:not(.active):hover > .menu-link,
+.menu-item:not(.active):hover > .menu-icon {
   color: white;
 }
 
-aside > nav li:not(.active):hover > a,
-aside > nav li:not(.active):hover > i.material-icons {
-  transition: color 0.25s ease-in-out;
-}
-
-aside > nav li:not(.active):hover {
+.menu-item:not(.active):hover {
   background-color: var(--cy-mediumgrey);
   border-left-color: var(--cy-blue);
   transition: all 0.25s ease-in-out;
 }
 
-body > main {
-  border-left-style: solid;
-  border-left-color: var(--cy-lightgrey);
+.menu-item:not(.active):hover > .menu-link,
+.menu-item:not(.active):hover > .menu-icon {
+  transition: color 0.25s ease-in-out;
 }
 
-body#home > main {
-  background-image: url('../images/background.jpg');
-}
 
-footer > p {
-  text-align: center;
-  font-family: 'Alata', Arial, sans-serif;
-  background-color: var(--cy-blue);
-  color: white;
-}
 
+/*
+ * ========================================================
+ * ============= 7.  BUTTONS ==============================
+ * ========================================================
+ */
 .button {
   color: white;
   cursor: pointer;
@@ -154,7 +212,15 @@ footer > p {
   transition: all 0.1s ease-in-out;
 }
 
-/* Page specific */
+
+
+/*
+ * ========================================================
+ * ============= 8.  COLLECTIONS ==========================
+ * ========================================================
+ *
+ * ------------- 8.1 Picture gallery ----------------------
+ */
 .picture-frame {
   background-color: white;
   border-style: solid;
@@ -182,6 +248,9 @@ footer > p {
   -webkit-box-shadow: inset 0 0 8px black;
 }
 
+/*
+ * ------------- 8.2 Fullscreen view ----------------------
+ */
 #div-fs {
   background-color: black;
   cursor: pointer;
@@ -203,4 +272,20 @@ footer > p {
   color: white;
   cursor: pointer;
 }
-/* ------------- */
+
+#div-fs > div#div-fs-info > p {
+  color: white;
+}
+
+
+
+/*
+ * ========================================================
+ * ============= 9.  PAGE-SPECIFIC ========================
+ * ========================================================
+ *
+ * ------------- 9.1 Homepage -----------------------------
+ */
+body#home > main {
+  background-image: url('../images/background.jpg');
+}
