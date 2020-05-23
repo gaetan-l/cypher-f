@@ -53,14 +53,12 @@ class Translator {
   /**
    * Switches betwen the available languages and translates
    * the page.
-   *
-   * TODO: remove param translator
    */
-  switchLanguage(translator) {
+  switchLanguage() {
     var availableLangs = [`en`, `fr`];
-    var index = availableLangs.indexOf(translator.getLanguage());
+    var index = availableLangs.indexOf(this.getLanguage());
     var next = availableLangs[(index + 1) % availableLangs.length];
-    translator.translatePage(next);
+    this.translatePage(next);
   }
 
   /**

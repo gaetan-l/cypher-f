@@ -67,7 +67,7 @@ export default class PageBuilder {
     /*
      * Binding events.
      */
-    PageUtil.bindOnclick(`#btn-translate`, function() {translator.switchLanguage(translator)});
+    PageUtil.bindOnclick(`#btn-translate`, translator.switchLanguage.bind(translator));
 
     /*
      * Override default behavior when leaving a page.
