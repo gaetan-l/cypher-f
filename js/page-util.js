@@ -182,15 +182,15 @@ export default class PageUtil {
   /**
    * Binds a function to an element's onclick event.
    *
-   * @selector  HTMLElement  elemOrSel   the HTMLElement to
-   *             or                      which the function
-   *            string                   will be bound to,
-   *                                     or the selector
-   *                                     used to access it
-   * @event     function      triggered  the function to
-   *                                     bind to the ele-
-   *                                     ment's onclick
-   *                                     event
+   * @selector  HTMLElement  elemOrSel  the HTMLElement to
+   *             or                     which the function
+   *            string                  will be bound to,
+   *                                    or the selector
+   *                                    used to access it
+   * @event     function     triggered  the function to
+   *                                    bind to the ele-
+   *                                    ment's onclick
+   *                                    event
    */
   static bindOnclick(elemOrSel, triggered) {
     var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
