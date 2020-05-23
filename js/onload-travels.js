@@ -11,6 +11,6 @@ load();
 
 async function load() {
   await pageBuilder.buildPage();
-  await cvBuilder.drawView(CollectionViewBuilder.GALLERY(), `#gallery`);
+  await cvBuilder.drawView(CollectionViewBuilder.GALLERY(), document.getElementsByClassName(`collection-view`)[0]);
   PageUtil.fadeIn(`main`);
 }

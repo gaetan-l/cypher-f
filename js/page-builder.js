@@ -318,8 +318,13 @@ export default class PageBuilder {
     var currParent = TextUtil.formatUrl(matches[2] === undefined ? `` : matches[2]);
 
     var nav = document.createElement(`nav`);
-    var menu = document.createElement(`ul`);
-    nav.appendChild(menu);
+    nav.setAttribute(`id`, `menu`);
+    /*
+     * ul1 is the base level ul
+     */
+    var ul1 = document.createElement(`ul`);
+    ul1.classList.add(`menu-level`);
+    nav.appendChild(ul1);
 
     /*
      * Keeps the parent of the previous menu item, used
@@ -329,10 +334,10 @@ export default class PageBuilder {
     var prevParent = ``;
 
     /*
-     * Temporary ul element used t ocreate nested me-
+     * Temporary ul element used to create nested me-
      * nus.
      */
-    var ul = null;
+    var currUl = null;
     for(var i = 0 ; i < json.length ; i++) {
       var item = json[i];
       var itemParent = TextUtil.formatUrl(item[`parent`]);
@@ -356,7 +361,7 @@ export default class PageBuilder {
       var active  = itemHref   === currHref;
       if (base || child || sibling) {
         var levelChange = itemParent != prevParent;
-        var prevSubmenu = !(ul === null);
+        var prevSubmenu = !(currUl === null);
         var currSubmenu = itemParent != `/`;
 
         /*
@@ -370,8 +375,8 @@ export default class PageBuilder {
            * main menu...
            */
           if (prevSubmenu) {
-            menu.appendChild(ul);
-            ul = null;
+            ul1.appendChild(currUl);
+            currUl = null;
           }
 
           /*
@@ -379,7 +384,8 @@ export default class PageBuilder {
            * we open a new one.
            */
           if (currSubmenu) {
-            ul = document.createElement(`ul`);
+            currUl = document.createElement(`ul`);
+            currUl.classList.add(`menu-level`);
           }
         } // end if (levelChange)
 
@@ -393,6 +399,7 @@ export default class PageBuilder {
         var itemI18n = item[`data-i18n`];
 
         var li = document.createElement(`li`);
+        li.classList.add(`menu-entry`);
         if (active) {
           li.classList.add(`active`);
         }
@@ -407,7 +414,7 @@ export default class PageBuilder {
 
         li.appendChild(img);
         li.appendChild(a);
-        (ul === null) ? menu.appendChild(li) : ul.appendChild(li);
+        (currUl === null) ? ul1.appendChild(li) : currUl.appendChild(li);
 
         /*
          * Now moving to the next item, so updating
@@ -421,8 +428,8 @@ export default class PageBuilder {
      * If we ended in a submenu we need to append it to
      * the main menu before returning.
      */
-    if (!(ul === null)) {
-      menu.appendChild(ul);
+    if (!(currUl === null)) {
+      ul1.appendChild(ul);
     }
 
     return nav.outerHTML;

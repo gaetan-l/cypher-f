@@ -12,7 +12,6 @@
          --main-border-width:   1px;
              --footer-height:  96px;
                --button-size:  36px;
-    --travel-gallery-columns:   3;
         --picture-frame-size: 200px;
       --picture-frame-margin:  36px;
      --picture-frame-padding:  12px;
@@ -36,7 +35,6 @@ html, body {
 
 aside, main {
   height: calc(100% - var(--footer-height));
-  /*overflow-y: auto;*/
 }
 
 aside {
@@ -97,20 +95,20 @@ footer > p {
   font-size: var(--footer-font-size);
 }
 
-#page-title-normal,
-#page-title-shadow {
+#site-title-normal,
+#site-title-shadow {
   line-height: var(--title-height);
   border-bottom-width: var(--title-border-width);
   padding: var(--title-padding);
   font-size: var(--title-font-size);
 }
 
-#page-title-normal {
+#site-title-normal {
   position: relative;
   z-index: 2;
 }
 
-#page-title-shadow {
+#site-title-shadow {
   position: absolute;
   top: 0;
   left: 0;
@@ -119,14 +117,14 @@ footer > p {
   padding: var(--title-padding);
 }
 
-#page-subtitle {
+#site-subtitle {
   position: absolute;
   top: calc(var(--title-padding) + (var(--title-height) - var(--title-font-size)) / 2 + var(--title-font-size));
   left: calc(0.5 * var(--aside-width));
 }
 
-#page-subtitle, 
-#page-subtitle > span {
+#site-subtitle, 
+#site-subtitle > span {
   font-size: var(--subtitle-font-size);
 }
 
@@ -160,12 +158,7 @@ body#home > main {
   background-position: calc(50% + var(--aside-width) / 2) calc(50% - var(--footer-height) / 2);
 }
 
-body#travels > main {
-  /* Removing space between lines of images */
-  line-height: 0;
-}
-
-body#travels > main > div#gallery {
+.picture-gallery {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
@@ -173,13 +166,13 @@ body#travels > main > div#gallery {
 
   /* 
    * Picture frames have margins on the right and the
-   * bottom, so gallery container has margins on the top
+   * bottom, so gallery container has padding on the top
    * and the left
    */
-  margin: var(--picture-frame-margin) 0 0 var(--picture-frame-margin);
+  padding: var(--picture-frame-margin) 0 0 var(--picture-frame-margin);
 }
 
-body#travels > main > div#gallery > div.picture-frame {
+.picture-frame {
   display: flex;
   width: var(--picture-frame-size);
   height: var(--picture-frame-size);
@@ -188,7 +181,7 @@ body#travels > main > div#gallery > div.picture-frame {
   border-width: var(--picture-frame-border-width);
 }
 
-body#travels > div#div-fs {
+#div-fs {
   display: flex;
   z-index: 3;
   position: absolute;
@@ -197,40 +190,40 @@ body#travels > div#div-fs {
   width: 100%;
 }
 
-body#travels > main > div#gallery > div.picture-frame > img {
+.picture-frame > img {
   max-width: 100%;
   max-height: 100%;
   margin: auto;
 }
 
-body#travels > div#div-fs > img {
+#div-fs > img {
   max-width: calc(100% - 2 * var(--button-size) - 4 * var(--fs-margin));
   max-height: 100%;
   margin: auto;
 }
 
-body#travels > div#div-fs > div#div-fs-info,
-body#travels > div#div-fs > i#btn-fs-close {
+#div-fs > div#div-fs-info,
+#div-fs > i#btn-fs-close {
   position: absolute;
   margin: var(--fs-margin);
 
 }
 
-body#travels > div#div-fs > div#div-fs-info {
+#div-fs > div#div-fs-info {
   left: 0;
   bottom: 0;
 }
 
-body#travels > div#div-fs > i {
+#div-fs > i {
   font-size: var(--button-size);
 }
 
-body#travels > div#div-fs > i#btn-fs-prev,
-body#travels > div#div-fs > i#btn-fs-next {
+#div-fs > i#btn-fs-prev,
+#div-fs > i#btn-fs-next {
   margin: auto var(--fs-margin);
 }
 
-body#travels > div#div-fs > i#btn-fs-close {
+#div-fs > i#btn-fs-close {
   right: 0;
   top: 0;
 }

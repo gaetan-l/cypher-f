@@ -42,7 +42,7 @@ aside, footer {
   user-select: none;
 }
 
-#page-title-normal {
+#site-title-normal {
   text-align: center;
   border-bottom-style: solid;
   border-bottom-color: var(--cy-lightgrey);
@@ -50,30 +50,30 @@ aside, footer {
   transition: color 0.25s ease-in-out;
 }
 
-#page-title-shadow {
+#site-title-shadow {
   text-align: center;
   font-family: 'Alata', Arial, sans-serif;
   color: var(--cy-blue);
   transition: color 0.25s ease-in-out;
 }
 
-#page-title:hover > #page-title-normal,
-#page-title:hover > #page-subtitle > span {
+#site-title:hover > #site-title-normal,
+#site-title:hover > #site-subtitle > span {
   color: var(--cy-blue);
   transition: color 0.25s ease-in-out;
 }
 
-#page-title:hover > #page-title-shadow {
+#site-title:hover > #site-title-shadow {
   color: var(--cy-grey);
   transition: color 0.25s ease-in-out;
 }
 
-#page-title:hover > #page-subtitle {
+#site-title:hover > #site-subtitle {
   letter-spacing: 5px;
   transition: letter-spacing 0.25s ease-in-out;
 }
 
-#page-subtitle {
+#site-subtitle {
   letter-spacing: 3px;
   transition: all 0.25s ease-in-out;
 }
@@ -113,7 +113,7 @@ aside > nav li.active > a,
 aside > nav li.active > i.material-icons,
 aside > nav li:not(.active):hover > a,
 aside > nav li:not(.active):hover > i.material-icons,
-body#travels > div#div-fs > div#div-fs-info > p {
+#div-fs > div#div-fs-info > p {
   color: white;
 }
 
@@ -155,7 +155,7 @@ footer > p {
 }
 
 /* Page specific */
-body#travels > main > div#gallery > div.picture-frame {
+.picture-gallery > div.picture-frame {
   border-style: solid;
   border-color: var(--cy-lightgrey);
   box-shadow: 6px 6px 6px;
@@ -163,34 +163,31 @@ body#travels > main > div#gallery > div.picture-frame {
   cursor: pointer;
 }
 
-body#travels > main > div#gallery > div.picture-frame:hover {
+.picture-gallery > div.picture-frame:hover {
   border-style: solid;
   border-color: var(--cy-lightgrey);
   box-shadow: 2px 2px 2px;
   transition: box-shadow 0.25s ease-in-out;
 }
 
-body#travels > div#div-fs {
+#div-fs {
   background-color: black;
   cursor: pointer;
-}
-
-body#travels > div#div-fs {
   opacity: 0;
   height: 0;
 }
 
-body#travels > div#div-fs.fade-out {
+#div-fs.fade-out {
   transition: opacity 0.25s ease-in-out, height 0s 0.25s;
 }
 
-body#travels > div#div-fs.fade-in {
+#div-fs.fade-in {
   opacity: 1;
   height: 100%;
   transition: opacity 0.25s ease-in-out;
 }
 
-body#travels > div#div-fs > i {
+#div-fs > i {
   color: white;
   cursor: pointer;
 }
