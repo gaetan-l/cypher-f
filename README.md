@@ -42,7 +42,7 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 - *js/page-builder.js*: Add **download pdf option**, which is activated when an index.pdf file is present in the same folder as the web page, if so, it adds an icon on the page to download it in PDF format
 
 ### Code cleanup
-- **Naming**: builder/drawer, gallery/directory, etc.
-- Harmonize **HTMLElement creation** (innerHTML vs firstChild)
-- Harmonize **asyncronous execution** (async+await vs .then())
-- Update **jsdoc** (@return Promise)
+- ~~**Naming**: builder/drawer, gallery/directory, etc.~~
+- ~~Harmonize **HTMLElement creation** (innerHTML vs firstChild)~~
+- ~~Harmonize **asyncronous execution** (async+await vs .then())~~
+- ~~Update **jsdoc** (@return Promise)~~

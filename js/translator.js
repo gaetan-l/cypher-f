@@ -3,14 +3,16 @@
  */
 `use strict`
 
+/**
+ * Class used to reanslate content using a json dictionary.
+ */
 class Translator {
-  /*
+  /**
    * Returns current language, if null defines it using
-   * cookie if available, or navigator language if not
-   * setting the cookie on the way.
+   * cookie if available, or navigator language.
    */
   getLanguage() {
-    if (this._lang == null) {
+    if (typeof this._lang === "undefined") {
       var navLangs = navigator.languages ? navigator.languages[0] : navigator.language;
       var navLang  = navLangs.substr(0, 2);
 
@@ -23,30 +25,36 @@ class Translator {
     return this._lang; 
   }
 
-  /*
-   * Defines current language either with the one passed
-   * as a parameter, or if null gets the cookie or
-   * navigator language, then translates the page using
-   * the relevant dictionary.
+  /**
+   * Translates the page using  the relevant dictionary.
+   * Also sets the language cookie.
+   *
+   * @param  string  lang  the language in which to tran-
+   *                       slate the page
    */
-  translatePage(lang = null) {
-    this._elements = document.querySelectorAll(`[data-i18n]`);
+  async translatePage(lang = null) {
+    /*
+     * If a language is specified, we set it as the current
+     * language. If null, it will be defined by the cookies
+     * or navigator by this.getLanguage called below.
+     */
     if (lang) {
       this._lang = lang;
     }
 
-    return fetch(`/json/lang-${this.getLanguage()}.json`)
-      .then((res) => res.json())
-      .then((dictionary) => {
-        this._translate(dictionary);
-      })
-      .then(document.cookie = `lang=${this._lang};path=/`)
-      .then(document.documentElement.lang = this._lang);
+    var response = await fetch(`/json/lang-${this.getLanguage()}.json`);
+    var dictionary = await response.json();
+    this._translatePage(dictionary);
+
+    document.cookie = `lang=${this._lang};path=/`;
+    document.documentElement.lang = this._lang;
   }
 
-  /*
+  /**
    * Switches betwen the available languages and translates
    * the page.
+   *
+   * TODO: remove param translator
    */
   switchLanguage(translator) {
     var availableLangs = [`en`, `fr`];
@@ -55,10 +63,13 @@ class Translator {
     translator.translatePage(next);
   }
 
-  /*
-   * Translates the page using a dictionary.
+  /**
+   * Translates the page using a specified dictionary.
+   *
+   * @param  json  dictionary  the json dictionary used for
+   *                           the translation
    */
-  _translate(dictionary) {
+  _translatePage(dictionary) {
     document.querySelectorAll(`[data-i18n]`).forEach((element) => {
       var keys = element.dataset.i18n.split(`.`);
       var text = keys.reduce((obj, i) => obj[i], dictionary);
@@ -67,6 +78,7 @@ class Translator {
         element.innerHTML = text;
       }
       else {
+        // TODO: css error class
         element.innerHTML = `key ${keys} not found for ${this.getLanguage()}!`
       }
     });

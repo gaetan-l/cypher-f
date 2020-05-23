@@ -24,7 +24,7 @@ export default class PageBuilder {
    * @param  string  menuPath       path to the json file
    *                                describing the menu
    */
-  constructor(title, root, templatesPath, menuPath) {
+  constructor(title, root, templatesPath, menuPath = null) {
     this._url        = TextUtil.formatUrl(window.location.href);
     this._title      = title;
     this._root       = root;
@@ -40,73 +40,72 @@ export default class PageBuilder {
    * specified. Then translates content using a Translator.
    * Then binds common events. Finally fades the page in when
    * everything is over.
-   *
-   * @return  Promise
    */
-  buildPage() {
+  async buildPage() {
     var translator = this._translator;
-    return this._drawHead()
-      /*
-       * Replacing placeholder elements with tags.
-       */
-      .then(() => PageUtil.replaceElementWithTemplate(`header`))
-      .then(() => PageUtil.replaceElementWithTemplate(`footer`))
-      .then(() => PageUtil.replaceElementWithTemplate(`aside`))
+    await this._drawHead();
+    /*
+     * Replacing placeholder elements with tags.
+     */
+    await PageUtil.replaceElementWithTemplate(`header`);
+    await PageUtil.replaceElementWithTemplate(`footer`);
+    await PageUtil.replaceElementWithTemplate(`aside`);
 
-      /*
-       * Injecting json menu if specified.
-       */
-      .then(() => (this._menuPath === undefined) ? null : this._buildHtmlMenu().then((htmlMenu) => this._drawElement(`nav`, htmlMenu)))
+    /*
+     * Injecting json menu if specified.
+     */
+    if (this._menuPath != null) {
+      var htmlMenu = await this._buildHtmlMenu();
+      PageUtil.replaceElementWithHtml(`nav`, htmlMenu);
+    }
 
-      /*
-       * Once all content is loaded, translating the page.
-       */
-      .then(() => this._translator.translatePage())
+    /*
+     * Once all content is loaded, translating the page.
+     */
+    await this._translator.translatePage();
 
-      /*
-       * Binding events.
-       */
-      .then(() => PageUtil.bindOnclick(`#btn-translate`, function() {translator.switchLanguage(translator)}))
+    /*
+     * Binding events.
+     */
+    PageUtil.bindOnclick(`#btn-translate`, function() {translator.switchLanguage(translator)});
 
-      /*
-       * Override default behavior when leaving a page.
-       *
-       * @link https://stackoverflow.com/questions/1760096/override-default-behaviour-for-link-a-objects-in-javascript
-       */
-      .then(() => {
-        document.onclick = function (e) {
-          e = e || window.event;
-          var element = e.target || e.srcElement;
+    /*
+     * Override default behavior when leaving a page.
+     *
+     * @link https://stackoverflow.com/questions/1760096/override-default-behaviour-for-link-a-objects-in-javascript
+     */
+    document.onclick = function (e) {
+      e = e || window.event;
+      var element = e.target || e.srcElement;
 
-          if (element.tagName == `A`) { // Capital `A`, not `a`.
-            /*
-             * Prevents default <a> behavior.
-             */
-            e.preventDefault();
+      if (element.tagName == `A`) { // Capital `A`, not `a`.
+        /*
+         * Prevents default <a> behavior.
+         */
+        e.preventDefault();
 
-            /*
-             * Stores target url.
-             */
-            var goTo = element.href;
-            PageUtil.fadeOut(document.body);
+        /*
+         * Stores target url.
+         */
+        var goTo = element.href;
+        PageUtil.fadeOut(document.body);
 
-            /*
-             * Wait for a while to let css transition terminate.
-             */
-            setTimeout(function () {
-              /*
-               * Navigate to intended destination
-               */
-              window.location = goTo;
-            }, 250);
-          }
-        }
-      })
+        /*
+         * Wait for a while to let css transition terminate.
+         */
+        setTimeout(function () {
+          /*
+           * Navigate to intended destination
+           */
+          window.location = goTo;
+        }, 250);
+      }
+    }
 
-      /*
-       * Fading the page in once averything is ready.
-       */
-      .then(() => PageUtil.fadeIn(document.body))
+    /*
+     * Fading the page in once averything is ready.
+     */
+    PageUtil.fadeIn(document.body);
   }
 
   /**
@@ -262,7 +261,7 @@ export default class PageBuilder {
    *                              template whose name is
    *                              the selector
    */
-   async _drawElement(selector, html) {
+  async _drawElement(selector, html) {
     var oldElement = PageUtil.getUniqueElement(selector);
     if (oldElement) {
       if (html === undefined) {
@@ -287,145 +286,145 @@ export default class PageBuilder {
     * TODO: Currently limited to a list of depth 2, update
     * code.
     * @access  private
-    * @return  Promise(string)  a promise containing the
-    *                           menu in html/string format
+    * @return  string   the menu in html/string format
     */
-   _buildHtmlMenu() {
-    return fetch(this._menuPath)
-      .then((res)  => res.json())
-      .then((json) => {
-        /*
-         * Examining current URL to determine which menu
-         * options to display or hide. See below.
-         */
-        var escapedRoot = this._root.replace(/[.\/]/g, `\\$&`); // $& means the whole matched string
-        var regexString = `${escapedRoot}(([a-z\-\/]*\/)*[a-z\-]*\/)`;
-        var regex       = new RegExp(regexString, `g`);
-        var matches     = regex.exec(this._url);
+  async _buildHtmlMenu() {
+    var response = await fetch(this._menuPath);
+    var json = await response.json();
+
+    /*
+     * Examining current URL to determine which menu
+     * options to display or hide. See below.
+     */
+    var escapedRoot = this._root.replace(/[.\/]/g, `\\$&`); // $& means the whole matched string
+    var regexString = `${escapedRoot}(([a-z\-\/]*\/)*[a-z\-]*\/)`;
+    var regex       = new RegExp(regexString, `g`);
+    var matches     = regex.exec(this._url);
+
+    /*
+     * All top-level menu items will be displayed, plus
+     * all `children` (items whose parent is the cur-
+     * rent page) and `siblings` (items whose parent is
+     * the same as current page's parent.
+     *
+     * if url = `http://website.com/sub/sub-sub/page`
+     * href   = `/sub/sub-sub/page`
+     * parent = `/sub/sub-sub`
+     *
+     * Values for current pages:
+     */
+    var currUrl    = TextUtil.formatUrl(matches[0]);
+    var currHref   = TextUtil.formatUrl(matches[1]);
+    var currParent = TextUtil.formatUrl(matches[2] === undefined ? `` : matches[2]);
+
+    var nav = document.createElement(`nav`);
+    var menu = document.createElement(`ul`);
+    nav.appendChild(menu);
+
+    /*
+     * Keeps the parent of the previous menu item, used
+     * to know if the current item should be in the
+     * same submenu or not.
+     */
+    var prevParent = ``;
+
+    /*
+     * Temporary ul element used t ocreate nested me-
+     * nus.
+     */
+    var ul = null;
+    for(var i = 0 ; i < json.length ; i++) {
+      var item = json[i];
+      var itemParent = TextUtil.formatUrl(item[`parent`]);
+      var itemHref   = TextUtil.formatUrl(item[`href`]);
+
+      /*
+       * Careful, using formatUrl, menu items having no
+       * parent (empty string) will instead have `/` as
+       * parent. But the homepage's href is also `/`,
+       * so some items will be considered as both chil-
+       * dren and sibling. Watch out for side effects.
+       */
+      var base    = itemParent === `/`;
+      var child   = itemParent === currHref;
+      var sibling = itemParent === currParent;
+
+      /*
+       * The json item is the page actually being dis-
+       * played.
+       */
+      var active  = itemHref   === currHref;
+      if (base || child || sibling) {
+        var levelChange = itemParent != prevParent;
+        var prevSubmenu = !(ul === null);
+        var currSubmenu = itemParent != `/`;
 
         /*
-         * All top-level menu items will be displayed, plus
-         * all `children` (items whose parent is the cur-
-         * rent page) and `siblings` (items whose parent is
-         * the same as current page's parent.
-         *
-         * if url = `http://website.com/sub/sub-sub/page`
-         * href   = `/sub/sub-sub/page`
-         * parent = `/sub/sub-sub`
-         *
-         * Values for current pages:
+         * If we are changing menu level...
          */
-        var currUrl    = TextUtil.formatUrl(matches[0]);
-        var currHref   = TextUtil.formatUrl(matches[1]);
-        var currParent = TextUtil.formatUrl(matches[2] === undefined ? `` : matches[2]);
-
-        var menu = document.createElement(`ul`);
-
-        /*
-         * Keeps the parent of the previous menu item, used
-         * to know if the current item should be in the
-         * same submenu or not.
-         */
-        var prevParent = ``;
-
-        /*
-         * Temporary ul element used t ocreate nested me-
-         * nus.
-         */
-        var ul = null;
-        for(var i = 0 ; i < json.length ; i++) {
-          var item = json[i];
-          var itemParent = TextUtil.formatUrl(item[`parent`]);
-          var itemHref   = TextUtil.formatUrl(item[`href`]);
+        if (levelChange) {
 
           /*
-           * Careful, using formatUrl, menu items having no
-           * parent (empty string) will instead have `/` as
-           * parent. But the homepage's href is also `/`,
-           * so some items will be considered as both chil-
-           * dren and sibling. Watch out for side effects.
+           * If we were creating a submenu, we add it 
+           * to the main menu and reset ul to be the
+           * main menu...
            */
-          var base    = itemParent === `/`;
-          var child   = itemParent === currHref;
-          var sibling = itemParent === currParent;
+          if (prevSubmenu) {
+            menu.appendChild(ul);
+            ul = null;
+          }
 
           /*
-           * The json item is the page actually being dis-
-           * played.
+           * If current item is in a submenu as well,
+           * we open a new one.
            */
-          var active  = itemHref   === currHref;
-          if (base || child || sibling) {
-            var levelChange = itemParent != prevParent;
-            var prevSubmenu = !(ul === null);
-            var currSubmenu = itemParent != `/`;
-
-            /*
-             * If we are changing menu level...
-             */
-            if (levelChange) {
-
-              /*
-               * If we were creating a submenu, we add it 
-               * to the main menu and reset ul to be the
-               * main menu...
-               */
-              if (prevSubmenu) {
-                menu.appendChild(ul);
-                ul = null;
-              }
-
-              /*
-               * If current item is in a submenu as well,
-               * we open a new one.
-               */
-              if (currSubmenu) {
-                ul = document.createElement(`ul`);
-              }
-            } // end if (levelChange)
-
-            /*
-             * Actually adding item to ul, which is either
-             * the base menu or the submenu currently being
-             * built. Items look like this:
-             * <li class=`active`><i class=`material-icon`>itemIcon</i><a href=itemHref data-i18n=itemI18n></a></li>
-             */
-            var itemIcon = item[`material-icon`];
-            var itemI18n = item[`data-i18n`];
-
-            var li = document.createElement(`li`);
-            if (active) {
-              li.classList.add(`active`);
-            }
-
-            var img = document.createElement(`i`);
-            img.classList.add(`material-icons`);
-            img.innerHTML = itemIcon;
-
-            var a = document.createElement(`a`);
-            a.setAttribute(`href`,      itemHref)
-            a.setAttribute(`data-i18n`, itemI18n);
-
-            li.appendChild(img);
-            li.appendChild(a);
-            (ul === null) ? menu.appendChild(li) : ul.appendChild(li);
-
-            /*
-             * Now moving to the next item, so updating
-             * previous parent.
-             */
-            prevParent = itemParent;
-          } // end if (base || child || sibling)
-        } // end for
+          if (currSubmenu) {
+            ul = document.createElement(`ul`);
+          }
+        } // end if (levelChange)
 
         /*
-         * If we ended in a submenu we need to append it to
-         * the main menu before returning.
+         * Actually adding item to ul, which is either
+         * the base menu or the submenu currently being
+         * built. Items look like this:
+         * <li class=`active`><i class=`material-icon`>itemIcon</i><a href=itemHref data-i18n=itemI18n></a></li>
          */
-        if (!(ul === null)) {
-          menu.appendChild(ul);
+        var itemIcon = item[`material-icon`];
+        var itemI18n = item[`data-i18n`];
+
+        var li = document.createElement(`li`);
+        if (active) {
+          li.classList.add(`active`);
         }
 
-        return menu.outerHTML;
-      }) // end promise
-   }
+        var img = document.createElement(`i`);
+        img.classList.add(`material-icons`);
+        img.innerHTML = itemIcon;
+
+        var a = document.createElement(`a`);
+        a.setAttribute(`href`,      itemHref)
+        a.setAttribute(`data-i18n`, itemI18n);
+
+        li.appendChild(img);
+        li.appendChild(a);
+        (ul === null) ? menu.appendChild(li) : ul.appendChild(li);
+
+        /*
+         * Now moving to the next item, so updating
+         * previous parent.
+         */
+        prevParent = itemParent;
+      } // end if (base || child || sibling)
+    } // end for
+
+    /*
+     * If we ended in a submenu we need to append it to
+     * the main menu before returning.
+     */
+    if (!(ul === null)) {
+      menu.appendChild(ul);
+    }
+
+    return nav.outerHTML;
+  }
 }

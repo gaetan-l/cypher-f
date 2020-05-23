@@ -5,5 +5,9 @@ import PageUtil    from "/js/page-util.js";
 
 var pageBuilder = new PageBuilder(`Cypher`, `http://cypher-f.com`, `/templates`, `/json/menu.json`);
 
-pageBuilder.buildPage()
-.then(() => PageUtil.fadeIn(`main`));
+load();
+
+async function load() {
+  await pageBuilder.buildPage();
+  PageUtil.fadeIn(`main`);
+}

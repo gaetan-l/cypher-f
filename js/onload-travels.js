@@ -7,6 +7,10 @@ import CollectionViewBuilder from "/js/collection-view-builder.js";
 var pageBuilder = new PageBuilder(`Cypher`, `http://cypher-f.com`, `/templates`, `/json/menu.json`);
 var cvBuilder = new CollectionViewBuilder(`travels`);
 
-pageBuilder.buildPage()
-.then(() => cvBuilder.drawView(CollectionViewBuilder.GALLERY(), document.getElementById(`gallery`)))
-.then(() => PageUtil.fadeIn(`main`))
+load();
+
+async function load() {
+  await pageBuilder.buildPage();
+  await cvBuilder.drawView(CollectionViewBuilder.GALLERY(), `#gallery`);
+  PageUtil.fadeIn(`main`);
+}

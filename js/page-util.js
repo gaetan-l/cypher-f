@@ -97,7 +97,7 @@ export default class PageUtil {
    * @param   string       html          the replacement
    *                                     html
    */
-  static async replaceElementWithHtml(elemOrSel, html) {
+  static replaceElementWithHtml(elemOrSel, html) {
     var oldElement = PageUtil.getUniqueElement(elemOrSel);
     if (document.body.contains(oldElement)) {
       if (oldElement) {
