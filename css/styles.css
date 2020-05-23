@@ -224,7 +224,7 @@ main.fade-in, main.fade-out, {
  *
  * ------------- 8.1 Picture gallery ----------------------
  */
-.picture-frame {
+.polaroid-frame {
   background-color: white;
   border-style: solid;
   border-color: var(--cy-lightgrey);
@@ -233,19 +233,19 @@ main.fade-in, main.fade-out, {
   cursor: pointer;
 }
 
-.picture-frame:hover {
+.polaroid-frame:hover {
   box-shadow: 2px 2px 2px;
   transition: box-shadow 0.25s ease-in-out;
 }
 
-.picture-shadow {
+.polaroid-shadow {
   position: relative;
   max-width: 100%;
   float: left;
   height: max-content;
   }
 
-.picture-shadow::before {
+.polaroid-shadow::before {
   box-shadow:         inset 0 0 8px black;
   -moz-box-shadow:    inset 0 0 8px black;
   -webkit-box-shadow: inset 0 0 8px black;

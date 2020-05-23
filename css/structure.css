@@ -38,10 +38,10 @@
 --footer-height:               96px;
 --button-size:                 36px;
 --button-margin:               12px;
---picture-size:               200px;
---picture-frame-margin:        36px;
---picture-frame-padding:       12px;
---picture-frame-border-width:   1px;
+--polaroid-size:              200px;
+--polaroid-frame-margin:       36px;
+--polaroid-frame-padding:      12px;
+--polaroid-frame-border-width:  1px;
 --fs-margin:                   12px;
 
 --title-font-size:    calc(2.0 * var(--font-size));
@@ -246,7 +246,7 @@ html, body {
  *
  * ------------- 8.1 Picture gallery ----------------------
  */
- .picture-gallery {
+ .polaroid-gallery {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
@@ -257,25 +257,25 @@ html, body {
    * bottom, so gallery container has padding on the top
    * and the left
    */
-  padding: var(--picture-frame-margin) 0 0 var(--picture-frame-margin);
+  padding: var(--polaroid-frame-margin) 0 0 var(--polaroid-frame-margin);
 }
 
-.picture-frame {
+.polaroid-frame {
   display: flex;
-  width: var(--picture-size);
-  height: var(--picture-size);
-  margin: 0 var(--picture-frame-margin) var(--picture-frame-margin) 0;
-  padding: var(--picture-frame-padding);
-  border-width: var(--picture-frame-border-width);
+  width: var(--polaroid-size);
+  height: var(--polaroid-size);
+  margin: 0 var(--polaroid-frame-margin) var(--polaroid-frame-margin) 0;
+  padding: var(--polaroid-frame-padding);
+  border-width: var(--polaroid-frame-border-width);
 }
 
-.picture-shadow {
+.polaroid-shadow {
   display: flex;
   position: relative;
   margin: auto;
 }
 
-.picture-shadow::before {
+.polaroid-shadow::before {
     content: "";
     position: absolute;
     top: 0;
@@ -284,9 +284,9 @@ html, body {
     right: 0;
 }
 
-.picture-image {
-  max-width: var(--picture-size);
-  max-height: var(--picture-size);
+.polaroid-image {
+  max-width: var(--polaroid-size);
+  max-height: var(--polaroid-size);
 }
 
 /*

@@ -187,7 +187,7 @@ export default class CollectionViewBuilder {
        * Picture frame.
        */
       var frame = document.createElement(`div`);
-      frame.classList.add(`picture-frame`);
+      frame.classList.add(`polaroid-frame`);
       frame.onclick = function() {
         var clicked = this.getElementsByTagName(`img`)[0];
         var index = parseInt(clicked.getAttribute(`index`));
@@ -201,7 +201,7 @@ export default class CollectionViewBuilder {
        */
       var a = document.createElement(`a`);
       a.setAttribute(`href`, `#`);
-      a.classList.add(`picture-shadow`);
+      a.classList.add(`polaroid-shadow`);
       a.classList.add(`dummy-link`);
 
       /*
@@ -213,7 +213,7 @@ export default class CollectionViewBuilder {
        * Index is used to retrieve info from collection
        * when clicked (see onclick above).
        */
-      img.classList.add(`picture-image`);
+      img.classList.add(`polaroid-image`);
       img.setAttribute(`index`, i);
       img.src = this._getFilePath(picture);
 
