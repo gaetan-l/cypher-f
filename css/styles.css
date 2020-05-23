@@ -177,9 +177,9 @@ footer > p {
   }
 
 .picture-shadow::before {
-  box-shadow:         inset 0 0 8px rgba(0,0,0,.6);
-  -moz-box-shadow:    inset 0 0 8px rgba(0,0,0,.6);
-  -webkit-box-shadow: inset 0 0 8px rgba(0,0,0,.6);
+  box-shadow:         inset 0 0 8px black;
+  -moz-box-shadow:    inset 0 0 8px black;
+  -webkit-box-shadow: inset 0 0 8px black;
 }
 
 #div-fs {
