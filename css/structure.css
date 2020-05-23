@@ -12,7 +12,7 @@
          --main-border-width:   1px;
              --footer-height:  96px;
                --button-size:  36px;
-        --picture-frame-size: 200px;
+              --picture-size: 200px;
       --picture-frame-margin:  36px;
      --picture-frame-padding:  12px;
 --picture-frame-border-width:   1px;
@@ -33,65 +33,57 @@ html, body {
   height: 100%;
 }
 
-aside, main {
+#side-panel, #main-panel {
   height: calc(100% - var(--footer-height));
 }
 
-aside {
+#side-panel {
   float: left;
   width: var(--aside-width);
   overflow-y: hidden;
 }
 
-aside > nav {
+#menu {
   overflow-y: auto; /* Vertical scrollbar when enough items */
   height: calc(100% - (var(--title-height) + 2 * var(--title-padding) + var(--title-border-width)));
 }
 
-aside > nav li {
+.menu-entry {
   display: inline-block;
   line-height: var(--nav-li-line-height);
   border-left-width: var(--nav-li-border-left);
   border-bottom-width: var(--nav-li-border-bottom);
 }
 
-aside > nav > ul > li {
+#menu > .menu-level > .menu-entry {
   width: calc(100% - var(--nav-li-border-left) - var(--nav-li-padding-left));
   padding-left: var(--nav-li-padding-left);
 }
 
-aside > nav > ul > ul > li {
+#menu > .menu-level > .menu-level > .menu-entry {
   width: calc(100% - var(--nav-li-border-left) - 2 * var(--nav-li-padding-left));
   padding-left: calc(2 * var(--nav-li-padding-left));
 }
 
-aside > nav a {
+.menu-entry a {
   display: inline-block;
   margin-left: var(--nav-a-margin-left);
-}
-
-aside > nav > ul > li > a {
   /* font-size for the material-icon size */
   width: calc(100% - var(--font-size) - var(--nav-a-margin-left));
 }
 
-aside > nav > ul > ul > li > a {
-  /* font-size for the material-icon size */
-  width: calc(100% - var(--font-size) - 2 * var(--nav-a-margin-left));
-}
-
-main {
+#main-panel {
   margin-left: var(--aside-width);
   border-left-width: var(--main-border-width);
   overflow-y: auto;
 }
 
-footer {
+#site-footer {
   line-height: var(--footer-height);
   font-size: var(--footer-font-size);
 }
 
-footer > p {
+#site-footer p {
   font-size: var(--footer-font-size);
 }
 
@@ -174,11 +166,31 @@ body#home > main {
 
 .picture-frame {
   display: flex;
-  width: var(--picture-frame-size);
-  height: var(--picture-frame-size);
+  width: var(--picture-size);
+  height: var(--picture-size);
   margin: 0 var(--picture-frame-margin) var(--picture-frame-margin) 0;
   padding: var(--picture-frame-padding);
   border-width: var(--picture-frame-border-width);
+}
+
+.picture-shadow {
+  display: flex;
+  position: relative;
+  margin: auto;
+}
+
+.picture-shadow::before {
+    content: "";
+    position: absolute;
+    top:    0;
+    bottom: 0;
+    left:   0;
+    right:  0;
+}
+
+.picture-image {
+  max-width: var(--picture-size);
+  max-height: var(--picture-size);
 }
 
 #div-fs {
@@ -188,12 +200,6 @@ body#home > main {
   top: 0;
   left: 0;
   width: 100%;
-}
-
-.picture-frame > img {
-  max-width: 100%;
-  max-height: 100%;
-  margin: auto;
 }
 
 #div-fs > img {
@@ -206,7 +212,6 @@ body#home > main {
 #div-fs > i#btn-fs-close {
   position: absolute;
   margin: var(--fs-margin);
-
 }
 
 #div-fs > div#div-fs-info {

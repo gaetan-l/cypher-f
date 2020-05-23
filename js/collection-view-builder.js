@@ -196,6 +196,15 @@ export default class CollectionViewBuilder {
       };
 
       /*
+       * Picture inset box-shadow wrapper.
+       * @link https://stackoverflow.com/questions/61961334/css-img-inset-box-shadow-trick-center-vh-anchor-max-height
+       */
+      var a = document.createElement(`a`);
+      a.setAttribute(`href`, `#`);
+      a.classList.add(`picture-shadow`);
+      a.classList.add(`dummy-link`);
+
+      /*
        * Picture.
        */
       var picture = JSON.parse(collection[i]);
@@ -204,13 +213,15 @@ export default class CollectionViewBuilder {
        * Index is used to retrieve info from collection
        * when clicked (see onclick above).
        */
+      img.classList.add(`picture-image`);
       img.setAttribute(`index`, i);
       img.src = this._getFilePath(picture);
 
       /*
        * Adding picture to frame and frame to temporary container.
        */
-      frame.appendChild(img);
+      a.appendChild(img);
+      frame.appendChild(a);
       view.appendChild(frame);
     }
 

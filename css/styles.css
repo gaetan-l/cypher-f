@@ -155,7 +155,8 @@ footer > p {
 }
 
 /* Page specific */
-.picture-gallery > div.picture-frame {
+.picture-frame {
+  background-color: white;
   border-style: solid;
   border-color: var(--cy-lightgrey);
   box-shadow: 6px 6px 6px;
@@ -163,11 +164,22 @@ footer > p {
   cursor: pointer;
 }
 
-.picture-gallery > div.picture-frame:hover {
-  border-style: solid;
-  border-color: var(--cy-lightgrey);
+.picture-frame:hover {
   box-shadow: 2px 2px 2px;
   transition: box-shadow 0.25s ease-in-out;
+}
+
+.picture-shadow {
+  position: relative;
+  max-width: 100%;
+  float: left;
+  height: max-content;
+  }
+
+.picture-shadow::before {
+  box-shadow:         inset 0 0 8px rgba(0,0,0,.6);
+  -moz-box-shadow:    inset 0 0 8px rgba(0,0,0,.6);
+  -webkit-box-shadow: inset 0 0 8px rgba(0,0,0,.6);
 }
 
 #div-fs {
@@ -192,25 +204,3 @@ footer > p {
   cursor: pointer;
 }
 /* ------------- */
-
-
-
-
-.img-shadow {
-  position: relative;
-  max-width: 100%;
-  float: left;
-  height: max-content;
-  }
-    
-    .img-shadow::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    box-shadow: inset 0 0 8px rgba(0,0,0,.6);
-    -moz-box-shadow: inset 0 0 8px rgba(0,0,0,.6);
-    -webkit-box-shadow: inset 0 0 8px rgba(0,0,0,.6);
-     } 

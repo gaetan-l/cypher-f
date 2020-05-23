@@ -48,8 +48,9 @@ export default class PageBuilder {
      * Replacing placeholder elements with tags.
      */
     await PageUtil.replaceElementWithTemplate(`header`);
-    await PageUtil.replaceElementWithTemplate(`footer`);
     await PageUtil.replaceElementWithTemplate(`aside`);
+    await PageUtil.replaceElementWithTemplate(`footer`);
+    document.getElementsByTagName(`main`)[0].setAttribute(`id`, `main-panel`);
 
     /*
      * Injecting json menu if specified.
@@ -88,17 +89,24 @@ export default class PageBuilder {
          * Stores target url.
          */
         var goTo = element.href;
-        PageUtil.fadeOut(document.body);
 
         /*
-         * Wait for a while to let css transition terminate.
+         * If it's a fake link, like the ones used in
+         * .picture-shadow, we do nothing.
          */
-        setTimeout(function () {
+        if (!element.classList.contains(`dummy-link`)) {
+          PageUtil.fadeOut(document.body);
+
           /*
-           * Navigate to intended destination
+           * Wait for a while to let css transition terminate.
            */
-          window.location = goTo;
-        }, 250);
+          setTimeout(function () {
+            /*
+             * Navigate to intended destination
+             */
+            window.location = goTo;
+          }, 250);
+        }
       }
     }
 
