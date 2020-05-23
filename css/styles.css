@@ -92,10 +92,13 @@ main.fade-in, main.fade-out, {
   border-left-color: var(--cy-lightgrey);
 }
 
+#site-footer {
+  background-color: var(--cy-blue);
+}
+
 #site-footer p {
   text-align: center;
   font-family: 'Alata', Arial, sans-serif;
-  background-color: var(--cy-blue);
   color: white;
 }
 
