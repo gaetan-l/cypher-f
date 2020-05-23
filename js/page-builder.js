@@ -128,7 +128,7 @@ export default class PageBuilder {
      * PageUtil.replaceElementWithTemplate cannot be used
      * here because head is outside DOM. 
      */
-    head.innerHTML = await PageUtil.getTemplateText(`head`);
+    head.innerHTML += await PageUtil.getTemplateText(`head`);
     head.innerHTML += document.head.innerHTML;
 
     /*
