@@ -30,7 +30,7 @@ export default class PageBuilder {
     this._root       = root;
     this._templates  = templatesPath;
     this._menuPath   = menuPath;
-    this._translator = new Translator();
+    this.translator = new Translator();
   }
 
   /**
@@ -42,7 +42,6 @@ export default class PageBuilder {
    * everything is over.
    */
   async buildPage() {
-    var translator = this._translator;
     await this._drawHead();
     /*
      * Replacing placeholder elements with tags.
@@ -63,12 +62,12 @@ export default class PageBuilder {
     /*
      * Once all content is loaded, translating the page.
      */
-    await this._translator.translatePage();
+    await this.translator.asyncTranslatePage();
 
     /*
      * Binding events.
      */
-    PageUtil.bindOnclick(`#btn-translate`, translator.switchLanguage.bind(translator));
+    PageUtil.bindOnclick(`#btn-translate`, this.translator.asyncSwitchLanguage.bind(this.translator));
 
     /*
      * Override default behavior when leaving a page.

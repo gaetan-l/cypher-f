@@ -6,6 +6,23 @@
     "title-shadow": "Cÿpher",
     "subtitle": "<span>七</span>転び<span>八</span>起き"
   },
+  "groupings" : {
+    "country-at": "Autriche",
+    "country-au": "Australie",
+    "country-cu": "Cuba",
+    "country-es": "Espagne",
+    "country-fr": "France",
+    "country-gb": "Grande Bretagne",
+    "country-hu": "Hongrie",
+    "country-ie": "Irlande",
+    "country-it": "Italie",
+    "country-my": "Malaisie",
+    "country-nl": "Pays-Bas",
+    "country-nz": "Nouvelle-Zélande",
+    "country-ph": "Philippines",
+    "country-si": "Slovénie",
+    "country-us": "États-Unis"
+  },
   "nav": {
     "main": "Accueil",
     "pins": "Épingles",

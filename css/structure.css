@@ -246,16 +246,30 @@ html, body {
  *
  * ------------- 8.1 Picture gallery ----------------------
  */
- .polaroid-gallery {
+.polaroid-gallery {
+}
+
+.polaroid-group {
+}
+
+.polaroid-group h1 {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding-left: calc(2 * var(--polaroid-frame-margin));
+  line-height: 2em;
+}
+
+.polaroid-group-content {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
-  align-items: flex-start;
-
-  /* 
-   * Picture frames have margins on the right and the
-   * bottom, so gallery container has padding on the top
-   * and the left
+  align-items: flex-start;/* 
+   * Picture frames have margins on the right and the bot-
+   * tom, so gallery container has padding on the top and
+   * the left
    */
   padding: var(--polaroid-frame-margin) 0 0 var(--polaroid-frame-margin);
 }

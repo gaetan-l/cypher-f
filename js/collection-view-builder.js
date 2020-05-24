@@ -23,11 +23,15 @@ export default class CollectionViewBuilder {
   /**
    * CollectionViewBuilder constructor.
    *
-   * @param  name          name of the collection, used to
-   *                       fetch it via the API
+   * @param  string       name         name of the collec-
+   *                                   tion, used to fetch
+   *                                   it via the API
+   * @param  PageBuilder  pageBuilder  the pageBuilder used
+   *                                   to build the page
    */
-  constructor(name) {
+  constructor(name, pageBuilder) {
     this._name = name;
+    this._pageBuilder = pageBuilder;
 
     /*
      * Will hold the collection once fetched via the api.
@@ -64,9 +68,6 @@ export default class CollectionViewBuilder {
   /**
    * Builds a view containing the collection.
    *
-   * @param  PageBuilder  pageBuilder  the pageBuilder used
-   *                                   to build the page
-   *                                   containing the view
    * @param  string       displayMode  the type of view
    *                                   that is to be drawn
    * @param  HTMLElement  elemOrSel    the HTMLElement to
@@ -89,18 +90,17 @@ export default class CollectionViewBuilder {
      * default. Orders and groups the collection before
      * displaying it.
      */
-    grouping = this._availableGroupings.includes(grouping) ? grouping : null;
-    order    = CollectionViewBuilder.DISPLAY_ORDER().includes(order) ? order : CollectionViewBuilder.ASC();
     await this._sort(order, grouping);
+    grouping = this._availableGroupings.includes(grouping) ? grouping : null;
 
     var collectionView;
     switch (displayMode) {
       case CollectionViewBuilder.GALLERY():
-        collectionView = await this._buildGalleryView();
+        collectionView = await this._buildGalleryView(grouping);
         break;
 
       case CollectionViewBuilder.DETAILS():
-        collectionView = await this._buildDetailsListView();
+        collectionView = await this._buildDetailsListView(grouping);
         break;
     }
 
@@ -119,6 +119,7 @@ export default class CollectionViewBuilder {
     fsView.setAttribute(`id`, `div-fs`);
     document.body.appendChild(fsView);
     await PageUtil.replaceElementWithTemplate(`#div-fs`);
+    await this._pageBuilder.translator.asyncTranslatePage();
     PageUtil.bindOnclick(`#btn-fs-close`,  function() {
       PageUtil.fadeOut(`#div-fs`);
     });
@@ -136,8 +137,37 @@ export default class CollectionViewBuilder {
    *                             tion, optional, default:
    *                             null
    */
-   async _sort(order, grouping) {
+  async _sort(order, grouping) {
     await this._getCollection();
+
+    /*
+     * Translates the groups so that they are ordered pro-
+     * perly.
+     */
+    async function _translateGroups(grouping) {
+      var length = (await this._getCollection()).length;
+      for (let i = 0 ; i < length ; i++) {
+        var item = JSON.parse((await this._getCollection())[i]);
+        var translatedGroup = ``;
+        switch (grouping) {
+          case CollectionViewBuilder.DATE():
+            break;
+
+          case null:
+            break;
+
+          default:
+            translatedGroup = await this._pageBuilder.translator.asyncGetTranslatedWord(`groupings.${grouping}-${item[grouping]}`);
+            break;
+        }
+        item[`translatedGroup`] = translatedGroup;
+        (await this._getCollection())[i] = JSON.stringify(item);
+      }
+    }
+
+    const _boundTranslateGroups = _translateGroups.bind(this);
+    await _boundTranslateGroups(grouping);
+
     this._collection.sort(function (x, y) {
       var jsonX = JSON.parse(x);
       var jsonY = JSON.parse(y);
@@ -147,8 +177,8 @@ export default class CollectionViewBuilder {
        * ter the order, except for date...
        */
       if (!((grouping === null) || (grouping === CollectionViewBuilder.DATE()))) {
-        var groupX = jsonX[grouping];
-        var groupY = jsonY[grouping];
+        var groupX = jsonX[`translatedGroup`];
+        var groupY = jsonY[`translatedGroup`];
 
         if (!(groupX === groupY)) {
           return groupX.localeCompare(groupY);
@@ -163,14 +193,16 @@ export default class CollectionViewBuilder {
       var dateY = Date.parse(jsonY.date);
       return (order === CollectionViewBuilder.DESC() ? dateY - dateX : dateX - dateY);
     });
-   }
+  }
 
   /*
    * Builds a gallery view containing the collection.
    *
    * @access  private
+   * @param   string  grouping  the grouping used to
+   *                            group the pictures
    */
-  async _buildGalleryView() {
+  async _buildGalleryView(grouping = null) {
     /*
      * Temporary container to hold the view.
      */
@@ -182,7 +214,52 @@ export default class CollectionViewBuilder {
      */
     var cvb = this;
     var collection = await this._getCollection();
+
+    var group = document.createElement(`div`);
+    group.setAttribute(`id`, `polaroid-group-`)
+    group.classList.add(`polaroid-group`);
+    var openGroup = ``;
+
+    var groupContent = document.createElement(`div`);
+    groupContent.classList.add(`polaroid-group-content`);
+    group.appendChild(groupContent);
+
     for (let i = 0 ; i < collection.length ; i++) {
+      var picture = JSON.parse(collection[i]);
+
+      if (grouping !== null) {
+        /*
+         * If current picture is not part of the currently
+         * open one, we create a new one.
+         */
+        var currGroup = picture[grouping];
+        if (currGroup !== openGroup) {
+          /*
+           * Prevents from appending empty group created by
+           * default, which would be filled only if no
+           * grouping is selected.
+           */
+          if (groupContent.firstChild) {
+            view.appendChild(group);
+          }
+
+          group = document.createElement(`div`);
+          group.setAttribute(`id`, `polaroid-group-${currGroup}`);
+          group.classList.add(`polaroid-group`);
+
+          var title = document.createElement(`h1`);
+          title.setAttribute(`data-i18n`, `groupings.${grouping}-${currGroup}`);
+          title.innerHTML = currGroup;
+          group.appendChild(title);
+
+          groupContent = document.createElement(`div`);
+          groupContent.classList.add(`polaroid-group-content`);
+          group.appendChild(groupContent);
+
+          openGroup = currGroup;
+        }
+      }
+
       /*
        * Picture frame.
        */
@@ -207,7 +284,6 @@ export default class CollectionViewBuilder {
       /*
        * Picture.
        */
-      var picture = JSON.parse(collection[i]);
       var img = document.createElement(`img`);
       /*
        * Index is used to retrieve info from collection
@@ -222,8 +298,10 @@ export default class CollectionViewBuilder {
        */
       a.appendChild(img);
       frame.appendChild(a);
-      view.appendChild(frame);
+      groupContent.appendChild(frame);
     }
+
+    view.appendChild(group);
 
     return view;
   }

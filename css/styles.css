@@ -224,6 +224,10 @@ main.fade-in, main.fade-out, {
  *
  * ------------- 8.1 Picture gallery ----------------------
  */
+.polaroid-group h1 {
+  background-color: var(--cy-lightgrey);
+}
+
 .polaroid-frame {
   background-color: white;
   border-style: solid;
