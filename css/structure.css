@@ -38,28 +38,30 @@
 --font-size-small:   calc(0.5 * var(--font-size-default));
 --font-size-medium:  calc(1.5 * var(--font-size-default));
 --font-size-big:     calc(2.0 * var(--font-size-default));
+--border-thin-width:               1px;
 
 /* ------------- Main structure --------------------------- */
 --side-panel-width: var(--size-50);
+--main-border-width:            var(--border-thin-width);
 
 /* ------------- Site title div --------------------------- */
 --site-title-height: var(--size-16);
 --site-title-padding: var(--size-4);
+--site-title-border-width:           var(--border-thin-width);
 
 /* ------------- Menu ------------------------------------- */
 --menu-item-height:           var(--size-10);
 --menu-item-padding-left:      var(--size-4);
 --menu-item-border-left-width: var(--size-2);
 --menu-link-margin-left:       var(--size-2);
+--menu-itm-border-bottom-width:         var(--border-thin-width);
 
 /* ------------- Collections ------------------------------ */
 --collection-toolbar-height: var(--size-16);
+--polaroid-frame-border-width:  var(--border-thin-width);
 
 
 
---title-border-width:           1px;
---nav-li-border-bottom:         1px;
---main-border-width:            1px;
 
 --high-div:                    96px;
 --button-size:                 36px;
@@ -67,7 +69,6 @@
 --polaroid-size:              200px;
 --polaroid-frame-margin:       36px;
 --polaroid-frame-padding:      12px;
---polaroid-frame-border-width:  1px;
 --fs-margin:                   12px;
 }
 
@@ -154,7 +155,7 @@ html, body {
 #site-title-normal,
 #site-title-shadow {
   line-height: var(--site-title-height);
-  border-bottom-width: var(--title-border-width);
+  border-bottom-width: var(--site-title-border-width);
   padding: var(--site-title-padding);
   font-size: var(--font-size-big);
 }
@@ -193,14 +194,14 @@ html, body {
  */
 #menu {
   overflow-y: auto;
-  height: calc(100% - (var(--site-title-height) + 2 * var(--site-title-padding) + var(--title-border-width)));
+  height: calc(100% - (var(--site-title-height) + 2 * var(--site-title-padding) + var(--site-title-border-width)));
 }
 
 .menu-item {
   display: inline-block;
   line-height: var(--menu-item-height);
   border-left-width: var(--menu-item-border-left-width);
-  border-bottom-width: var(--nav-li-border-bottom);
+  border-bottom-width: var(--menu-itm-border-bottom-width);
 }
 
 #menu > .menu-level > .menu-item {
