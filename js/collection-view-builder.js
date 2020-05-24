@@ -54,7 +54,7 @@ export default class CollectionViewBuilder {
    * @access  private
    * @return  JSONObject  the collection in json format
    */
-  async _getCollection() {
+  async _asyncGetCollection() {
     if (this._collection === null) {
       var response = await fetch(`/api/collection/get-collection.php?name=${this._name}`, {method: `GET`});
       var json = await response.json();
@@ -66,7 +66,7 @@ export default class CollectionViewBuilder {
   }
 
   /**
-   * Builds a view containing the collection.
+   * Draws both the collection and the fullscreen views.
    *
    * @param  string       displayMode  the type of view
    *                                   that is to be drawn
@@ -84,19 +84,43 @@ export default class CollectionViewBuilder {
    *                                   tional, default:
    *                                   null
    */
-  async drawView(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
+  async asyncDrawAll(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
+    await this.asyncDrawView(displayMode, elemOrSel, order, grouping);
+    await this._asyncDrawFullscreenView();
+  }
+
+  /**
+   * Draws the view containing the collection.
+   *
+   * @param  string       displayMode  the type of view
+   *                                   that is to be drawn
+   * @param  HTMLElement  elemOrSel    the HTMLElement to
+   *          or                       access or the selec-
+   *         string                    tor used to access
+   *                                   it
+   * @param  string       order        the order of the
+   *                                   items, can be `ASC`
+   *                                   or `DESC`, default:
+   *                                   `ASC`
+   * @param  string       grouping     the grouping used to
+   *                                   group the items of
+   *                                   the collection, op-
+   *                                   tional, default:
+   *                                   null
+   */
+  async asyncDrawView(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
     /*
      * Checks if order and grouping are valid or reverts to
      * default. Orders and groups the collection before
      * displaying it.
      */
-    await this._sort(order, grouping);
+    await this._asyncSort(order, grouping);
     grouping = this._availableGroupings.includes(grouping) ? grouping : null;
 
     var collectionView;
     switch (displayMode) {
       case CollectionViewBuilder.GALLERY():
-        collectionView = await this._buildGalleryView(grouping);
+        collectionView = await this._asyncBuildGalleryView(grouping);
         break;
 
       case CollectionViewBuilder.DETAILS():
@@ -111,10 +135,13 @@ export default class CollectionViewBuilder {
     while (collectionView.firstChild) {
       container.appendChild(collectionView.firstChild);
     }
+  }
 
-    /*
-     * Adding fullscreen view to document body.
-     */
+  /**
+   * Draws the view containing the a fullscreen picture once
+   * clicked.
+   */
+  async _asyncDrawFullscreenView() {
     var fsView = document.createElement(`div`);
     fsView.setAttribute(`id`, `div-fs`);
     document.body.appendChild(fsView);
@@ -137,17 +164,17 @@ export default class CollectionViewBuilder {
    *                             tion, optional, default:
    *                             null
    */
-  async _sort(order, grouping) {
-    await this._getCollection();
+  async _asyncSort(order, grouping) {
+    await this._asyncGetCollection();
 
     /*
      * Translates the groups so that they are ordered pro-
      * perly.
      */
     async function _translateGroups(grouping) {
-      var length = (await this._getCollection()).length;
+      var length = (await this._asyncGetCollection()).length;
       for (let i = 0 ; i < length ; i++) {
-        var item = JSON.parse((await this._getCollection())[i]);
+        var item = JSON.parse((await this._asyncGetCollection())[i]);
         var translatedGroup = ``;
         switch (grouping) {
           case CollectionViewBuilder.DATE():
@@ -161,7 +188,7 @@ export default class CollectionViewBuilder {
             break;
         }
         item[`translatedGroup`] = translatedGroup;
-        (await this._getCollection())[i] = JSON.stringify(item);
+        (await this._asyncGetCollection())[i] = JSON.stringify(item);
       }
     }
 
@@ -202,7 +229,7 @@ export default class CollectionViewBuilder {
    * @param   string  grouping  the grouping used to
    *                            group the pictures
    */
-  async _buildGalleryView(grouping = null) {
+  async _asyncBuildGalleryView(grouping = null) {
     /*
      * Temporary container to hold the view.
      */
@@ -213,7 +240,7 @@ export default class CollectionViewBuilder {
      * overriding "this" which is needed in this context.
      */
     var cvb = this;
-    var collection = await this._getCollection();
+    var collection = await this._asyncGetCollection();
 
     var group = document.createElement(`div`);
     group.setAttribute(`id`, `polaroid-group-`)
@@ -268,7 +295,7 @@ export default class CollectionViewBuilder {
       frame.onclick = function() {
         var clicked = this.getElementsByTagName(`img`)[0];
         var index = parseInt(clicked.getAttribute(`index`));
-        cvb._displayFullscreenPicture(index, cvb);
+        cvb._asyncDisplayFullscreenPicture(index, cvb);
         PageUtil.fadeIn(`#div-fs`);
       };
 
@@ -312,8 +339,8 @@ export default class CollectionViewBuilder {
    *
    * @access  private
    */
-  async _displayFullscreenPicture(index, cvb) {
-    var collection = await cvb._getCollection();
+  async _asyncDisplayFullscreenPicture(index, cvb) {
+    var collection = await cvb._asyncGetCollection();
     var jsonItem = JSON.parse(collection[index]);
 
     /*
@@ -344,12 +371,12 @@ export default class CollectionViewBuilder {
      */
     PageUtil.bindOnclick(`#btn-fs-prev`, function() {
       var prevIndex = (index + collection.length - 1) % collection.length;
-      cvb._displayFullscreenPicture(prevIndex, cvb);
+      cvb._asyncDisplayFullscreenPicture(prevIndex, cvb);
     });
 
     PageUtil.bindOnclick(`#btn-fs-next`, function() {
       var nextIndex = (index + 1) % collection.length;
-      cvb._displayFullscreenPicture(nextIndex, cvb);
+      cvb._asyncDisplayFullscreenPicture(nextIndex, cvb);
     });
   }
 

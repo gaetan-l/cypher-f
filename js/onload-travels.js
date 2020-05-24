@@ -11,7 +11,7 @@ load();
 
 async function load() {
   await pageBuilder.buildPage();
-  await cvBuilder.drawView(
+  await cvBuilder.asyncDrawAll(
     CollectionViewBuilder.GALLERY(),
     document.getElementsByClassName(`collection-view`)[0],
     CollectionViewBuilder.DESC(),
