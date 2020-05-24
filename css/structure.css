@@ -32,6 +32,7 @@
 --size-10: calc(10 * var(--size-1)); /*  60px */
 --size-16: calc(16 * var(--size-1)); /*  96px */
 --size-50: calc(50 * var(--size-1)); /* 300px */
+--size-34: calc(34 * var(--size-1)); /* 204px */
 
 /* ------------- General styles --------------------------- */
 --font-size-default: var(--size-4);
@@ -61,15 +62,15 @@
 /* ------------- Collections ------------------------------ */
 --collection-toolbar-height: var(--size-16);
 --polaroid-frame-border-width:  var(--border-thin-width);
+--polaroid-size:              var(--size-34);
+--polaroid-frame-margin:       var(--size-6);
+--polaroid-frame-padding:      var(--size-2);
+--fullscreen-view-margin:                   var(--size-2);
 
 
 
 
 --high-div:                    96px;
---polaroid-size:              200px;
---polaroid-frame-margin:       36px;
---polaroid-frame-padding:      12px;
---fs-margin:                   12px;
 }
 
 
@@ -352,7 +353,7 @@ html, body {
 }
 
 #div-fs > img {
-  max-width: calc(100% - 2 * var(--button-size) - 4 * var(--fs-margin));
+  max-width: calc(100% - 2 * var(--button-size) - 4 * var(--fullscreen-view-margin));
   max-height: 100%;
   margin: auto;
 }
@@ -360,7 +361,7 @@ html, body {
 #div-fs > div#div-fs-info,
 #div-fs > i#btn-fs-close {
   position: absolute;
-  margin: var(--fs-margin);
+  margin: var(--fullscreen-view-margin);
 }
 
 #div-fs > div#div-fs-info {
@@ -374,7 +375,7 @@ html, body {
 
 #div-fs > i#btn-fs-prev,
 #div-fs > i#btn-fs-next {
-  margin: auto var(--fs-margin);
+  margin: auto var(--fullscreen-view-margin);
 }
 
 #div-fs > i#btn-fs-close {
