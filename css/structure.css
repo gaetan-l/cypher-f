@@ -25,52 +25,49 @@
  */
 :root {
 /* ------------- Default values---------------------------- */
---size-1:                       6px;
---size-2:   calc(2 * var(--size-1)); /*  12px */
---size-4:   calc(4 * var(--size-1)); /*  24px */
---size-6:   calc(6 * var(--size-1)); /*  36px */
---size-10: calc(10 * var(--size-1)); /*  60px */
---size-16: calc(16 * var(--size-1)); /*  96px */
---size-50: calc(50 * var(--size-1)); /* 300px */
---size-34: calc(34 * var(--size-1)); /* 204px */
+--size-1:                         6px;
+--size-2:                       calc(2 * var(--size-1)); /*   12px */
+--size-4:                       calc(4 * var(--size-1)); /*   24px */
+--size-6:                       calc(6 * var(--size-1)); /*   36px */
+--size-10:                      calc(10 * var(--size-1)); /*  60px */
+--size-16:                      calc(16 * var(--size-1)); /*  96px */
+--size-50:                      calc(50 * var(--size-1)); /* 300px */
+--size-34:                      calc(34 * var(--size-1)); /* 204px */
 
 /* ------------- General styles --------------------------- */
---font-size-default: var(--size-4);
---font-size-small:   calc(0.5 * var(--font-size-default));
---font-size-medium:  calc(1.5 * var(--font-size-default));
---font-size-big:     calc(2.0 * var(--font-size-default));
---border-thin-width:               1px;
---button-size:                 var(--size-6);
---button-margin:               var(--size-2);
+--font-size-default:            var(--size-4);
+--font-size-small:              calc(0.5 * var(--font-size-default));
+--font-size-medium:             calc(1.5 * var(--font-size-default));
+--font-size-big:                calc(2.0 * var(--font-size-default));
+--border-thin-width:              1px;
+--button-size:                  var(--size-6);
+--button-margin:                var(--size-2);
 
 /* ------------- Main structure --------------------------- */
---side-panel-width: var(--size-50);
+--side-panel-width:             var(--size-50);
 --main-border-width:            var(--border-thin-width);
+--site-footer-height:           var(--size-16);
 
 /* ------------- Site title div --------------------------- */
---site-title-height: var(--size-16);
---site-title-padding: var(--size-4);
---site-title-border-width:           var(--border-thin-width);
+--site-title-height:            var(--size-16);
+--site-title-padding:           var(--size-4);
+--site-title-border-width:      var(--border-thin-width);
 
 /* ------------- Menu ------------------------------------- */
---menu-item-height:           var(--size-10);
---menu-item-padding-left:      var(--size-4);
---menu-item-border-left-width: var(--size-2);
---menu-link-margin-left:       var(--size-2);
---menu-itm-border-bottom-width:         var(--border-thin-width);
+--menu-item-height:             var(--size-10);
+--menu-item-padding-left:       var(--size-4);
+--menu-item-border-left-width:  var(--size-2);
+--menu-itm-border-bottom-width: var(--border-thin-width);
+--menu-link-margin-left:        var(--size-2);
 
 /* ------------- Collections ------------------------------ */
---collection-toolbar-height: var(--size-16);
+--collection-toolbar-height:    var(--size-10);
+--polaroid-group-title-height:  var(--size-16);
 --polaroid-frame-border-width:  var(--border-thin-width);
---polaroid-size:              var(--size-34);
---polaroid-frame-margin:       var(--size-6);
---polaroid-frame-padding:      var(--size-2);
---fullscreen-view-margin:                   var(--size-2);
-
-
-
-
---high-div:                    96px;
+--polaroid-frame-margin:        var(--size-6);
+--polaroid-frame-padding:       var(--size-2);
+--polaroid-size:                var(--size-34);
+--fullscreen-view-margin:       var(--size-2);
 }
 
 
@@ -109,7 +106,7 @@ html, body {
  * ========================================================
  */
 #side-panel, #main-panel {
-  height: calc(100% - var(--high-div));
+  height: calc(100% - var(--site-footer-height));
 }
 
 #main-panel {
@@ -129,7 +126,7 @@ html, body {
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
-  height: var(--high-div);
+  height: var(--site-footer-height);
 }
 
 #site-footer p {
@@ -296,7 +293,7 @@ html, body {
   z-index: 1;
   margin: 0;
   padding-left: var(--polaroid-frame-margin);
-  line-height: var(--high-div);
+  line-height: var(--polaroid-group-title-height);
 }
 
 .polaroid-group-content {
@@ -396,5 +393,5 @@ html, body {
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
-  background-position: calc(50% + var(--side-panel-width) / 2) calc(50% - var(--high-div) / 2);
+  background-position: calc(50% + var(--side-panel-width) / 2) calc(50% - var(--site-footer-height) / 2);
 }

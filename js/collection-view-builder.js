@@ -85,8 +85,6 @@ export default class CollectionViewBuilder {
    *                                   null
    */
   async asyncDrawAll(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
-console.log("asyncDrawAll");
-console.log(elemOrSel);
     this.drawToolbarView(displayMode, elemOrSel);
     await this.asyncDrawCollectionView(displayMode, elemOrSel, order, grouping);
     await this._asyncDrawFullscreenView();
@@ -103,8 +101,6 @@ console.log(elemOrSel);
    *                                   it
    */
   drawToolbarView(displayMode, elemOrSel) {
-console.log("drawToolbarView");
-console.log(elemOrSel);
     var toolbar = document.createElement(`div`);
     toolbar.classList.add(`collection-toolbar`);
 
@@ -162,8 +158,6 @@ console.log(elemOrSel);
     /*
      * Adding collection view to specified container.
      */
-console.log("asyncDrawCollectionView");
-console.log(elemOrSel);
     var container = PageUtil.getUniqueElement(elemOrSel);
     while (collectionView.firstChild) {
       container.appendChild(collectionView.firstChild);
