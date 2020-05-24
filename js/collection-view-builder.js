@@ -85,8 +85,39 @@ export default class CollectionViewBuilder {
    *                                   null
    */
   async asyncDrawAll(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
-    await this.asyncDrawView(displayMode, elemOrSel, order, grouping);
+console.log("asyncDrawAll");
+console.log(elemOrSel);
+    this.drawToolbarView(displayMode, elemOrSel);
+    await this.asyncDrawCollectionView(displayMode, elemOrSel, order, grouping);
     await this._asyncDrawFullscreenView();
+  }
+
+  /**
+   * Draws the collection toolbar view.
+   *
+   * @param  string       displayMode  the type of view
+   *                                   that is to be drawn
+   * @param  HTMLElement  elemOrSel    the HTMLElement to
+   *          or                       access or the selec-
+   *         string                    tor used to access
+   *                                   it
+   */
+  drawToolbarView(displayMode, elemOrSel) {
+console.log("drawToolbarView");
+console.log(elemOrSel);
+    var toolbar = document.createElement(`div`);
+    toolbar.classList.add(`collection-toolbar`);
+
+    switch (displayMode) {
+      case CollectionViewBuilder.GALLERY():
+        break;
+
+      case CollectionViewBuilder.DETAILS():
+        break;
+    }
+
+    var container = PageUtil.getUniqueElement(elemOrSel);
+    container.appendChild(toolbar);
   }
 
   /**
@@ -108,7 +139,7 @@ export default class CollectionViewBuilder {
    *                                   tional, default:
    *                                   null
    */
-  async asyncDrawView(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
+  async asyncDrawCollectionView(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
     /*
      * Checks if order and grouping are valid or reverts to
      * default. Orders and groups the collection before
@@ -131,6 +162,8 @@ export default class CollectionViewBuilder {
     /*
      * Adding collection view to specified container.
      */
+console.log("asyncDrawCollectionView");
+console.log(elemOrSel);
     var container = PageUtil.getUniqueElement(elemOrSel);
     while (collectionView.firstChild) {
       container.appendChild(collectionView.firstChild);

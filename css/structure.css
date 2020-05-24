@@ -247,6 +247,16 @@ html, body {
  * ============= 8.  COLLECTIONS ==========================
  * ========================================================
  *
+ */
+.collection-toolbar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: var(--title-height);
+}
+
+/*
  * ------------- 8.1 Picture gallery ----------------------
  */
 .polaroid-gallery {
@@ -258,7 +268,7 @@ html, body {
 .polaroid-group h1 {
   position: -webkit-sticky;
   position: sticky;
-  top: 0;
+  top: var(--title-height);
   z-index: 1;
   margin: 0;
   padding-left: var(--polaroid-frame-margin);
