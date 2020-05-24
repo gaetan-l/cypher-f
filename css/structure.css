@@ -39,6 +39,8 @@
 --font-size-medium:  calc(1.5 * var(--font-size-default));
 --font-size-big:     calc(2.0 * var(--font-size-default));
 --border-thin-width:               1px;
+--button-size:                 var(--size-6);
+--button-margin:               var(--size-2);
 
 /* ------------- Main structure --------------------------- */
 --side-panel-width: var(--size-50);
@@ -64,8 +66,6 @@
 
 
 --high-div:                    96px;
---button-size:                 36px;
---button-margin:               12px;
 --polaroid-size:              200px;
 --polaroid-frame-margin:       36px;
 --polaroid-frame-padding:      12px;
