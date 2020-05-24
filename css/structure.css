@@ -24,7 +24,21 @@
  * ========================================================
  */
 :root {
---font-size:                   24px;
+/* ------------- Default values---------------------------- */
+--size-1:                       6px;
+--size-2:   calc(2 * var(--size-1)); /* 12px */
+--size-4:   calc(4 * var(--size-1)); /* 24px */
+--size-6:   calc(6 * var(--size-1)); /* 36px */
+--size-10: calc(10 * var(--size-1)); /* 60px */
+--size-16: calc(16 * var(--size-1)); /* 96px */
+
+/* ------------- General styles --------------------------- */
+--font-size-default: var(--size-4);
+--font-size-small:   calc(0.5 * var(--font-size-default));
+--font-size-medium:  calc(1.5 * var(--font-size-default));
+--font-size-big:     calc(2.0 * var(--font-size-default));
+
+/* ------------- Main structure --------------------------- */
  --aside-width:               300px;
 --title-height:                96px;
 --title-padding:               24px;
@@ -43,10 +57,6 @@
 --polaroid-frame-padding:      12px;
 --polaroid-frame-border-width:  1px;
 --fs-margin:                   12px;
-
---title-font-size:    calc(2.0 * var(--font-size));
---subtitle-font-size: calc(0.5 * var(--font-size));
---h1-font-size:       calc(1.5 * var(--font-size));
 }
 
 
@@ -59,7 +69,7 @@
 * {
   margin: 0;
   padding: 0;
-  font-size: var(--font-size);
+  font-size: var(--font-size-default);
 }
 
 html, body {
@@ -74,7 +84,7 @@ html, body {
  * ========================================================
  */
  h1 {
-  font-size: var(--h1-font-size);
+  font-size: var(--font-size-medium);
  }
 
 
@@ -109,7 +119,7 @@ html, body {
 }
 
 #site-footer p {
-  font-size: var(--h1-font-size);
+  font-size: var(--font-size-medium);
 }
 
 #site-footer .button-container {
@@ -134,7 +144,7 @@ html, body {
   line-height: var(--title-height);
   border-bottom-width: var(--title-border-width);
   padding: var(--title-padding);
-  font-size: var(--title-font-size);
+  font-size: var(--font-size-big);
 }
 
 #site-title-normal {
@@ -153,13 +163,13 @@ html, body {
 
 #site-subtitle {
   position: absolute;
-  top: calc(var(--title-padding) + (var(--title-height) - var(--title-font-size)) / 2 + var(--title-font-size));
+  top: calc(var(--title-padding) + (var(--title-height) - var(--font-size-big)) / 2 + var(--font-size-big));
   left: calc(0.5 * var(--aside-width));
 }
 
 #site-subtitle, 
 #site-subtitle > span {
-  font-size: var(--subtitle-font-size);
+  font-size: var(--font-size-small);
 }
 
 
@@ -198,7 +208,7 @@ html, body {
    * Font-size is here to compensate for the material-icon
    * size.
    */
-  width: calc(100% - var(--font-size) - var(--nav-a-margin-left));
+  width: calc(100% - var(--font-size-default) - var(--nav-a-margin-left));
 }
 
 
