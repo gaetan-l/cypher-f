@@ -35,7 +35,7 @@
 --nav-li-border-bottom:         1px;
 --nav-a-margin-left:           12px;
 --main-border-width:            1px;
---footer-height:               96px;
+--high-div:                    96px;
 --button-size:                 36px;
 --button-margin:               12px;
 --polaroid-size:              200px;
@@ -46,7 +46,7 @@
 
 --title-font-size:    calc(2.0 * var(--font-size));
 --subtitle-font-size: calc(0.5 * var(--font-size));
---footer-font-size:   calc(1.5 * var(--font-size));
+--h1-font-size:       calc(1.5 * var(--font-size));
 }
 
 
@@ -73,6 +73,9 @@ html, body {
  * ============= 3.  GENERAL STYLES =======================
  * ========================================================
  */
+ h1 {
+  font-size: var(--h1-font-size);
+ }
 
 
 
@@ -82,7 +85,7 @@ html, body {
  * ========================================================
  */
 #side-panel, #main-panel {
-  height: calc(100% - var(--footer-height));
+  height: calc(100% - var(--high-div));
 }
 
 #main-panel {
@@ -102,11 +105,11 @@ html, body {
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
-  height: var(--footer-height);
+  height: var(--high-div);
 }
 
 #site-footer p {
-  font-size: var(--footer-font-size);
+  font-size: var(--h1-font-size);
 }
 
 #site-footer .button-container {
@@ -258,8 +261,8 @@ html, body {
   top: 0;
   z-index: 1;
   margin: 0;
-  padding-left: calc(2 * var(--polaroid-frame-margin));
-  line-height: 2em;
+  padding-left: var(--polaroid-frame-margin);
+  line-height: var(--high-div);
 }
 
 .polaroid-group-content {
@@ -359,5 +362,5 @@ html, body {
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
-  background-position: calc(50% + var(--aside-width) / 2) calc(50% - var(--footer-height) / 2);
+  background-position: calc(50% + var(--aside-width) / 2) calc(50% - var(--high-div) / 2);
 }

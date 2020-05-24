@@ -26,9 +26,12 @@
  */
 :root {
   --cy-blue: #0ca5b6;
+  --cy-blue-translucent: #0ca5b67d;
   --cy-grey: #777;
   --cy-mediumgrey: #bbb;
   --cy-lightgrey: #ddd;
+  --font-body: 'Yantra', Helvetica, sans-serif;
+  --font-titles: 'Alata', Arial, sans-serif;
 }
 
 
@@ -39,7 +42,8 @@
  * ========================================================
  */
 * {
-  font-family: 'Yantra', Helvetica, sans-serif;
+  font-family: var(--font-body);
+  font-weight: normal;
   color: var(--cy-grey);
 }
 
@@ -73,6 +77,10 @@ main.fade-in, main.fade-out, {
   opacity: 1;
 }
 
+h1 {
+  font-family: var(--font-titles);
+}
+
 
 
 /*
@@ -98,7 +106,7 @@ main.fade-in, main.fade-out, {
 
 #site-footer p {
   text-align: center;
-  font-family: 'Alata', Arial, sans-serif;
+  font-family: var(--font-titles);
   color: white;
 }
 
@@ -225,7 +233,12 @@ main.fade-in, main.fade-out, {
  * ------------- 8.1 Picture gallery ----------------------
  */
 .polaroid-group h1 {
-  background-color: var(--cy-lightgrey);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: var(--cy-blue-translucent);
+  color: white;
 }
 
 .polaroid-frame {
