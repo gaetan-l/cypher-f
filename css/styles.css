@@ -25,13 +25,18 @@
  * ========================================================
  */
 :root {
-  --cy-blue:             #0ca5b6;
-  --cy-blue-translucent: #0ca5b67d;
-  --cy-grey:             #777;
-  --cy-mediumgrey:       #bbb;
-  --cy-lightgrey:        #ddd;
-  --font-body:           'Yantra', Helvetica, sans-serif;
-  --font-titles:         'Alata',  Arial,     sans-serif;
+  --secondary-r:           221;
+  --secondary-g:           221;
+  --secondary-b:           221;
+
+  --color-primary:          12, 165, 182;
+  --color-secondary-light: calc(1.0 * var(--secondary-r)), calc(1.0 * var(--secondary-g)), calc(1.0 * var(--secondary-b));
+  --color-secondary:       calc(0.8 * var(--secondary-r)), calc(0.8 * var(--secondary-g)), calc(0.8 * var(--secondary-b));
+  --color-secondary-dark:  calc(0.5 * var(--secondary-r)), calc(0.5 * var(--secondary-g)), calc(0.5 * var(--secondary-b));
+  --color-neutral:         255, 255, 255;
+
+  --font-body:             'Yantra', Helvetica, sans-serif;
+  --font-titles:           'Alata',  Arial,     sans-serif;
 }
 
 
@@ -44,7 +49,7 @@
 * {
   font-family: var(--font-body);
   font-weight: normal;
-  color: var(--cy-grey);
+  color: rgba(var(--color-secondary-dark), 1.0);
 }
 
 
@@ -97,18 +102,18 @@ h1 {
 
 #side-panel {
   border-right-style: solid;
-  border-right-color: var(--cy-lightgrey);
+  border-right-color: rgba(var(--color-secondary-light), 1.0);
   box-shadow: 1px 1px 1px;
 }
 
 #site-footer {
-  background-color: var(--cy-blue);
+  background-color: rgba(var(--color-primary), 1.0);
 }
 
 #site-footer p {
   text-align: center;
   font-family: var(--font-titles);
-  color: white;
+  color: rgba(var(--color-neutral), 1.0);
 }
 
 
@@ -121,7 +126,7 @@ h1 {
 #site-title-normal {
   text-align: center;
   border-bottom-style: solid;
-  border-bottom-color: var(--cy-lightgrey);
+  border-bottom-color: rgba(var(--color-secondary-light), 1.0);
   font-family: 'Alata', Arial, sans-serif;
   transition: color 0.25s ease-in-out;
 }
@@ -129,18 +134,18 @@ h1 {
 #site-title-shadow {
   text-align: center;
   font-family: 'Alata', Arial, sans-serif;
-  color: var(--cy-blue);
+  color: rgba(var(--color-primary), 1.0);
   transition: color 0.25s ease-in-out;
 }
 
 #site-title:hover > #site-title-normal,
 #site-title:hover > #site-subtitle > span {
-  color: var(--cy-blue);
+  color: rgba(var(--color-primary), 1.0);
   transition: color 0.25s ease-in-out;
 }
 
 #site-title:hover > #site-title-shadow {
-  color: var(--cy-grey);
+  color: rgba(var(--color-secondary-dark), 1.0);
   transition: color 0.25s ease-in-out;
 }
 
@@ -169,7 +174,7 @@ h1 {
   border-left-style: solid;
   border-left-color: transparent;
   border-bottom-style: solid;
-  border-bottom-color: var(--cy-lightgrey);
+  border-bottom-color: rgba(var(--color-secondary-light), 1.0);
 }
 
 .menu-item * {
@@ -182,23 +187,23 @@ h1 {
 }
 
 .menu-item.active {
-  background-color: var(--cy-blue);
+  background-color: rgba(var(--color-primary), 1.0);
 }
 
 .menu-item:not(.active) > .material-icons {
-  color: var(--cy-blue);
+  color: rgba(var(--color-primary), 1.0);
 }
 
 .menu-item.active > .menu-link,
 .menu-item.active > .menu-icon,
 .menu-item:not(.active):hover > .menu-link,
 .menu-item:not(.active):hover > .menu-icon {
-  color: white;
+  color: rgba(var(--color-neutral), 1.0);
 }
 
 .menu-item:not(.active):hover {
-  background-color: var(--cy-mediumgrey);
-  border-left-color: var(--cy-blue);
+  background-color: rgba(var(--color-secondary), 1.0);
+  border-left-color: rgba(var(--color-primary), 1.0);
   transition: all 0.25s ease-in-out;
 }
 
@@ -215,7 +220,7 @@ h1 {
  * ========================================================
  */
 .button {
-  color: white;
+  color: rgba(var(--color-neutral), 1.0);
   cursor: pointer;
 }
 
@@ -233,8 +238,8 @@ h1 {
  *
  */
 .collection-toolbar {
-  background-color: white;
-  border-bottom-color: var(--cy-lightgrey);
+  background-color: rgba(var(--color-neutral), 1.0);
+  border-bottom-color: rgba(var(--color-secondary-light), 1.0);
   border-bottom-style: solid;
   box-shadow: 1px 1px 1px;
 }
@@ -247,14 +252,14 @@ h1 {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  background-color: var(--cy-blue-translucent);
-  color: white;
+  background-color: rgba(var(--color-primary), 0.5);
+  color: rgba(var(--color-neutral), 1.0);
 }
 
 .polaroid-frame {
-  background-color: white;
+  background-color: rgba(var(--color-neutral), 1.0);
   border-style: solid;
-  border-color: var(--cy-lightgrey);
+  border-color: rgba(var(--color-secondary-light), 1.0);
   box-shadow: 6px 6px 6px;
   transition: box-shadow 0.25s ease-in-out;
   cursor: pointer;
@@ -298,7 +303,7 @@ h1 {
 }
 
 .fullscreen-info {
-  color: white;
+  color: rgba(var(--color-neutral), 1.0);
 }
 
 
