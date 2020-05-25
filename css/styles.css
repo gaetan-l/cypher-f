@@ -281,29 +281,23 @@ h1 {
 /*
  * ------------- 8.2 Fullscreen view ----------------------
  */
-#div-fs {
+#fullscreen-container {
   background-color: black;
-  cursor: pointer;
   opacity: 0;
   height: 0;
 }
 
-#div-fs.fade-out {
+#fullscreen-container.fade-out {
   transition: opacity 0.25s ease-in-out, height 0s 0.25s;
 }
 
-#div-fs.fade-in {
+#fullscreen-container.fade-in {
   opacity: 1;
   height: 100%;
   transition: opacity 0.25s ease-in-out;
 }
 
-#div-fs > i {
-  color: white;
-  cursor: pointer;
-}
-
-#div-fs > div#div-fs-info > p {
+.fullscreen-info {
   color: white;
 }
 
@@ -316,6 +310,6 @@ h1 {
  *
  * ------------- 9.1 Homepage -----------------------------
  */
-body#home > main {
+#home > #main-panel {
   background-image: url('../images/background.jpg');
 }

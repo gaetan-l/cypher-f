@@ -170,12 +170,12 @@ export default class CollectionViewBuilder {
    */
   async _asyncDrawFullscreenView() {
     var fsView = document.createElement(`div`);
-    fsView.setAttribute(`id`, `div-fs`);
+    fsView.setAttribute(`id`, `fullscreen-container`);
     document.body.appendChild(fsView);
-    await PageUtil.replaceElementWithTemplate(`#div-fs`);
+    await PageUtil.replaceElementWithTemplate(`#fullscreen-container`);
     await this._pageBuilder.translator.asyncTranslatePage();
     PageUtil.bindOnclick(`#btn-fs-close`,  function() {
-      PageUtil.fadeOut(`#div-fs`);
+      PageUtil.fadeOut(`#fullscreen-container`);
     });
   }
 
@@ -323,7 +323,7 @@ export default class CollectionViewBuilder {
         var clicked = this.getElementsByTagName(`img`)[0];
         var index = parseInt(clicked.getAttribute(`index`));
         cvb._asyncDisplayFullscreenPicture(index, cvb);
-        PageUtil.fadeIn(`#div-fs`);
+        PageUtil.fadeIn(`#fullscreen-container`);
       };
 
       /*
@@ -373,21 +373,21 @@ export default class CollectionViewBuilder {
     /*
      * Displaying actual picture.
      */
-    document.getElementById(`img-fs`).src = cvb._getFilePath(jsonItem);
+    document.getElementById(`fullscreen-image`).src = cvb._getFilePath(jsonItem);
 
     /*
      * Displaying picture information
      */
-    var infoDiv = document.getElementById(`div-fs-info`);
+    var infoDiv = document.getElementById(`fullscreen-infobox`);
     infoDiv.innerHTML = ``;
-    var jsonInfoArray = [`readableDate`, `location`,      `description`];
-    var htmlInfoArray = [`p-fs-date`,    `p-fs-location`, `p-fs-description`];
+    var jsonInfoArray = [`readableDate`,    `location`,            `description`];
+    var htmlInfoArray = [`fullscreen-date`, `fullscreen-location`, `fullscreen-description`];
     for (let i = 0 ; i < jsonInfoArray.length ; i++) {
       var value = jsonItem[jsonInfoArray[i]];
       if (value != null) {
         var p = document.createElement(`p`);
         p.setAttribute(`id`, htmlInfoArray[i]);
-        p.classList.add(`fs-info`);
+        p.classList.add(`fullscreen-info`);
         p.innerHTML = value;
         infoDiv.appendChild(p);
       }

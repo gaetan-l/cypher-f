@@ -347,7 +347,7 @@ html, body {
 /*
  * ------------- 8.2 Fullscreen view ----------------------
  */
- #div-fs {
+ #fullscreen-container {
   display: flex;
   z-index: 3;
   position: absolute;
@@ -356,33 +356,28 @@ html, body {
   width: 100%;
 }
 
-#div-fs > img {
-  max-width: calc(100% - 2 * var(--button-size) - 4 * var(--fullscreen-view-margin));
+#fullscreen-image {
+  max-width: calc(100% - 2 * var(--button-size) - 4 * var(--button-margin));
   max-height: 100%;
   margin: auto;
 }
 
-#div-fs > div#div-fs-info,
-#div-fs > i#btn-fs-close {
+#fullscreen-infobox, #btn-fs-close {
   position: absolute;
-  margin: var(--fullscreen-view-margin);
 }
 
-#div-fs > div#div-fs-info {
+#btn-fs-prev, #btn-fs-next {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#fullscreen-infobox {
+  margin: var(--fullscreen-view-margin);
   left: 0;
   bottom: 0;
 }
 
-#div-fs > i {
-  font-size: var(--button-size);
-}
-
-#div-fs > i#btn-fs-prev,
-#div-fs > i#btn-fs-next {
-  margin: auto var(--fullscreen-view-margin);
-}
-
-#div-fs > i#btn-fs-close {
+#btn-fs-close {
   right: 0;
   top: 0;
 }
@@ -396,7 +391,7 @@ html, body {
  *
  * ------------- 9.1 Homepage -----------------------------
  */
-#home > main {
+#home > #main-panel {
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
