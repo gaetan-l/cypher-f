@@ -25,7 +25,6 @@ export default class PageUtil {
    *                                     item is not found
    */
   static fadeIn(elemOrSel, ignoreWarning = false) {
-    console.log("fade-in" + elemOrSel);
     var uniqueElement = PageUtil.getUniqueElement(elemOrSel, ignoreWarning);
     if (uniqueElement) {
       uniqueElement.classList.remove(`faded-out-onload`);
@@ -49,7 +48,6 @@ export default class PageUtil {
    *                                     item is not found
    */
   static fadeOut(elemOrSel, ignoreWarning = false) {
-    console.log("fade-out " + elemOrSel);
     var uniqueElement = PageUtil.getUniqueElement(elemOrSel, ignoreWarning);
     if (uniqueElement) {
       uniqueElement.classList.remove(`faded-in`);

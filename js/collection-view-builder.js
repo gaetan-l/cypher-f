@@ -44,6 +44,8 @@ export default class CollectionViewBuilder {
      * for this collection once fetched via the api.
      */
     this._availableGroupings = [];
+    this._currentGrouping;
+    this._currentOrder;
   }
 
   /*
@@ -156,7 +158,17 @@ export default class CollectionViewBuilder {
         var icons = await response.json();
 
         async function redrawOnClick(selectedGrouping) {
-          await this.asyncRedraw(displayMode, elemOrSel, null, selectedGrouping);
+          var selectedOrder = CollectionViewBuilder.ASC();
+
+          /*
+           * When the user clicks twice on the same grou-
+           * ping, the order is reversed.
+           */
+          if (selectedGrouping === this._currentGrouping) {
+            selectedOrder = this._currentOrder === CollectionViewBuilder.ASC() ? CollectionViewBuilder.DESC() : CollectionViewBuilder.ASC();
+          }
+          console.log(selectedOrder);
+          await this.asyncRedraw(displayMode, elemOrSel, selectedOrder, selectedGrouping);
         }
 
         const boundRedrawOnClick = redrawOnClick.bind(this);
@@ -276,8 +288,6 @@ export default class CollectionViewBuilder {
      * Hiding the sorting notification if it exists.
      */
     var notification = document.getElementById(`notification-sort`);
-    console.log("notification");
-    console.log(notification);
     if (notification) {
       PageUtil.fadeOut(notification);
       await PageUtil.asyncWaitForIt(250);
@@ -350,7 +360,6 @@ export default class CollectionViewBuilder {
       notification.classList.add(`material-icons`);
       notification.classList.add(`notification`);
       notification.classList.add(`fadable`);
-      notification.innerHTML = order === CollectionViewBuilder.DESC() ? `arrow_drop_up` : `arrow_drop_down`;
       document.getElementById(`collection-toolbar-button-container`).appendChild(notification);
 
     }
@@ -370,6 +379,7 @@ export default class CollectionViewBuilder {
     var notificationPosition = this._availableGroupings.length - groupNumber - 1;
     var right = offset + notificationPosition * (buttonSize + 2 * buttonMargin);
     notification.style.right = `${right}px`;
+    notification.innerHTML = order === CollectionViewBuilder.DESC() ? `arrow_drop_up` : `arrow_drop_down`;
 
 
     /*
@@ -377,6 +387,9 @@ export default class CollectionViewBuilder {
      * done and the icon created, we display it.
      */
     PageUtil.fadeIn(notification);
+
+    this._currentGrouping = grouping;
+    this._currentOrder = order;
   }
 
   /*
