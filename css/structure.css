@@ -25,49 +25,50 @@
  */
 :root {
 /* ------------- Default values---------------------------- */
---size-1:                         6px;
---size-2:                       calc(2 * var(--size-1)); /*   12px */
---size-4:                       calc(4 * var(--size-1)); /*   24px */
---size-6:                       calc(6 * var(--size-1)); /*   36px */
---size-10:                      calc(10 * var(--size-1)); /*  60px */
---size-16:                      calc(16 * var(--size-1)); /*  96px */
---size-50:                      calc(50 * var(--size-1)); /* 300px */
---size-34:                      calc(34 * var(--size-1)); /* 204px */
+--size-1:                            6px;
+--size-2:                          calc(2 * var(--size-1)); /*   12px */
+--size-4:                          calc(4 * var(--size-1)); /*   24px */
+--size-6:                          calc(6 * var(--size-1)); /*   36px */
+--size-10:                         calc(10 * var(--size-1)); /*  60px */
+--size-16:                         calc(16 * var(--size-1)); /*  96px */
+--size-50:                         calc(50 * var(--size-1)); /* 300px */
+--size-34:                         calc(34 * var(--size-1)); /* 204px */
 
 /* ------------- General styles --------------------------- */
---font-size-default:            var(--size-4);
---font-size-small:              calc(0.5 * var(--font-size-default));
---font-size-medium:             calc(1.5 * var(--font-size-default));
---font-size-big:                calc(2.0 * var(--font-size-default));
---border-thin-width:              1px;
---button-size:                  var(--size-6);
---button-margin:                var(--size-2);
+--font-size-default:               var(--size-4);
+--font-size-small:                 calc(0.5 * var(--font-size-default));
+--font-size-medium:                calc(1.5 * var(--font-size-default));
+--font-size-big:                   calc(2.0 * var(--font-size-default));
+--border-thin-width:                 1px;
+--button-size:                     var(--size-6);
+--button-margin:                   var(--size-2);
 
 /* ------------- Main structure --------------------------- */
---side-panel-width:             var(--size-50);
---main-border-width:            var(--border-thin-width);
---site-footer-height:           var(--size-16);
+--side-panel-width:                var(--size-50);
+--side-panel-right-border-width:   var(--border-thin-width);
+--site-footer-height:              var(--size-16);
 
 /* ------------- Site title div --------------------------- */
---site-title-height:            var(--size-16);
---site-title-padding:           var(--size-4);
---site-title-border-width:      var(--border-thin-width);
+--site-title-height:               var(--size-16);
+--site-title-padding:              var(--size-4);
+--site-title-border-width:         var(--border-thin-width);
 
 /* ------------- Menu ------------------------------------- */
---menu-item-height:             var(--size-10);
---menu-item-padding-left:       var(--size-4);
---menu-item-border-left-width:  var(--size-2);
---menu-itm-border-bottom-width: var(--border-thin-width);
---menu-link-margin-left:        var(--size-2);
+--menu-item-height:                var(--size-10);
+--menu-item-padding-left:          var(--size-4);
+--menu-item-border-left-width:     var(--size-2);
+--menu-itm-border-bottom-width:    var(--border-thin-width);
+--menu-link-margin-left:           var(--size-2);
 
 /* ------------- Collections ------------------------------ */
---collection-toolbar-height:    var(--size-10);
---polaroid-group-title-height:  var(--size-16);
---polaroid-frame-border-width:  var(--border-thin-width);
---polaroid-frame-margin:        var(--size-6);
---polaroid-frame-padding:       var(--size-2);
---polaroid-size:                var(--size-34);
---fullscreen-view-margin:       var(--size-2);
+--collection-toolbar-height:       var(--size-10);
+--collection-toolbar-border-width: var(--border-thin-width);
+--polaroid-group-title-height:     var(--size-16);
+--polaroid-frame-border-width:     var(--border-thin-width);
+--polaroid-frame-margin:           var(--size-6);
+--polaroid-frame-padding:          var(--size-2);
+--polaroid-size:                   var(--size-34);
+--fullscreen-view-margin:          var(--size-2);
 }
 
 
@@ -110,8 +111,7 @@ html, body {
 }
 
 #main-panel {
-  margin-left: var(--side-panel-width);
-  border-left-width: var(--main-border-width);
+  margin-left: calc(var(--side-panel-width) + var(--side-panel-right-border-width));
   overflow-y: auto;
 }
 
@@ -119,9 +119,15 @@ html, body {
   float: left;
   width: var(--side-panel-width);
   overflow-y: hidden;
+  border-right-width: var(--side-panel-right-border-width);
 }
 
 #site-footer {
+  /*
+   * To not be affected by box-shadow
+   */
+  position: relative;
+
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
@@ -273,8 +279,9 @@ html, body {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 2;
   height: var(--collection-toolbar-height);
+  border-bottom-width: var(--collection-toolbar-border-width);
 }
 
 /*
@@ -289,7 +296,7 @@ html, body {
 .polaroid-group h1 {
   position: -webkit-sticky;
   position: sticky;
-  top: var(--collection-toolbar-height);
+  top: calc(var(--collection-toolbar-height) + var(--collection-toolbar-border-width));
   z-index: 1;
   margin: 0;
   padding-left: var(--polaroid-frame-margin);

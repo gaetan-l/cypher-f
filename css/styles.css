@@ -25,13 +25,13 @@
  * ========================================================
  */
 :root {
-  --cy-blue: #0ca5b6;
+  --cy-blue:             #0ca5b6;
   --cy-blue-translucent: #0ca5b67d;
-  --cy-grey: #777;
-  --cy-mediumgrey: #bbb;
-  --cy-lightgrey: #ddd;
-  --font-body: 'Yantra', Helvetica, sans-serif;
-  --font-titles: 'Alata', Arial, sans-serif;
+  --cy-grey:             #777;
+  --cy-mediumgrey:       #bbb;
+  --cy-lightgrey:        #ddd;
+  --font-body:           'Yantra', Helvetica, sans-serif;
+  --font-titles:         'Alata',  Arial,     sans-serif;
 }
 
 
@@ -95,9 +95,10 @@ h1 {
   user-select: none;
 }
 
-#main-panel {
-  border-left-style: solid;
-  border-left-color: var(--cy-lightgrey);
+#side-panel {
+  border-right-style: solid;
+  border-right-color: var(--cy-lightgrey);
+  box-shadow: 1px 1px 1px;
 }
 
 #site-footer {
@@ -233,6 +234,9 @@ h1 {
  */
 .collection-toolbar {
   background-color: white;
+  border-bottom-color: var(--cy-lightgrey);
+  border-bottom-style: solid;
+  box-shadow: 1px 1px 1px;
 }
 
 /*
