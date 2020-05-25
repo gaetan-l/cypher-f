@@ -42,6 +42,7 @@
 --border-thin-width:                 1px;
 --button-size:                     var(--size-6);
 --button-margin:                   var(--size-2);
+--input-height:                    var(--size-6);
 
 /* ------------- Main structure --------------------------- */
 --side-panel-width:                var(--size-50);
@@ -61,7 +62,6 @@
 --menu-link-margin-left:           var(--size-2);
 
 /* ------------- Collections ------------------------------ */
---collection-toolbar-height:       var(--size-10);
 --collection-toolbar-border-width: var(--border-thin-width);
 --polaroid-group-title-height:     var(--size-16);
 --polaroid-frame-border-width:     var(--border-thin-width);
@@ -95,9 +95,13 @@ html, body {
  * ============= 3.  GENERAL STYLES =======================
  * ========================================================
  */
- h1 {
+h1 {
   font-size: var(--font-size-medium);
  }
+
+input {
+  height: var(--input-height);
+}
 
 
 
@@ -132,7 +136,8 @@ html, body {
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
-  height: var(--site-footer-height);
+  height: calc(var(--site-footer-height) - 2 * var(--button-margin));
+  padding: var(--button-margin);
 }
 
 #site-footer p {
@@ -245,8 +250,6 @@ html, body {
    */
   justify-content: space-evenly;
   align-items: center;
-
-  padding: 0 var(--button-margin) 0 var(--button-margin);
 }
 
 .button-container.left-side {
@@ -276,11 +279,19 @@ html, body {
  *
  */
 .collection-toolbar {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+
   position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 2;
-  height: var(--collection-toolbar-height);
+
+  height: calc(var(--button-size) + 2 * var(--button-margin));
+  padding: var(--button-margin) var(--button-margin) var(--button-margin) calc(2 * var(--button-margin));
+
   border-bottom-width: var(--collection-toolbar-border-width);
 }
 
@@ -391,7 +402,7 @@ html, body {
  *
  * ------------- 9.1 Homepage -----------------------------
  */
-#home > #main-panel {
+#pge-home > #main-panel {
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;

@@ -68,11 +68,18 @@
  * later if specific work needs to be done that requires
  * more time. Body fades out on page unload.
  */
+ /*
+  * Add this class to elements that need to be faded out
+  * when the page loads to avoid "blinking" effect.
+  */
 .faded-out-onload {
   opacity: 0;
   transition: opacity 0s;
 }
 
+/*
+ * Declare all the "fadable elements" here.
+ */
 body, main, .fullscreen-container {
   opacity: 0;
   transition: var(--transition-opacity);
@@ -84,6 +91,10 @@ body, main, .fullscreen-container {
 
 h1 {
   font-family: var(--font-titles);
+}
+
+input {
+  border: 1px solid rgba(var(--color-secondary-light), 1.0);
 }
 
 
@@ -113,6 +124,10 @@ h1 {
 #site-footer p {
   text-align: center;
   font-family: var(--font-titles);
+  color: rgba(var(--color-neutral), 1.0);
+}
+
+#site-footer .button {
   color: rgba(var(--color-neutral), 1.0);
 }
 
@@ -220,7 +235,6 @@ h1 {
  * ========================================================
  */
 .button {
-  color: rgba(var(--color-neutral), 1.0);
   cursor: pointer;
 }
 
@@ -245,6 +259,10 @@ h1 {
   border-bottom-color: rgba(var(--color-secondary-light), 1.0);
   border-bottom-style: solid;
   box-shadow: 1px 1px 1px;
+}
+
+.collection-toolbar .button {
+  color: rgba(var(--color-primary), 1.0);;
 }
 
 /*
@@ -316,6 +334,6 @@ h1 {
  *
  * ------------- 9.1 Homepage -----------------------------
  */
-#home > #main-panel {
+#pge-home > #main-panel {
   background-image: url('../images/background.jpg');
 }

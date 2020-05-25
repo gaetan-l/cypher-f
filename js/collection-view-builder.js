@@ -106,6 +106,27 @@ export default class CollectionViewBuilder {
 
     switch (displayMode) {
       case CollectionViewBuilder.GALLERY():
+        var input = document.createElement(`input`);
+        toolbar.appendChild(input);
+
+        var toolbarButtonContainer = document.createElement(`div`);
+        toolbarButtonContainer.classList.add(`button-container`);
+        toolbarButtonContainer.classList.add(`right-side`);
+
+        var dummy1 = document.createElement(`i`);
+        dummy1.classList.add(`material-icons`);
+        dummy1.classList.add(`button`);
+        dummy1.innerHTML = `change_history`;
+
+        var dummy2 = document.createElement(`i`);
+        dummy2.classList.add(`material-icons`);
+        dummy2.classList.add(`button`);
+        dummy2.innerHTML = `favorite_border`;
+
+        toolbarButtonContainer.appendChild(dummy1);
+        toolbarButtonContainer.appendChild(dummy2);
+
+        toolbar.appendChild(toolbarButtonContainer);
         break;
 
       case CollectionViewBuilder.DETAILS():
