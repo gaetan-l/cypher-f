@@ -6,6 +6,7 @@ import TextUtil from "/js/text-util.js";
  * Utility class for page operations.
  */
 export default class PageUtil {
+  static IGNORE_NOT_FOUND_WARNING() {return true;}
   static TEMPLATE_PATH() {return `/templates`;}
 
   /**
@@ -14,12 +15,18 @@ export default class PageUtil {
    * First removes faded-out-onload class then adds
    * faded-in class. Transition effects defined in css.
    *
-   * @param  HTMLElement  elemOrSel  the HTMLElement to
-   *          or                     fade in or the selec-
-   *         string                  tor used to access it
+   * @param  HTMLElement  elemOrSel      the HTMLElement to
+   *          or                         fade in or the se-
+   *         string                      lector used to
+   *                                     access it
+   * @param  boolean      ignoreWarning  indicates the user
+   *                                     doesn't want to be
+   *                                     alerted if the
+   *                                     item is not found
    */
-  static fadeIn(elemOrSel) {
-    var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
+  static fadeIn(elemOrSel, ignoreWarning = false) {
+    console.log("fade-in" + elemOrSel);
+    var uniqueElement = PageUtil.getUniqueElement(elemOrSel, ignoreWarning);
     if (uniqueElement) {
       uniqueElement.classList.remove(`faded-out-onload`);
       uniqueElement.classList.add(`faded-in`);
@@ -32,12 +39,18 @@ export default class PageUtil {
    * Removes faded-in class. Transition effects to be de-
    * fined in css.
    *
-   * @param  HTMLElement  elemOrSel  the HTMLElement to
-   *          or                     fade out or the selec-
-   *         string                  tor used to access it
+   * @param  HTMLElement  elemOrSel      the HTMLElement to
+   *          or                         fade out or the
+   *         string                      selector used to
+   *                                     access it
+   * @param  boolean      ignoreWarning  indicates the user
+   *                                     doesn't want to be
+   *                                     alerted if the
+   *                                     item is not found
    */
-  static fadeOut(elemOrSel) {
-    var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
+  static fadeOut(elemOrSel, ignoreWarning = false) {
+    console.log("fade-out " + elemOrSel);
+    var uniqueElement = PageUtil.getUniqueElement(elemOrSel, ignoreWarning);
     if (uniqueElement) {
       uniqueElement.classList.remove(`faded-in`);
     }
@@ -52,20 +65,25 @@ export default class PageUtil {
    * turns it, otherwise, if there is 0 or more than 1 ele-
    * ment, or if selector is another type, returns null.
    *
-   * @param   HTMLElement  elemOrSel  the HTMLElement to
-   *           or                     access or the selec-
-   *          string                  tor used to access it
-   * @return  HTMLElement             the unique
-   *                                  HTMLElement, or null
+   * @param  HTMLElement  elemOrSel      the unique
+   *          or                         HTMLElement or the
+   *         string                      selector used to
+   *                                     access it
+   * @param  boolean      ignoreWarning  indicates the user
+   *                                     doesn't want to be
+   *                                     alerted if the
+   *                                     item is not found
    */
-  static getUniqueElement(elemOrSel) {
+  static getUniqueElement(elemOrSel, ignoreWarning = false) {
     if (typeof elemOrSel === 'HTMLElement' || elemOrSel instanceof HTMLElement) {
       return elemOrSel;
     }
     else if (typeof elemOrSel === 'string' || elemOrSel instanceof String) {
       var elements = document.querySelectorAll(elemOrSel);
       if (!(elements.length == 1)) {
-        console.warn(`Tried to use PageUtil.getUniqueElement(elemOrSel) with selector "${elemOrSel}", found ${elements.length} element(s), should be 1.`);
+        if (!ignoreWarning) {
+          console.warn(`Tried to use PageUtil.getUniqueElement(elemOrSel) with selector "${elemOrSel}", found ${elements.length} element(s), should be 1.`);
+        }
         return null;
       }
       else {

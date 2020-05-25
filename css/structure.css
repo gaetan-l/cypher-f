@@ -8,7 +8,7 @@
  * 4.  MAIN STRUCTURE
  * 5.  SITE TITLE DIV
  * 6.  MENU
- * 7.  BUTTONS
+ * 7.  BUTTONS AND NOTIFICATIONS
  * 8.  COLLECTIONS
  * 8.1 Picture gallery
  * 8.2 Fullscreen view
@@ -42,6 +42,7 @@
 --border-thin-width:                 1px;
 --button-size:                     var(--size-6);
 --button-margin:                   var(--size-2);
+--notification-size:               var(--size-6);
 --input-height:                    var(--size-6);
 
 /* ------------- Main structure --------------------------- */
@@ -241,7 +242,7 @@ input {
 
 /*
  * ========================================================
- * ============= 7.  BUTTONS ==============================
+ * ============= 7.  BUTTONS AND NOTIFICATIONS ============
  * ========================================================
  */
  .button-container {
@@ -272,6 +273,17 @@ input {
 .button:hover {
   font-size: calc(var(--button-size) + 2 * var(--button-margin));
   margin: 0;
+}
+
+.notification {
+  position: absolute;
+
+  /*
+   * Add shift in javascript.
+   */
+  right: 12px;
+  bottom: var(--button-margin);
+  font-size: var(--notification-size);
 }
 
 

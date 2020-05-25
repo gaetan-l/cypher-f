@@ -117,7 +117,7 @@ export default class CollectionViewBuilder {
    *                                   null
    */
   async asyncRedraw(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
-    PageUtil.fadeOut(`#collection-content`);
+    PageUtil.fadeOut(`#collection-content`, PageUtil.IGNORE_NOT_FOUND_WARNING());
     var content = document.getElementById(`collection-content`);
     if (content) {
       await PageUtil.asyncWaitForIt(250);
@@ -148,6 +148,7 @@ export default class CollectionViewBuilder {
         toolbar.appendChild(input);
 
         var toolbarButtonContainer = document.createElement(`div`);
+        toolbarButtonContainer.setAttribute(`id`, `collection-toolbar-button-container`);
         toolbarButtonContainer.classList.add(`button-container`);
         toolbarButtonContainer.classList.add(`right-side`);
 
@@ -271,6 +272,17 @@ export default class CollectionViewBuilder {
    *                             null
    */
   async _asyncSort(order, grouping) {
+    /*
+     * Hiding the sorting notification if it exists.
+     */
+    var notification = document.getElementById(`notification-sort`);
+    console.log("notification");
+    console.log(notification);
+    if (notification) {
+      PageUtil.fadeOut(notification);
+      await PageUtil.asyncWaitForIt(250);
+    }
+
     await this._asyncGetCollection();
 
     /*
@@ -284,6 +296,7 @@ export default class CollectionViewBuilder {
         var translatedGroup = ``;
         switch (grouping) {
           case CollectionViewBuilder.DATE():
+            translatedGroup = item[grouping].substring(0, 4);
             break;
 
           case null:
@@ -326,6 +339,44 @@ export default class CollectionViewBuilder {
       var dateY = Date.parse(jsonY.date);
       return (order === CollectionViewBuilder.DESC() ? dateY - dateX : dateX - dateY);
     });
+
+    /*
+     * Creating the sorting notification icon if it doesn't
+     * exist already.
+     */
+    if (!notification) {
+      notification = document.createElement(`i`);
+      notification.setAttribute(`id`, `notification-sort`);
+      notification.classList.add(`material-icons`);
+      notification.classList.add(`notification`);
+      notification.classList.add(`fadable`);
+      notification.innerHTML = order === CollectionViewBuilder.DESC() ? `arrow_drop_up` : `arrow_drop_down`;
+      document.getElementById(`collection-toolbar-button-container`).appendChild(notification);
+
+    }
+    /*
+     * Calculate where to place the notification, get the
+     * notification offset and the buttons margin and size
+     * and add as many times button size + 2 * button mar-
+     * gin as needed.
+     * btn-menu is always present so we can use it to get
+     * buttons style.
+     */
+    var buttonStyle = window.getComputedStyle(document.getElementById(`btn-menu`), null);
+    var buttonMargin = parseInt(buttonStyle.getPropertyValue(`margin`).replace(/px/,""));
+    var buttonSize = parseInt(buttonStyle.getPropertyValue(`font-size`).replace(/px/,""));
+    var offset = buttonMargin;
+    var groupNumber = this._availableGroupings.indexOf(grouping);
+    var notificationPosition = this._availableGroupings.length - groupNumber - 1;
+    var right = offset + notificationPosition * (buttonSize + 2 * buttonMargin);
+    notification.style.right = `${right}px`;
+
+
+    /*
+     * Finally, when all the sorting treatment has been
+     * done and the icon created, we display it.
+     */
+    PageUtil.fadeIn(notification);
   }
 
   /*
@@ -369,7 +420,7 @@ export default class CollectionViewBuilder {
          * If current picture is not part of the currently
          * open one, we create a new one.
          */
-        var currGroup = picture[grouping];
+        var currGroup = picture[`translatedGroup`];
         if (currGroup !== openGroup) {
           /*
            * Prevents from appending empty group created by
@@ -385,7 +436,6 @@ export default class CollectionViewBuilder {
           group.classList.add(`polaroid-group`);
 
           var title = document.createElement(`h1`);
-          title.setAttribute(`data-i18n`, `groupings.${grouping}-${currGroup}`);
           title.innerHTML = currGroup;
           group.appendChild(title);
 
