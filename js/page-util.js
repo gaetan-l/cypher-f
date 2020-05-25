@@ -197,4 +197,14 @@ export default class PageUtil {
       uniqueElement.onclick = triggered;
     }
   }
+
+  /**
+   * Wait for a specified amount of time.
+   *
+   * @param  integer  timeInMs  number of ms to wait
+   */
+  static async asyncWaitForIt(timeInMs) {
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+    await delay(timeInMs);
+  }
 }

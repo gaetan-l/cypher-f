@@ -116,7 +116,11 @@ input {
 
 #main-panel {
   margin-left: calc(var(--side-panel-width) + var(--side-panel-right-border-width));
-  overflow-y: auto;
+
+  /*
+   * Always display scrollbar.
+   */
+  overflow-y: scroll;
 }
 
 #side-panel {
@@ -407,4 +411,9 @@ input {
   background-attachment: fixed;
   background-size: cover;
   background-position: calc(50% + var(--side-panel-width) / 2) calc(50% - var(--site-footer-height) / 2);
+
+  /*
+   * Otherwise picture moves.
+   */
+  overflow-y: hidden;
 }

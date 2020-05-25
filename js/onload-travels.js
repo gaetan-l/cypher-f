@@ -16,5 +16,4 @@ async function load() {
     document.getElementsByClassName(`collection-view`)[0],
     CollectionViewBuilder.DESC(),
     `country`);
-  PageUtil.fadeIn(`main`);
 }

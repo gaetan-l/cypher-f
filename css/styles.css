@@ -78,9 +78,10 @@
 }
 
 /*
- * Declare all the "fadable elements" here.
+ * Declare all the "fadable elements" here. Will be faded-
+ * out by default.
  */
-body, main, .fullscreen-container {
+body, main, .fadable {
   opacity: 0;
   transition: var(--transition-opacity);
 }
@@ -104,7 +105,7 @@ input {
  * ============= 4.  MAIN STRUCTURE =======================
  * ========================================================
  */
-#side-panel, #site-footer {
+#side-panel, #site-footer, .collection-toolbar {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;

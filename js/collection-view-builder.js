@@ -59,7 +59,6 @@ export default class CollectionViewBuilder {
     if (this._collection === null) {
       var response = await fetch(`/api/collection/get-collection.php?name=${this._name}`, {method: `GET`});
       var json = await response.json();
-      console.log(json);
       this._collection = json.content;
       this._availableGroupings = json.extra.availableGroupings;
     }
@@ -93,8 +92,40 @@ export default class CollectionViewBuilder {
     await this._asyncGetCollection();
 
     await this.asyncDrawToolbarView(displayMode, elemOrSel);
-    await this.asyncDrawCollectionView(displayMode, elemOrSel, order, grouping);
+    await this.asyncRedraw(displayMode, elemOrSel, order, grouping);
     await this._asyncDrawFullscreenView();
+    PageUtil.fadeIn(`#main-panel`);
+  }
+
+  /**
+   * Redraws the collection view.
+   *
+   * @param  string       displayMode  the type of view
+   *                                   that is to be drawn
+   * @param  HTMLElement  elemOrSel    the HTMLElement to
+   *          or                       access or the selec-
+   *         string                    tor used to access
+   *                                   it
+   * @param  string       order        the order of the
+   *                                   items, can be `ASC`
+   *                                   or `DESC`, default:
+   *                                   `ASC`
+   * @param  string       grouping     the grouping used to
+   *                                   group the items of
+   *                                   the collection, op-
+   *                                   tional, default:
+   *                                   null
+   */
+  async asyncRedraw(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
+    PageUtil.fadeOut(`#collection-content`);
+    var content = document.getElementById(`collection-content`);
+    if (content) {
+      await PageUtil.asyncWaitForIt(250);
+      content.parentNode.removeChild(content);
+    }
+    await this.asyncDrawCollectionView(displayMode, elemOrSel, order, grouping);
+    await this._pageBuilder.translator.asyncTranslatePage();
+    PageUtil.fadeIn(`#collection-content`);
   }
 
   /**
@@ -123,14 +154,23 @@ export default class CollectionViewBuilder {
         var response = await fetch(`/json/icons.json`);
         var icons = await response.json();
 
-        console.log(icons);
-        console.log(this._availableGroupings);
+        async function redrawOnClick(selectedGrouping) {
+          await this.asyncRedraw(displayMode, elemOrSel, null, selectedGrouping);
+        }
+
+        const boundRedrawOnClick = redrawOnClick.bind(this);
         for (let i = 0 ; i < this._availableGroupings.length ; i++) {
-          var grouping = this._availableGroupings[i];
+          /*
+           * block-scoped variable with let instead of var.
+           */
+          let grouping = this._availableGroupings[i];
 
           var button = document.createElement(`i`);
+          button.setAttribute(`id`, `grouping-${grouping}`);
           button.classList.add(`material-icons`);
           button.classList.add(`button`);
+
+          PageUtil.bindOnclick(button, function() {boundRedrawOnClick(grouping);});
 
           /*
            * Retrieve grouping icon in icons.json, set it
@@ -213,7 +253,6 @@ export default class CollectionViewBuilder {
     fsView.setAttribute(`id`, `polaroid-fullscreen`);
     document.body.appendChild(fsView);
     await PageUtil.replaceElementWithTemplate(`#polaroid-fullscreen`);
-    await this._pageBuilder.translator.asyncTranslatePage();
     PageUtil.bindOnclick(`#btn-fs-close`,  function() {
       PageUtil.fadeOut(`#polaroid-fullscreen`);
     });
@@ -300,7 +339,11 @@ export default class CollectionViewBuilder {
     /*
      * Temporary container to hold the view.
      */
+    var wrapper = document.createElement(`div`);
     var view = document.createElement(`div`);
+    view.setAttribute(`id`, `collection-content`);
+    view.classList.add(`fadable`);
+    wrapper.appendChild(view);
 
     /*
      * Used to "bind" the CollexionViewBuilder without
@@ -397,7 +440,7 @@ export default class CollectionViewBuilder {
 
     view.appendChild(group);
 
-    return view;
+    return wrapper;
   }
 
   /*
