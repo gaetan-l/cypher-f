@@ -38,4 +38,16 @@ export default class TextUtil {
     var response = await fetch(escaped);
     return response.ok ? await response.text() : null;
   }
+
+  /**
+   * Returns the value of a json entry with its code.
+   *
+   * @param   string  code  the code of the entry to browse
+   * @param   json    json  the json to browse
+   * @return  text          the value of the entry
+   */
+  static getJsonValue(code, json) {
+    var keys = code.split(`.`);
+    return keys.reduce((obj, i) => obj[i], json);
+  }
 }

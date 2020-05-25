@@ -1,3 +1,5 @@
+import TextUtil from "/js/text-util.js";
+
 `use strict`
 
 /**
@@ -128,8 +130,9 @@ export default class Translator {
   async asyncGetTranslatedWord(code, lang = null) {
     lang = lang === null ? this.getCurrLang() : lang;
     var dictionary = await this._asyncGetDictionary(lang);
-    var keys = code.split(`.`);
-    var text = keys.reduce((obj, i) => obj[i], dictionary);
+    //var keys = code.split(`.`);
+    //var text = keys.reduce((obj, i) => obj[i], dictionary);
+    var text = TextUtil.getJsonValue(code, dictionary);
 
     if (text === undefined) {
       var tmp = document.createElement(`div`);

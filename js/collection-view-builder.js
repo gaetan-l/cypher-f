@@ -1,4 +1,5 @@
 import PageUtil from "/js/page-util.js";
+import TextUtil from "/js/text-util.js";
 
 `use strict`
 
@@ -58,6 +59,7 @@ export default class CollectionViewBuilder {
     if (this._collection === null) {
       var response = await fetch(`/api/collection/get-collection.php?name=${this._name}`, {method: `GET`});
       var json = await response.json();
+      console.log(json);
       this._collection = json.content;
       this._availableGroupings = json.extra.availableGroupings;
     }
@@ -85,7 +87,12 @@ export default class CollectionViewBuilder {
    *                                   null
    */
   async asyncDrawAll(displayMode, elemOrSel, order = CollectionViewBuilder.ASC(), grouping = null) {
-    this.drawToolbarView(displayMode, elemOrSel);
+    /*
+     * Initializes the collection before anything is done.
+     */
+    await this._asyncGetCollection();
+
+    await this.asyncDrawToolbarView(displayMode, elemOrSel);
     await this.asyncDrawCollectionView(displayMode, elemOrSel, order, grouping);
     await this._asyncDrawFullscreenView();
   }
@@ -100,7 +107,7 @@ export default class CollectionViewBuilder {
    *         string                    tor used to access
    *                                   it
    */
-  drawToolbarView(displayMode, elemOrSel) {
+  async asyncDrawToolbarView(displayMode, elemOrSel) {
     var toolbar = document.createElement(`div`);
     toolbar.classList.add(`collection-toolbar`);
 
@@ -113,18 +120,30 @@ export default class CollectionViewBuilder {
         toolbarButtonContainer.classList.add(`button-container`);
         toolbarButtonContainer.classList.add(`right-side`);
 
-        var dummy1 = document.createElement(`i`);
-        dummy1.classList.add(`material-icons`);
-        dummy1.classList.add(`button`);
-        dummy1.innerHTML = `change_history`;
+        var response = await fetch(`/json/icons.json`);
+        var icons = await response.json();
 
-        var dummy2 = document.createElement(`i`);
-        dummy2.classList.add(`material-icons`);
-        dummy2.classList.add(`button`);
-        dummy2.innerHTML = `favorite_border`;
+        console.log(icons);
+        console.log(this._availableGroupings);
+        for (let i = 0 ; i < this._availableGroupings.length ; i++) {
+          var grouping = this._availableGroupings[i];
 
-        toolbarButtonContainer.appendChild(dummy1);
-        toolbarButtonContainer.appendChild(dummy2);
+          var button = document.createElement(`i`);
+          button.classList.add(`material-icons`);
+          button.classList.add(`button`);
+
+          /*
+           * Retrieve grouping icon in icons.json, set it
+           * to default icon if not found.
+           */
+          var iconName = TextUtil.getJsonValue(grouping, icons);
+          if (!iconName) {
+            iconName = TextUtil.getJsonValue(`default`, icons);
+          }
+          button.innerHTML = iconName;
+
+          toolbarButtonContainer.appendChild(button);
+        }
 
         toolbar.appendChild(toolbarButtonContainer);
         break;
