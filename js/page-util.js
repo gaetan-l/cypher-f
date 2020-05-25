@@ -11,8 +11,8 @@ export default class PageUtil {
   /**
    * Fades element in.
    *
-   * First removes fade-out class then adds fade-in class.
-   * Transition effects to be defined in css.
+   * First removes faded-out-onload class then adds
+   * faded-in class. Transition effects defined in css.
    *
    * @param  HTMLElement  elemOrSel  the HTMLElement to
    *          or                     fade in or the selec-
@@ -21,16 +21,16 @@ export default class PageUtil {
   static fadeIn(elemOrSel) {
     var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
     if (uniqueElement) {
-      uniqueElement.classList.remove(`fade-out`);
-      uniqueElement.classList.add(`fade-in`);
+      uniqueElement.classList.remove(`faded-out-onload`);
+      uniqueElement.classList.add(`faded-in`);
     }
   }
 
   /**
    * Fades element out.
    *
-   * First removes fade-in class then adds fade-out class.
-   * Transition effects to be defined in css.
+   * Removes faded-in class. Transition effects to be de-
+   * fined in css.
    *
    * @param  HTMLElement  elemOrSel  the HTMLElement to
    *          or                     fade out or the selec-
@@ -39,8 +39,7 @@ export default class PageUtil {
   static fadeOut(elemOrSel) {
     var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
     if (uniqueElement) {
-      uniqueElement.classList.remove(`fade-in`);
-      uniqueElement.classList.add(`fade-out`);
+      uniqueElement.classList.remove(`faded-in`);
     }
   }
 

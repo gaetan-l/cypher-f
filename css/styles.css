@@ -37,6 +37,8 @@
 
   --font-body:             'Yantra', Helvetica, sans-serif;
   --font-titles:           'Alata',  Arial,     sans-serif;
+
+  --transition-opacity:    opacity 0.25s ease-in-out;
 }
 
 
@@ -66,19 +68,17 @@
  * later if specific work needs to be done that requires
  * more time. Body fades out on page unload.
  */
-body, main {
+.faded-out-onload {
   opacity: 0;
+  transition: opacity 0s;
 }
 
-.fade-in, .fade-out {
-  transition: opacity 0.25s ease-in-out;
+body, main, .fullscreen-container {
+  opacity: 0;
+  transition: var(--transition-opacity);
 }
 
-main.fade-in, main.fade-out, {
-  transition: opacity 2.0s ease-in-out;
-}
-
-.fade-in {
+.faded-in {
   opacity: 1;
 }
 
@@ -226,6 +226,9 @@ h1 {
 
 .button,
 .button:hover {
+  /*
+   * Changes to size and margins are in structure.css.
+   */
   transition: all 0.1s ease-in-out;
 }
 
@@ -267,7 +270,6 @@ h1 {
 
 .polaroid-frame:hover {
   box-shadow: 2px 2px 2px;
-  transition: box-shadow 0.25s ease-in-out;
 }
 
 .polaroid-shadow {
@@ -286,20 +288,19 @@ h1 {
 /*
  * ------------- 8.2 Fullscreen view ----------------------
  */
-#fullscreen-container {
+ /*
+  * Height trick (height must be applied after fade-out
+  * finishes)
+  */
+.fullscreen-container {
   background-color: black;
-  opacity: 0;
   height: 0;
+  transition: var(--transition-opacity), height 0s 0.25s;
 }
 
-#fullscreen-container.fade-out {
-  transition: opacity 0.25s ease-in-out, height 0s 0.25s;
-}
-
-#fullscreen-container.fade-in {
-  opacity: 1;
+.fullscreen-container.faded-in {
   height: 100%;
-  transition: opacity 0.25s ease-in-out;
+  transition: var(--transition-opacity);
 }
 
 .fullscreen-info {

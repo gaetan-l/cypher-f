@@ -170,12 +170,12 @@ export default class CollectionViewBuilder {
    */
   async _asyncDrawFullscreenView() {
     var fsView = document.createElement(`div`);
-    fsView.setAttribute(`id`, `fullscreen-container`);
+    fsView.setAttribute(`id`, `polaroid-fullscreen`);
     document.body.appendChild(fsView);
-    await PageUtil.replaceElementWithTemplate(`#fullscreen-container`);
+    await PageUtil.replaceElementWithTemplate(`#polaroid-fullscreen`);
     await this._pageBuilder.translator.asyncTranslatePage();
     PageUtil.bindOnclick(`#btn-fs-close`,  function() {
-      PageUtil.fadeOut(`#fullscreen-container`);
+      PageUtil.fadeOut(`#polaroid-fullscreen`);
     });
   }
 
@@ -323,7 +323,7 @@ export default class CollectionViewBuilder {
         var clicked = this.getElementsByTagName(`img`)[0];
         var index = parseInt(clicked.getAttribute(`index`));
         cvb._asyncDisplayFullscreenPicture(index, cvb);
-        PageUtil.fadeIn(`#fullscreen-container`);
+        PageUtil.fadeIn(`#polaroid-fullscreen`);
       };
 
       /*

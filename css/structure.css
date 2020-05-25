@@ -347,7 +347,7 @@ html, body {
 /*
  * ------------- 8.2 Fullscreen view ----------------------
  */
- #fullscreen-container {
+ .fullscreen-container {
   display: flex;
   z-index: 3;
   position: absolute;
