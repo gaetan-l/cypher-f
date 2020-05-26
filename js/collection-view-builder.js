@@ -167,7 +167,7 @@ export default class CollectionViewBuilder {
           if (selectedGrouping === this._currentGrouping) {
             selectedOrder = this._currentOrder === CollectionViewBuilder.ASC() ? CollectionViewBuilder.DESC() : CollectionViewBuilder.ASC();
           }
-          console.log(selectedOrder);
+
           await this.asyncRedraw(displayMode, elemOrSel, selectedOrder, selectedGrouping);
         }
 
@@ -179,7 +179,7 @@ export default class CollectionViewBuilder {
           let grouping = this._availableGroupings[i];
 
           var button = document.createElement(`i`);
-          button.setAttribute(`id`, `grouping-${grouping}`);
+          button.setAttribute(`id`, `btn-grouping-${grouping}`);
           button.classList.add(`material-icons`);
           button.classList.add(`button`);
 
@@ -195,7 +195,10 @@ export default class CollectionViewBuilder {
           }
           button.innerHTML = iconName;
 
-          toolbarButtonContainer.appendChild(button);
+          var iconNotifContainer = document.createElement(`div`);
+          iconNotifContainer.classList.add(`icon-notif-container`)
+          iconNotifContainer.appendChild(button);
+          toolbarButtonContainer.appendChild(iconNotifContainer);
         }
 
         toolbar.appendChild(toolbarButtonContainer);
@@ -360,27 +363,11 @@ export default class CollectionViewBuilder {
       notification.classList.add(`material-icons`);
       notification.classList.add(`notification`);
       notification.classList.add(`fadable`);
-      document.getElementById(`collection-toolbar-button-container`).appendChild(notification);
 
     }
-    /*
-     * Calculate where to place the notification, get the
-     * notification offset and the buttons margin and size
-     * and add as many times button size + 2 * button mar-
-     * gin as needed.
-     * btn-menu is always present so we can use it to get
-     * buttons style.
-     */
-    var buttonStyle = window.getComputedStyle(document.getElementById(`btn-menu`), null);
-    var buttonMargin = parseInt(buttonStyle.getPropertyValue(`margin`).replace(/px/,""));
-    var buttonSize = parseInt(buttonStyle.getPropertyValue(`font-size`).replace(/px/,""));
-    var offset = buttonMargin;
-    var groupNumber = this._availableGroupings.indexOf(grouping);
-    var notificationPosition = this._availableGroupings.length - groupNumber - 1;
-    var right = offset + notificationPosition * (buttonSize + 2 * buttonMargin);
-    notification.style.right = `${right}px`;
-    notification.innerHTML = order === CollectionViewBuilder.DESC() ? `arrow_drop_up` : `arrow_drop_down`;
 
+    notification.innerHTML = order === CollectionViewBuilder.DESC() ? `arrow_drop_up` : `arrow_drop_down`;
+    document.getElementById(`btn-grouping-${grouping}`).parentNode.appendChild(notification);
 
     /*
      * Finally, when all the sorting treatment has been

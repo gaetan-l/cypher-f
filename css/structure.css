@@ -275,14 +275,14 @@ input {
   margin: 0;
 }
 
+.icon-notif-container {
+  position: relative;
+}
+
 .notification {
   position: absolute;
-
-  /*
-   * Add shift in javascript.
-   */
-  right: 12px;
-  bottom: var(--button-margin);
+  right: 0;
+  bottom: 0;
   font-size: var(--notification-size);
 }
 
