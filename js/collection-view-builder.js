@@ -331,26 +331,22 @@ export default class CollectionViewBuilder {
       var jsonX = JSON.parse(x);
       var jsonY = JSON.parse(y);
 
-      /*
-       * Groupings are always sorted alphabetically no mat-
-       * ter the order, except for date...
-       */
-      if (!((grouping === null) || (grouping === CollectionViewBuilder.DATE()))) {
+      if (!((grouping === null) || (grouping === `date`))) {
         var groupX = jsonX[`translatedGroup`];
         var groupY = jsonY[`translatedGroup`];
 
         if (!(groupX === groupY)) {
-          return groupX.localeCompare(groupY);
+          return (order === CollectionViewBuilder.DESC() ? groupY.localeCompare(groupX) : groupX.localeCompare(groupY));
         }
       }
 
       /*
-       * ...then items are sorted chronologically, depen-
-       * ding on the order.
+       * After grouping, items are sorted chronologically,
+       * depending on the order.
        */
       var dateX = Date.parse(jsonX.date);
       var dateY = Date.parse(jsonY.date);
-      return (order === CollectionViewBuilder.DESC() ? dateY - dateX : dateX - dateY);
+      return ((grouping === null) || (grouping === `date`))   ?   (order === CollectionViewBuilder.DESC() ? dateY - dateX : dateX - dateY)   :   dateX - dateY;
     });
 
     /*
