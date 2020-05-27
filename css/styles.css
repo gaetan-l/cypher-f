@@ -25,35 +25,43 @@
  * ========================================================
  */
 :root {
-  --primary-r:              15;
-  --primary-g:             206;
-  --primary-b:             227;
+  --primary-r:               15;
+  --primary-g:              206;
+  --primary-b:              227;
 
-  --secondary-r:           244;
-  --secondary-g:            22;
-  --secondary-b:            67;
+  --secondary-r:            244;
+  --secondary-g:             22;
+  --secondary-b:             67;
 
-  --tertiary-r:            221;
-  --tertiary-g:            221;
-  --tertiary-b:            221;
+  --tertiary-r:              22;
+  --tertiary-g:             226;
+  --tertiary-b:             0;
 
-  --color-primary-light:   calc(1.0 * var(--primary-r)), calc(1.0 * var(--primary-g)), calc(1.0 * var(--primary-b));
-  --color-primary:         calc(0.8 * var(--primary-r)), calc(0.8 * var(--primary-g)), calc(0.8 * var(--primary-b));
-  --color-primary-dark:    calc(0.5 * var(--primary-r)), calc(0.5 * var(--primary-g)), calc(0.5 * var(--primary-b));
+  --quaternary-r:           221;
+  --quaternary-g:           221;
+  --quaternary-b:           221;
 
-  --color-secondary-light:   calc(1.0 * var(--secondary-r)), calc(1.0 * var(--secondary-g)), calc(1.0 * var(--secondary-b));
-  --color-secondary:         calc(0.8 * var(--secondary-r)), calc(0.8 * var(--secondary-g)), calc(0.8 * var(--secondary-b));
-  --color-secondary-dark:    calc(0.5 * var(--secondary-r)), calc(0.5 * var(--secondary-g)), calc(0.5 * var(--secondary-b));
+  --color-primary-light:    calc(1.0 * var(--primary-r)), calc(1.0 * var(--primary-g)), calc(1.0 * var(--primary-b));
+  --color-primary:          calc(0.8 * var(--primary-r)), calc(0.8 * var(--primary-g)), calc(0.8 * var(--primary-b));
+  --color-primary-dark:     calc(0.5 * var(--primary-r)), calc(0.5 * var(--primary-g)), calc(0.5 * var(--primary-b));
 
-  --color-tertiary-light:  calc(1.0 * var(--tertiary-r)), calc(1.0 * var(--tertiary-g)), calc(1.0 * var(--tertiary-b));
-  --color-tertiary:        calc(0.8 * var(--tertiary-r)), calc(0.8 * var(--tertiary-g)), calc(0.8 * var(--tertiary-b));
-  --color-tertiary-dark:   calc(0.5 * var(--tertiary-r)), calc(0.5 * var(--tertiary-g)), calc(0.5 * var(--tertiary-b));
-  --color-neutral:         255, 255, 255;
+  --color-secondary-light:  calc(1.0 * var(--secondary-r)), calc(1.0 * var(--secondary-g)), calc(1.0 * var(--secondary-b));
+  --color-secondary:        calc(0.8 * var(--secondary-r)), calc(0.8 * var(--secondary-g)), calc(0.8 * var(--secondary-b));
+  --color-secondary-dark:   calc(0.5 * var(--secondary-r)), calc(0.5 * var(--secondary-g)), calc(0.5 * var(--secondary-b));
 
-  --font-body:             'Yantra', Helvetica, sans-serif;
-  --font-titles:           'Alata',  Arial,     sans-serif;
+  --color-tertiary-light:   calc(1.0 * var(--tertiary-r)), calc(1.0 * var(--tertiary-g)), calc(1.0 * var(--tertiary-b));
+  --color-tertiary:         calc(0.8 * var(--tertiary-r)), calc(0.8 * var(--tertiary-g)), calc(0.8 * var(--tertiary-b));
+  --color-tertiary-dark:    calc(0.5 * var(--tertiary-r)), calc(0.5 * var(--tertiary-g)), calc(0.5 * var(--tertiary-b));
 
-  --transition-opacity:    opacity 0.25s ease-in-out;
+  --color-quaternary-light: calc(1.0 * var(--quaternary-r)), calc(1.0 * var(--quaternary-g)), calc(1.0 * var(--quaternary-b));
+  --color-quaternary:       calc(0.8 * var(--quaternary-r)), calc(0.8 * var(--quaternary-g)), calc(0.8 * var(--quaternary-b));
+  --color-quaternary-dark:  calc(0.5 * var(--quaternary-r)), calc(0.5 * var(--quaternary-g)), calc(0.5 * var(--quaternary-b));
+  --color-neutral:          255, 255, 255;
+
+  --font-body:              'Yantra', Helvetica, sans-serif;
+  --font-titles:            'Alata',  Arial,     sans-serif;
+
+  --transition-opacity:     opacity 0.25s ease-in-out;
 }
 
 
@@ -66,7 +74,7 @@
 * {
   font-family: var(--font-body);
   font-weight: normal;
-  color: rgba(var(--color-tertiary-dark), 1.0);
+  color: rgba(var(--color-quaternary-dark), 1.0);
 }
 
 
@@ -110,7 +118,7 @@ h1 {
 }
 
 input {
-  border: 1px solid rgba(var(--color-tertiary-light), 1.0);
+  border: 1px solid rgba(var(--color-quaternary-light), 1.0);
 }
 
 
@@ -129,7 +137,7 @@ input {
 
 #side-panel {
   border-right-style: solid;
-  border-right-color: rgba(var(--color-tertiary-light), 1.0);
+  border-right-color: rgba(var(--color-quaternary-light), 1.0);
   box-shadow: 1px 1px 1px;
 }
 
@@ -157,7 +165,7 @@ input {
 #site-title-normal {
   text-align: center;
   border-bottom-style: solid;
-  border-bottom-color: rgba(var(--color-tertiary-light), 1.0);
+  border-bottom-color: rgba(var(--color-quaternary-light), 1.0);
   font-family: 'Alata', Arial, sans-serif;
   transition: color 0.25s ease-in-out;
 }
@@ -176,7 +184,7 @@ input {
 }
 
 #site-title:hover > #site-title-shadow {
-  color: rgba(var(--color-tertiary-dark), 1.0);
+  color: rgba(var(--color-quaternary-dark), 1.0);
   transition: color 0.25s ease-in-out;
 }
 
@@ -205,7 +213,7 @@ input {
   border-left-style: solid;
   border-left-color: transparent;
   border-bottom-style: solid;
-  border-bottom-color: rgba(var(--color-tertiary-light), 1.0);
+  border-bottom-color: rgba(var(--color-quaternary-light), 1.0);
 }
 
 .menu-item * {
@@ -233,7 +241,7 @@ input {
 }
 
 .menu-item:not(.active):hover {
-  background-color: rgba(var(--color-tertiary), 1.0);
+  background-color: rgba(var(--color-quaternary), 1.0);
   border-left-color: rgba(var(--color-primary), 1.0);
   transition: all 0.25s ease-in-out;
 }
@@ -270,6 +278,16 @@ input {
   color: rgba(var(--color-secondary), 1.0);
 }
 
+@supports (-webkit-text-stroke: 2px white) {
+  .notification {
+    -webkit-text-stroke: 2px white;
+  }
+}
+
+#notification-sort-secondary {
+  color: rgba(var(--color-tertiary), 1.0);
+}
+
 
 
 /*
@@ -280,7 +298,7 @@ input {
  */
 .collection-toolbar {
   background-color: rgba(var(--color-neutral), 1.0);
-  border-bottom-color: rgba(var(--color-tertiary-light), 1.0);
+  border-bottom-color: rgba(var(--color-quaternary-light), 1.0);
   border-bottom-style: solid;
   box-shadow: 1px 1px 1px;
 }
@@ -304,7 +322,7 @@ input {
 .polaroid-frame {
   background-color: rgba(var(--color-neutral), 1.0);
   border-style: solid;
-  border-color: rgba(var(--color-tertiary-light), 1.0);
+  border-color: rgba(var(--color-quaternary-light), 1.0);
   box-shadow: 6px 6px 6px;
   transition: box-shadow 0.25s ease-in-out;
   cursor: pointer;

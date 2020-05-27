@@ -207,10 +207,22 @@ export default class PageUtil {
    *                                    ment's onclick
    *                                    event
    */
-  static bindOnclick(elemOrSel, triggered) {
+  static bindOnClick(elemOrSel, triggered) {
     var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
     if (uniqueElement) {
       uniqueElement.onclick = triggered;
+    }
+  }
+
+  // TODO: doc
+  static bindOnRightClick(elemOrSel, triggered) {
+    var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
+    if (uniqueElement) {
+      uniqueElement.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        //TODO: params ?
+        triggered();
+      });
     }
   }
 

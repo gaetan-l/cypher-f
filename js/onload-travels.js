@@ -11,9 +11,5 @@ load();
 
 async function load() {
   await pageBuilder.buildPage();
-  await cvBuilder.asyncDrawAll(
-    CollectionViewBuilder.GALLERY(),
-    document.getElementsByClassName(`collection-view`)[0],
-    CollectionViewBuilder.DESC(),
-    `country`);
+  await cvBuilder.asyncDrawAll(CollectionViewBuilder.GALLERY(), document.getElementsByClassName(`collection-view`)[0]);
 }
