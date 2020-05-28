@@ -1,6 +1,6 @@
 import PageBuilder           from "/js/page-builder.js";
 import PageUtil              from "/js/page-util.js";
-import CollectionViewBuilder from "/js/collection-view-builder.js";
+import CollectionViewBuilder from "/js/coll-view-builder.js";
 
 `use strict`
 

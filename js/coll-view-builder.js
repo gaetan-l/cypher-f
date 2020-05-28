@@ -641,12 +641,12 @@ export default class CollectionViewBuilder {
     /*
      * Binding prev/next button functions.
      */
-    PageUtil.bindOnclick(`#btn-fs-prev`, function() {
+    PageUtil.bindOnClick(`#btn-fs-prev`, function() {
       var prevIndex = (index + collection.length - 1) % collection.length;
       cvb._asyncDisplayFullscreenPicture(prevIndex, cvb);
     });
 
-    PageUtil.bindOnclick(`#btn-fs-next`, function() {
+    PageUtil.bindOnClick(`#btn-fs-next`, function() {
       var nextIndex = (index + 1) % collection.length;
       cvb._asyncDisplayFullscreenPicture(nextIndex, cvb);
     });
