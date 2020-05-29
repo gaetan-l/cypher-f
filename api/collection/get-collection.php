@@ -31,7 +31,7 @@
         echo json_encode(array(
           "message" => "Gallery $name found.",
           "content" => $collection->toArray(),
-          "extra"   => array("availableGroupings" => $collection->getAvailableGroupings())
+          "extra"   => array("sortableAttributes" => $collection->getSortableAttributes())
         ));
       }
       else {

@@ -1,20 +1,53 @@
-`use strict`
+import Enum from "/js/enum.js";
 
-export const DISPLAY_GALLERY = `GALLERY`;
+`use strict`
 
 /**
  * Utility class for collection operations.
  */
-export default class CollUtil {
-  static GALLERY() {return `gallery`;}
-  static DETAILS() {return `deteils`;}
-  static DISPLAY_MODE() {return [CollViewBuilder.GALLERY(), CollViewBuilder.DETAILS()];}
+export class DisplayMode extends Enum {}
+DisplayMode.GALLERY = new DisplayMode(`gallery`);
+DisplayMode.DETAILS = new DisplayMode(`details`);
+DisplayMode.lock();
 
-  static ASC() {return `ASC`;}
-  static DESC() {return `DESC`;}
-  static DISPLAY_ORDER() {return [CollViewBuilder.ASC(), CollViewBuilder.DESC()];}
-  static GROUPED() {return true;}
-  static NOT_GROUPED() {return false;}
+export class Direction extends Enum {}
+Direction.ASC = new Direction(`ascending`);
+Direction.DESC = new Direction(`descending`);
+Direction.lock();
 
-  static DATE() {return `date`;}
+export class Grouping extends Enum {}
+Grouping.NOT_GROUPED = new Grouping(`not-grouped`);
+Grouping.GROUPED = new Grouping(`grouped`);
+Grouping.lock();
+
+export class Sorting extends Enum {
+  constructor(direction, grouping) {
+    super([direction, grouping]);
+    this._direction = direction;
+    this._grouping  = grouping;
+  }
+
+  get direction() {return this._direction;}
+  get grouping()  {return this._grouping;}
+
+  static from(direction, grouping) {
+    var sorting // undefined
+    let items = this.items;
+    for (let i = 0 ; i < items.length ; i++) {
+      if ((items[i].direction === direction) && (items[i].grouping === grouping)) {
+        return items[i];
+      }
+    }
+    throw `Tried to find Sorting with direction=${direction} and grouping=${grouping} but failed.`;
+  }
 }
+Sorting.ASC_NOT_GROUPED  = new Sorting(Direction.ASC,  Grouping.NOT_GROUPED);
+Sorting.ASC_GROUPED      = new Sorting(Direction.ASC,  Grouping.GROUPED);
+Sorting.DESC_NOT_GROUPED = new Sorting(Direction.DESC, Grouping.NOT_GROUPED);
+Sorting.DESC_GROUPED     = new Sorting(Direction.DESC, Grouping.GROUPED);
+Sorting.lock();
+
+export const DATE          = `date`;
+export const READABLE_DATE = `readableDate`;
+export const LOCATION      = `location`;
+export const DESCRIPTION   = `description`;

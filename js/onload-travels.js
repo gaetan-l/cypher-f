@@ -1,15 +1,16 @@
-import PageBuilder           from "/js/page-builder.js";
-import PageUtil              from "/js/page-util.js";
-import CollectionViewBuilder from "/js/coll-view-builder.js";
+import PageBuilder     from "/js/page-builder.js";
+import PageUtil        from "/js/page-util.js";
+import CollViewBuilder from "/js/coll-view-builder.js";
+import {DisplayMode}   from "/js/coll-util.js";
 
 `use strict`
 
 var pageBuilder = new PageBuilder(`Cypher`, `http://cypher-f.com`, `/templates`, `/json/menu.json`);
-var cvBuilder = new CollectionViewBuilder(`travels`, pageBuilder);
+var cvBuilder = new CollViewBuilder(`travels`, pageBuilder);
 
 load();
 
 async function load() {
   await pageBuilder.buildPage();
-  await cvBuilder.asyncDrawAll(CollectionViewBuilder.GALLERY(), document.getElementsByClassName(`collection-view`)[0]);
+  await cvBuilder.asyncDrawAll(document.getElementById(`collection-view`));
 }

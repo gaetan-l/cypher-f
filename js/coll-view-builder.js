@@ -1,5 +1,6 @@
-import PageUtil from "/js/page-util.js";
-import TextUtil from "/js/text-util.js";
+import      PageUtil from "/js/page-util.js";
+import      TextUtil from "/js/text-util.js";
+import * as CollUtil from "/js/coll-util.js";
 
 `use strict`
 
@@ -7,24 +8,9 @@ import TextUtil from "/js/text-util.js";
  * Helper class to build views able to display collections
  * (list, gallery, etc.).
  */
-export default class CollectionViewBuilder {
-  /*
-   * Class "constants"
-   */
-  static GALLERY() {return `gallery`;}
-  static DETAILS() {return `deteils`;}
-  static DISPLAY_MODE() {return [CollectionViewBuilder.GALLERY(), CollectionViewBuilder.DETAILS()];}
-
-  static ASC() {return `ASC`;}
-  static DESC() {return `DESC`;}
-  static DISPLAY_ORDER() {return [CollectionViewBuilder.ASC(), CollectionViewBuilder.DESC()];}
-  static GROUPED() {return true;}
-  static NOT_GROUPED() {return false;}
-
-  static DATE() {return `date`;}
-
+export default class CollViewBuilder {
   /**
-   * CollectionViewBuilder constructor.
+   * CollViewBuilder constructor.
    *
    * @param  string       name         name of the collec-
    *                                   tion, used to fetch
@@ -33,27 +19,49 @@ export default class CollectionViewBuilder {
    *                                   to build the page
    */
   constructor(name, pageBuilder) {
-    this._name = name;
-    this._pageBuilder = pageBuilder;
+    this._name               = name;
+    this._pageBuilder        = pageBuilder;
 
-    /*
-     * Will hold the collection once fetched via the api.
-     */
-    this._collection = null;
+    this._apiPath            = `/api/collection/get-collection.php?name=${this.name}`;
+    this._iconsJsonPath      = `/json/icons.json`;
+    this._imgPath            = `/images/${name}/`
 
-    /*
-     * An array that will contain the groupings available
-     * for this collection once fetched via the api.
-     */
-    this._availableGroupings = [];
-    this._currentOrder;
-    this._currentDirection;
-    this._currentGrouping;
+    this._redrawLocked       = false;
+
+    this._collection         = null;
+    this._sortableAttributes = [];
+    this._currDateDirection  = CollUtil.Direction.ASC;
   }
+
+  get name()                 {return this._name;}
+  get pageBuilder()          {return this._pageBuilder;}
+
+  get apiPath()              {return this._apiPath;}
+  get iconsJsonPath()        {return this._iconsJsonPath;}
+  get imgPath()              {return this._imgPath;}
+
+  get redrawLocked()         {return this._redrawLocked;}
+
+  get collection()           {return this._collection;}
+  get sortableAttributes()   {return this._sortableAttributes;}
+  get currSortingAttribute() {return this._currSortingAttribute;}
+  get currSortingDirection() {return this._currSortingDirection;}
+  get currGrouping()         {return this._currGrouping;}
+  get currDateDirection()    {return this._currDateDirection;}
+
+  _redrawLock()   {this._redrawLocked = true;}
+  _redrawUnlock() {this._redrawLocked = false;}
+
+  set collection          (collection)           {this._collection           = collection;}
+  set sortableAttributes  (sortableAttributes)   {this._sortableAttributes   = sortableAttributes;}
+  set currSortingAttribute(currSortingAttribute) {this._currSortingAttribute = currSortingAttribute;}
+  set currSortingDirection(currSortingDirection) {this._currSortingDirection = currSortingDirection;}
+  set currGrouping        (currGrouping)         {this._currGrouping         = currGrouping;}
+  set currDateDirection   (currDateDirection)    {this._currDateDirection    = currDateDirection;}
 
   /*
    * Returns the collection associated with this
-   * CollectionViewBuilder.
+   * CollViewBuilder.
    *
    * Fetches it via the api if not already loaded. 
    *
@@ -61,221 +69,194 @@ export default class CollectionViewBuilder {
    * @return  JSONObject  the collection in json format
    */
   async _asyncGetCollection() {
-    if (this._collection === null) {
-      var response = await fetch(`/api/collection/get-collection.php?name=${this._name}`, {method: `GET`});
-      var json = await response.json();
-      this._collection = json.content;
-      this._availableGroupings = json.extra.availableGroupings;
+    if (this.collection === null) {
+      const response = await fetch(this.apiPath, {method: `GET`});
+      const json = await response.json();
+      this.collection = json.content;
+      this.sortableAttributes = json.extra.sortableAttributes;
     }
 
-    return this._collection;
+    return this.collection;
   }
 
   /**
-   * Draws both the collection and the fullscreen views.
+   * Draws avery componenr necessary to display a collec-
+   * tion.
    *
-   * @param  string       displayMode  the type of view
-   *                                   that is to be drawn
-   * @param  HTMLElement  elemOrSel    the HTMLElement to
-   *          or                       access or the selec-
-   *         string                    tor used to access
-   *                                   it
-   * @param  string       order        the order of the
-   *                                   items, can be `ASC`
-   *                                   or `DESC`, default:
-   *                                   `ASC`
-   * @param  boolean     grouping      specifies if the
-   *                                   items have to be
-   *                                   grouped
-   * TODO: @params
+   * @param  HTMLElement  container         the HTMLElement
+   *          or                            in which to
+   *         string                         draw the view,
+   *                                        or selector to
+   *                                        access it
+   * @param  DisplayMode  displayMode       the type of view
+   *                                        to draw
+   * @param  string       sortingAttribute  the attribute
+   *                                        used to sort
+   *                                        the collection
+   * @param  Direction    sortingDirection  ascending or
+   *                                        descending
+   * @param  Grouping     grouping          if the items
+   *                                        have to be
+   *                                        grouped or not
+   * @param  Direction    dateDirection     the chronologi-
+   *                                        cal sorting
    */
-  async asyncDrawAll(displayMode, elemOrSel, order = CollectionViewBuilder.DATE(), direction = CollectionViewBuilder.ASC(), grouping = CollectionViewBuilder.NOT_GROUPED(), secDirection = CollectionViewBuilder.ASC()) {
-    /*
-     * Checks if order is valid or reverts to default.
-     */
-    order = this._availableGroupings.includes(order) ? order : CollectionViewBuilder.DATE();
-
-    /*
-     * When ordering by date, the "secondary" order is, in
-     * fact the actually specified "primary" order (there
-     * will just be one ordering, the date, but by defining
-     * the "secondary" direction, we avoid doing a specific
-     * treatment for collections ordered by date later).
-     */
-    secDirection = (order === CollectionViewBuilder.DATE() ? direction : secDirection);
-
+  async asyncDrawAll(container, displayMode = CollUtil.DisplayMode.GALLERY, sortingAttribute, sortingDirection, grouping, dateDirection) {
     /*
      * Initializes the collection before anything is done.
      */
     await this._asyncGetCollection();
 
-    await this.asyncDrawToolbarView(displayMode, elemOrSel);
-    await this.asyncRedraw(displayMode, elemOrSel, order, direction, grouping, secDirection);
+    await this._asyncDrawToolbarView(container, displayMode);
+    await this._asyncRedraw(container, displayMode, sortingAttribute, sortingDirection, grouping, dateDirection);
     await this._asyncDrawFullscreenView();
     PageUtil.fadeIn(`#main-panel`);
   }
 
   /**
-   * Redraws the collection view.
+   * Redraws the collection content and associated views.
    *
-   * @param  string       displayMode  the type of view
-   *                                   that is to be drawn
-   * @param  HTMLElement  elemOrSel    the HTMLElement to
-   *          or                       access or the selec-
-   *         string                    tor used to access
-   *                                   it
-   * @param  string       order        the order of the
-   *                                   items, can be `ASC`
-   *                                   or `DESC`, default:
-   *                                   `ASC`
-   * @param  string       grouping     the grouping used to
-   *                                   group the items of
-   *                                   the collection, op-
-   *                                   tional, default:
-   *                                   null
-   * TODO: @params
+   * @access  private
+   * @param   HTMLElement  container         the
+   *           or                            HTMLElement in
+   *          string                         which to draw
+   *                                         the view, or
+   *                                         selector to
+   *                                         access it
+   * @param   DisplayMode  displayMode       the type of
+   *                                         view to draw
+   * @param   string       sortingAttribute  the attribute
+   *                                         used to sort
+   *                                         the collection
+   * @param   Direction    sortingDirection  ascending or
+   *                                         descending
+   * @param   Grouping     grouping          if the items
+   *                                         have to be
+   *                                         grouped or not
+   * @param   Direction    dateDirection     the chronologi-
+   *                                         cal sorting
    */
-  async asyncRedraw(displayMode, elemOrSel, order, direction, grouping, secDirection) {
-    PageUtil.fadeOut(`#collection-content`, PageUtil.IGNORE_NOT_FOUND_WARNING());
-    var content = document.getElementById(`collection-content`);
-    if (content) {
-      await PageUtil.asyncWaitForIt(250);
-      content.parentNode.removeChild(content);
+  async _asyncRedraw(container,
+                     displayMode =      CollUtil.DisplayMode.GALLERY,
+                     sortingAttribute = CollUtil.DATE,
+                     sortingDirection = CollUtil.Direction.ASC,
+                     grouping =         CollUtil.Grouping.NOT_GROUPED,
+                     dateDirection =    CollUtil.Direction.ASC) {
+
+    if (!this.redrawLocked) {
+      this._redrawLock();
+
+      container = PageUtil.getUniqueElement(container);
+      sortingAttribute = this.sortableAttributes.includes(sortingAttribute) ? sortingAttribute : CollUtil.DATE;
+      dateDirection = (sortingAttribute === CollUtil.DATE ? sortingDirection : dateDirection);
+
+      PageUtil.fadeOut(`#collection-content`, true);
+      const content = document.getElementById(`collection-content`);
+      if (content) {
+        await PageUtil.asyncWaitForIt(250);
+        content.parentNode.removeChild(content);
+      }
+
+      await this._asyncGetCollection();
+      await this._asyncSort(sortingAttribute, sortingDirection, grouping, dateDirection);
+
+      switch (displayMode) {
+        case CollUtil.DisplayMode.GALLERY:
+          await this._asyncDrawGalleryView(container, grouping);
+          break;
+
+        case CollUtil.DisplayMode.DETAILS:
+          await this._asyncDrawDetailsView(container, grouping);
+          break;
+      }
+
+      await this._pageBuilder.translator.asyncTranslatePage();
+      PageUtil.fadeIn(`#collection-content`);
+
+      this._redrawUnlock();
     }
-    await this.asyncDrawCollectionView(displayMode, elemOrSel, order, direction, grouping, secDirection);
-    await this._pageBuilder.translator.asyncTranslatePage();
-    PageUtil.fadeIn(`#collection-content`);
   }
 
   /**
    * Draws the collection toolbar view.
    *
-   * @param  string       displayMode  the type of view
-   *                                   that is to be drawn
-   * @param  HTMLElement  elemOrSel    the HTMLElement to
-   *          or                       access or the selec-
-   *         string                    tor used to access
-   *                                   it
+   * @access  private
+   * @param   HTMLElement  container    the HTMLElement in
+   *           or                       which to draw the
+   *          string                    view, or selector
+   *                                    to access it
+   * @param   DisplayMode  displayMode  the type of view to
+   *                                    draw
    */
-  async asyncDrawToolbarView(displayMode, elemOrSel) {
-    var toolbar = document.createElement(`div`);
+  async _asyncDrawToolbarView(container, displayMode) {
+    const toolbar = document.createElement(`div`);
     toolbar.classList.add(`collection-toolbar`);
 
     switch (displayMode) {
-      case CollectionViewBuilder.GALLERY():
-        var input = document.createElement(`input`);
+      case CollUtil.DisplayMode.GALLERY:
+        const input = document.createElement(`input`);
         toolbar.appendChild(input);
 
-        var toolbarButtonContainer = document.createElement(`div`);
+        const toolbarButtonContainer = document.createElement(`div`);
         toolbarButtonContainer.setAttribute(`id`, `collection-toolbar-button-container`);
-        toolbarButtonContainer.classList.add(`button-container`);
-        toolbarButtonContainer.classList.add(`right-side`);
+        toolbarButtonContainer.classList.add(`button-container`, `right-side`);
 
-        var response = await fetch(`/json/icons.json`);
-        var icons = await response.json();
+        const response = await fetch(this.iconsJsonPath);
+        const icons = await response.json();
 
-        async function _changeOrderGroupingDirection(selectedOrder) {
-          var selectedDirection;
-          var selectedGrouping;
-          var selectedSecDirection;
+        async function changeSorting(selectedSortingAttribute) {
+          let selectedDirection;
+          let selectedGrouping;
+          let selectedDateDirection;
 
-          if (selectedOrder === this._currentOrder) {
-            /*
-             * Toggling between the different directions
-             * and grouping like this:
-             * 1st click: ascending,  no grouping
-             * 2nd click: descending, no grouping
-             * 3rd click: ascending,  with grouping
-             * 4th click: descending,  with grouping
-             * TODO: do this with an array of classes containing boolean and an order
-             */
-            switch ([this._currentDirection, this._currentGrouping].toString()) {
-              case [CollectionViewBuilder.ASC(), CollectionViewBuilder.NOT_GROUPED()].toString():
-                selectedDirection = CollectionViewBuilder.DESC();
-                selectedGrouping = CollectionViewBuilder.NOT_GROUPED();
-                break;
-
-              case [CollectionViewBuilder.DESC(), CollectionViewBuilder.NOT_GROUPED()].toString():
-                selectedDirection = CollectionViewBuilder.ASC();
-                selectedGrouping = CollectionViewBuilder.GROUPED();
-                break;
-
-              case [CollectionViewBuilder.ASC(), CollectionViewBuilder.GROUPED()].toString():
-                selectedDirection = CollectionViewBuilder.DESC();
-                selectedGrouping = CollectionViewBuilder.GROUPED();
-                break;
-
-              case [CollectionViewBuilder.DESC(), CollectionViewBuilder.GROUPED()].toString():
-                selectedDirection = CollectionViewBuilder.ASC();
-                selectedGrouping = CollectionViewBuilder.NOT_GROUPED();
-                break;
-            }
-            selectedDirection = this._currentDirection === CollectionViewBuilder.ASC() ? CollectionViewBuilder.DESC() : CollectionViewBuilder.ASC();
+          if (selectedSortingAttribute === this.currSortingAttribute) {
+            let currSorting = CollUtil.Sorting.from(this.currSortingDirection, this.currGrouping);
+            let nextSorting = currSorting.next;
+            selectedDirection = nextSorting.direction;
+            selectedGrouping  = nextSorting.grouping;
           }
           else {
-            selectedDirection = CollectionViewBuilder.ASC();
-            selectedGrouping = false;
+            selectedDirection = CollUtil.Direction.ASC;
+            selectedGrouping  = CollUtil.Grouping.NOT_GROUPED;
           }
 
-          if (selectedOrder === `date`) {
-            selectedSecDirection = selectedDirection;
+          if (selectedSortingAttribute === CollUtil.DATE) {
+            selectedDateDirection = selectedDirection;
+          }
+          else if (selectedSortingAttribute !== this.currSortingAttribute) {
+            selectedDateDirection = CollUtil.Direction.ASC;
           }
           else {
-            if (selectedOrder !== this._currentOrder) {
-              selectedSecDirection = CollectionViewBuilder.ASC();
-            }
-            else {
-              selectedSecDirection = this._currertSecDirection;
-            }
+            selectedDateDirection = this.currDateDirection;
           }
 
-          await this.asyncRedraw(displayMode, elemOrSel, selectedOrder, selectedDirection, selectedGrouping, selectedSecDirection);
+          await this._asyncRedraw(container, displayMode, selectedSortingAttribute, selectedDirection, selectedGrouping, selectedDateDirection);
         }
 
-        async function _changeSecDirection() {
-          if (this._currentOrder !== `date`) {
-            await this.asyncRedraw(displayMode, elemOrSel, this._currentOrder, this._currentDirection, this._currentGrouping, this._currertSecDirection === CollectionViewBuilder.DESC() ? CollectionViewBuilder.ASC() : CollectionViewBuilder.DESC());
+        async function changeDateDirection() {
+          if (this.currSortingAttribute !== CollUtil.DATE) {
+            await this._asyncRedraw(container, displayMode, this.currSortingAttribute, this.currSortingDirection, this.currGrouping, this.currDateDirection.next);
           }
         }
 
-        /*
-         * Bind "this" to inner functions.
-         */
-        const _boundChangeOrderGroupingDirection = _changeOrderGroupingDirection.bind(this);
-        const _boundChangeSecDirection = _changeSecDirection.bind(this);
+        const boundChangeSorting = changeSorting.bind(this);
+        const boundChangeDateDirection = changeDateDirection.bind(this);
 
-        for (let i = 0 ; i < this._availableGroupings.length ; i++) {
-          /*
-           * block-scoped variable with let instead of var.
-           */
-          let order = this._availableGroupings[i];
+        for (let i = 0 ; i < this.sortableAttributes.length ; i++) {
+          let sorting = this.sortableAttributes[i];
 
-          var button = document.createElement(`i`);
-          button.setAttribute(`id`, `btn-grouping-${order}`);
-          button.classList.add(`material-icons`);
-          button.classList.add(`button`);
+          const button = document.createElement(`i`);
+          button.setAttribute(`id`, `btn-sorting-${sorting}`);
+          button.classList.add(`material-icons`, `button`);
 
-          PageUtil.bindOnClick(button, function() {_boundChangeOrderGroupingDirection(order);});
+          PageUtil.bindOnClick(button, function() {boundChangeSorting(sorting);});
+          PageUtil.bindOnRightClick(button, sorting === CollUtil.DATE ? function() {boundChangeDateDirection();} : function() {});
 
-          /*
-           * We have to put it here instead of outside the
-           * for loop for it to be asynchronous.
-           */
-          if (order ===`date`) {
-            PageUtil.bindOnRightClick(button, function() {_boundChangeSecDirection();});
-          }
-
-          /*
-           * Retrieve grouping icon in icons.json, set it
-           * to default icon if not found.
-           */
-          var iconName = TextUtil.getJsonValue(order, icons);
-          if (!iconName) {
-            iconName = TextUtil.getJsonValue(`default`, icons);
-          }
+          let iconName = TextUtil.getJsonValue(sorting, icons);
+          if (!iconName) {iconName = TextUtil.getJsonValue(`default`, icons);}
           button.innerHTML = iconName;
 
-          var iconNotifContainer = document.createElement(`div`);
+          const iconNotifContainer = document.createElement(`div`);
           iconNotifContainer.classList.add(`icon-notif-container`)
           iconNotifContainer.appendChild(button);
           toolbarButtonContainer.appendChild(iconNotifContainer);
@@ -284,123 +265,73 @@ export default class CollectionViewBuilder {
         toolbar.appendChild(toolbarButtonContainer);
         break;
 
-      case CollectionViewBuilder.DETAILS():
+      case CollUtil.DisplayMode.DETAILS:
+        // TODO
         break;
     }
 
-    var container = PageUtil.getUniqueElement(elemOrSel);
     container.appendChild(toolbar);
   }
 
   /**
-   * Draws the view containing the collection.
+   * Draws the view containing the a fullscreen picture
+   * once clicked.
    *
-   * @param  string       displayMode  the type of view
-   *                                   that is to be drawn
-   * @param  HTMLElement  elemOrSel    the HTMLElement to
-   *          or                       access or the selec-
-   *         string                    tor used to access
-   *                                   it
-   * @param  string       order        the order of the
-   *                                   items, can be `ASC`
-   *                                   or `DESC`, default:
-   *                                   `ASC`
-   * @param  string       grouping     the grouping used to
-   *                                   group the items of
-   *                                   the collection, op-
-   *                                   tional, default:
-   *                                   null
-   * TODO: @params
-   */
-  async asyncDrawCollectionView(displayMode, elemOrSel, order, direction, grouping, secDirection) {
-    /* 
-     * Orders and groups the collection before displaying
-     * it.
-     */
-    await this._asyncSort(order, direction, grouping, secDirection);
-
-    var collectionView;
-    switch (displayMode) {
-      case CollectionViewBuilder.GALLERY():
-        collectionView = await this._asyncBuildGalleryView(grouping); // TODO grouping?
-        break;
-
-      case CollectionViewBuilder.DETAILS():
-        collectionView = await this._buildDetailsListView(grouping); // TODO grouping?
-        break;
-    }
-
-    /*
-     * Adding collection view to specified container.
-     */
-    var container = PageUtil.getUniqueElement(elemOrSel);
-    while (collectionView.firstChild) {
-      container.appendChild(collectionView.firstChild);
-    }
-  }
-
-  /**
-   * Draws the view containing the a fullscreen picture once
-   * clicked.
+   * @access  private
    */
   async _asyncDrawFullscreenView() {
-    var fsView = document.createElement(`div`);
+    const fsView = document.createElement(`div`);
     fsView.setAttribute(`id`, `polaroid-fullscreen`);
     document.body.appendChild(fsView);
     await PageUtil.replaceElementWithTemplate(`#polaroid-fullscreen`);
-    PageUtil.bindOnClick(`#btn-fs-close`,  function() {
-      PageUtil.fadeOut(`#polaroid-fullscreen`);
-    });
+    PageUtil.bindOnClick(`#btn-fs-close`,  function() {PageUtil.fadeOut(`#polaroid-fullscreen`);});
   }
 
   /**
-   * Orders and groups the collection.
+   * Sorts and groups the collection.
    *
    * @access  private
-   * @param  string    order     the order of the items,
-   *                             can be `ASC` or `DESC`,
-   *                             default: `ASC`
-   * @param   string   grouping  the grouping used to group
-   *                             the items of the collec-
-   *                             tion, optional, default:
-   *                             null
-   * TODO: @params
+   * @param   string     sortingAttribute  the attribute
+   *                                       used to sort the
+   *                                       collection
+   * @param   Direction  sortingDirection  ascending or
+   *                                       descending
+   * @param   Grouping   grouping          if the items
+   *                                       have to be grou-
+   *                                       ped or not
+   * @param   Direction  dateDirection     the chronologi-
+   *                                       cal sorting
    */
-  async _asyncSort(order, direction, grouping, secDirection) {
-    /*
-     * Hiding the sorting notifications if they exists.
-     */
-    var notifs = document.getElementsByClassName(`notification-sort`);
-    for (let i = 0 ; i < notifs.length ; i++) {
-      PageUtil.fadeOut(notifs[i]);
-    }
+  async _asyncSort(sortingAttribute, sortingDirection, grouping, dateDirection) {
+    const notifs = document.getElementsByClassName(`notification-sort`);
+    Array.from(notifs).forEach((element) => {
+      PageUtil.fadeOut(element);
+    });
 
     if (notifs.length > 0) {
       /*
-       * TO DO: find a better way to wait for the notifica-
+       * TODO: find a better way to wait for the notifica-
        * tion to display without blocking all the process.
        */
       await PageUtil.asyncWaitForIt(250);
     }
 
-    await this._asyncGetCollection();
-
     /*
      * Translates the groups so that they are ordered pro-
      * perly.
      */
-    async function _translateGroups(order, grouping) {
-      var length = (await this._asyncGetCollection()).length;
+    async function translateGroups(sortingAttribute, grouping) {
+      const length = (await this._asyncGetCollection()).length;
       for (let i = 0 ; i < length ; i++) {
-        var item = JSON.parse((await this._asyncGetCollection())[i]);
+        const item = JSON.parse((await this._asyncGetCollection())[i]);
         let translatedGroup = ``;
-        switch (order) {
-          case CollectionViewBuilder.DATE():
-            translatedGroup = item[order].substring(0, 4);
+        switch (sortingAttribute) {
+          case CollUtil.DATE:
+            translatedGroup = item[sortingAttribute].substring(0, 4);
             break;
 
           default:
-            translatedGroup = await this._pageBuilder.translator.asyncGetTranslatedWord(`groupings.${order}-${item[order]}`);
+            translatedGroup = await this._pageBuilder.translator.asyncGetTranslatedWord(`${sortingAttribute}.${item[sortingAttribute]}`);
             break;
         }
         item[`translatedGroup`] = translatedGroup;
@@ -408,23 +339,23 @@ export default class CollectionViewBuilder {
       }
     }
 
-    const _boundTranslateGroups = _translateGroups.bind(this);
-    await _boundTranslateGroups(order, grouping);
+    const boundTranslateGroups = translateGroups.bind(this);
+    await boundTranslateGroups(sortingAttribute, grouping);
 
-    this._collection.sort(function (x, y) {
-      var jsonX = JSON.parse(x);
-      var jsonY = JSON.parse(y);
+    this.collection.sort(function (x, y) {
+      const jsonX = JSON.parse(x);
+      const jsonY = JSON.parse(y);
 
       /*
        * No need to use the groups to sort the dates as
        * collection is sorted by date anyway below.
        */
-      if (!(order === `date`)) {
-        var groupX = jsonX[`translatedGroup`];
-        var groupY = jsonY[`translatedGroup`];
+      if (!(sortingAttribute === CollUtil.DATE)) {
+        const groupX = jsonX[`translatedGroup`];
+        const groupY = jsonY[`translatedGroup`];
 
         if (groupX !== groupY) {
-          return (direction === CollectionViewBuilder.DESC() ? groupY.localeCompare(groupX) : groupX.localeCompare(groupY));
+          return (sortingDirection === CollUtil.Direction.DESC ? groupY.localeCompare(groupX) : groupX.localeCompare(groupY));
         }
       }
 
@@ -432,28 +363,24 @@ export default class CollectionViewBuilder {
        * After grouping, items are sorted chronologically,
        * depending on the order.
        */
-      var dateX = Date.parse(jsonX.date);
-      var dateY = Date.parse(jsonY.date);
-      return secDirection === CollectionViewBuilder.DESC() ? dateY - dateX : dateX - dateY;
+      const dateX = Date.parse(jsonX.date);
+      const dateY = Date.parse(jsonY.date);
+      return dateDirection === CollUtil.Direction.DESC ? dateY - dateX : dateX - dateY;
     });
 
     /*
      * Creating the primary sorting notification icon if
      * it doesn't exist already.
      */
-    var primaryNotif = document.getElementById(`notification-sort-primary`);
+    let primaryNotif = document.getElementById(`notification-sort-primary`);
     if (!primaryNotif) {
       primaryNotif = document.createElement(`i`);
       primaryNotif.setAttribute(`id`, `notification-sort-primary`);
-      primaryNotif.classList.add(`notification`);
-      primaryNotif.classList.add(`notification-sort`);
-      primaryNotif.classList.add(`sort-${order}`);
-      primaryNotif.classList.add(`material-icons`);
-      primaryNotif.classList.add(`fadable`);
+      primaryNotif.classList.add(`material-icons`, `fadable`, `notification`, `notification-sort`, `sort-${sortingAttribute}`);
     }
 
-    primaryNotif.innerHTML = direction === CollectionViewBuilder.DESC() ? `arrow_drop_up` : `arrow_drop_down`;
-    document.getElementById(`btn-grouping-${order}`).parentNode.appendChild(primaryNotif);
+    primaryNotif.innerHTML = sortingDirection === CollUtil.Direction.DESC ? `arrow_drop_up` : `arrow_drop_down`;
+    document.getElementById(`btn-sorting-${sortingAttribute}`).parentNode.appendChild(primaryNotif);
 
     /*
      * Finally, when all the sorting treatment has been
@@ -465,17 +392,14 @@ export default class CollectionViewBuilder {
      * Same treatment with the secondary notification. Only
      * displayed if it is DESC().
      */
-    if((order !== `date`) && (secDirection !== CollectionViewBuilder.ASC())) {
-      var secondaryNotif = document.getElementById(`notification-sort-secondary`);
+    if((sortingAttribute !== CollUtil.DATE) && (dateDirection === CollUtil.Direction.DESC)) {
+      let secondaryNotif = document.getElementById(`notification-sort-secondary`);
       if (!secondaryNotif) {
         secondaryNotif = document.createElement(`i`);
         secondaryNotif.setAttribute(`id`, `notification-sort-secondary`);
-        secondaryNotif.classList.add(`notification-sort`);
-        secondaryNotif.classList.add(`material-icons`);
-        secondaryNotif.classList.add(`notification`);
-        secondaryNotif.classList.add(`fadable`);
+        secondaryNotif.classList.add(`material-icons`, `fadable`, `notification`, `notification-sort`);
         secondaryNotif.innerHTML = `arrow_drop_up`;
-        document.getElementById(`btn-grouping-date`).parentNode.appendChild(secondaryNotif);
+        document.getElementById(`btn-sorting-date`).parentNode.appendChild(secondaryNotif);
       }
 
       /*
@@ -485,59 +409,58 @@ export default class CollectionViewBuilder {
       PageUtil.fadeIn(secondaryNotif);
     }
 
-    this._currentOrder = order;
-    this._currentDirection = direction
-    this._currentGrouping = grouping;
-    this._currertSecDirection = secDirection;
+    this.currSortingAttribute = sortingAttribute;
+    this.currSortingDirection = sortingDirection
+    this.currGrouping         = grouping;
+    this.currDateDirection    = dateDirection;
   }
 
   /*
-   * Builds a gallery view containing the collection.
+   * Draws the gallery view containing the collection.
    *
    * @access  private
-   * @param   string  grouping  the grouping used to
-   *                            group the pictures
+   * @param   HTMLElement  container  the HTMLElement in
+   *           or                     which to draw the
+   *          string                  view, or selector
+   *                                  to access it
+   * @param   Grouping   grouping     if the items have to
+   *                                  be grouped or not
    */
-  async _asyncBuildGalleryView(grouping) {
+  async _asyncDrawGalleryView(container, grouping) {
     /*
      * Temporary container to hold the view.
      */
-    var wrapper = document.createElement(`div`);
-    var view = document.createElement(`div`);
+    let view = document.getElementById(`collection-content`);
+    view = view ? view : document.createElement(`div`);
     view.setAttribute(`id`, `collection-content`);
     view.classList.add(`fadable`);
-    wrapper.appendChild(view);
+    container.appendChild(view);
 
-    /*
-     * Used to "bind" the CollexionViewBuilder without
-     * overriding "this" which is needed in this context.
-     */
-    var cvb = this;
-    var collection = await this._asyncGetCollection();
+    const collection = await this._asyncGetCollection();
 
-    var group = document.createElement(`div`);
+    let group = document.createElement(`div`);
     group.setAttribute(`id`, `polaroid-group-`)
     group.classList.add(`polaroid-group`);
-    var openGroup = ``;
+    let openGroup = ``;
 
-    var groupContent = document.createElement(`div`);
+    let groupContent = document.createElement(`div`);
     groupContent.classList.add(`polaroid-group-content`);
     group.appendChild(groupContent);
 
-    for (let i = 0 ; i < collection.length ; i++) {
-      var picture = JSON.parse(collection[i]);
+    const cvb = this;
+    const _boundAsyncDisplayFullscreenPicture = this._asyncDisplayFullscreenPicture.bind(this);
 
-      if (grouping) {
-        /*
-         * If current picture is not part of the currently
-         * open one, we create a new one.
-         */
-        var currGroup = picture[`translatedGroup`];
+    for (let i = 0 ; i < collection.length ; i++) {
+      const picture = JSON.parse(collection[i]);
+
+      if (grouping === CollUtil.Grouping.GROUPED) {
+        const currGroup = picture[`translatedGroup`];
         if (currGroup !== openGroup) {
           /*
            * Prevents from appending empty group created by
            * default, which would be filled only if no
-           * grouping is selected.
+           * grouping is selected because openGroup === ``
+           * when created.
            */
           if (groupContent.firstChild) {
             view.appendChild(group);
@@ -547,7 +470,7 @@ export default class CollectionViewBuilder {
           group.setAttribute(`id`, `polaroid-group-${currGroup}`);
           group.classList.add(`polaroid-group`);
 
-          var title = document.createElement(`h1`);
+          const title = document.createElement(`h1`);
           title.innerHTML = currGroup;
           group.appendChild(title);
 
@@ -562,12 +485,13 @@ export default class CollectionViewBuilder {
       /*
        * Picture frame.
        */
-      var frame = document.createElement(`div`);
+      const frame = document.createElement(`div`);
       frame.classList.add(`polaroid-frame`);
+
       frame.onclick = function() {
-        var clicked = this.getElementsByTagName(`img`)[0];
-        var index = parseInt(clicked.getAttribute(`index`));
-        cvb._asyncDisplayFullscreenPicture(index, cvb);
+        const clicked = this.querySelector(`img`);
+        const index = parseInt(clicked.getAttribute(`index`));
+        _boundAsyncDisplayFullscreenPicture(index);
         PageUtil.fadeIn(`#polaroid-fullscreen`);
       };
 
@@ -575,22 +499,21 @@ export default class CollectionViewBuilder {
        * Picture inset box-shadow wrapper.
        * @link https://stackoverflow.com/questions/61961334/css-img-inset-box-shadow-trick-center-vh-anchor-max-height
        */
-      var a = document.createElement(`a`);
+      const a = document.createElement(`a`);
       a.setAttribute(`href`, `#`);
-      a.classList.add(`polaroid-shadow`);
-      a.classList.add(`dummy-link`);
+      a.classList.add(`dummy-link`, `polaroid-shadow`);
 
       /*
        * Picture.
        */
-      var img = document.createElement(`img`);
+      const img = document.createElement(`img`);
       /*
        * Index is used to retrieve info from collection
        * when clicked (see onclick above).
        */
       img.classList.add(`polaroid-image`);
       img.setAttribute(`index`, i);
-      img.src = this._getFilePath(picture);
+      img.src = `${this.imgPath}${picture.fileName}`;
 
       /*
        * Adding picture to frame and frame to temporary container.
@@ -601,8 +524,6 @@ export default class CollectionViewBuilder {
     }
 
     view.appendChild(group);
-
-    return wrapper;
   }
 
   /*
@@ -610,27 +531,23 @@ export default class CollectionViewBuilder {
    * navigation buttons and picture information labels.
    *
    * @access  private
+   * @param   int      the index (in the collection) of the
+   *                    picture to display
    */
-  async _asyncDisplayFullscreenPicture(index, cvb) {
-    var collection = await cvb._asyncGetCollection();
-    var jsonItem = JSON.parse(collection[index]);
+  async _asyncDisplayFullscreenPicture(index) {
+    const collection = await this._asyncGetCollection();
+    const jsonItem = JSON.parse(collection[index]);
 
-    /*
-     * Displaying actual picture.
-     */
-    document.getElementById(`fullscreen-image`).src = cvb._getFilePath(jsonItem);
+    document.getElementById(`fullscreen-image`).src = `${this.imgPath}${jsonItem.fileName}`;
 
-    /*
-     * Displaying picture information
-     */
-    var infoDiv = document.getElementById(`fullscreen-infobox`);
+    const infoDiv = document.getElementById(`fullscreen-infobox`);
     infoDiv.innerHTML = ``;
-    var jsonInfoArray = [`readableDate`,    `location`,            `description`];
-    var htmlInfoArray = [`fullscreen-date`, `fullscreen-location`, `fullscreen-description`];
+    const jsonInfoArray = [CollUtil.READABLE_DATE, CollUtil.LOCATION,     CollUtil.DESCRIPTION];
+    const htmlInfoArray = [`fullscreen-date`,      `fullscreen-location`, `fullscreen-description`];
     for (let i = 0 ; i < jsonInfoArray.length ; i++) {
-      var value = jsonItem[jsonInfoArray[i]];
+      const value = jsonItem[jsonInfoArray[i]];
       if (value != null) {
-        var p = document.createElement(`p`);
+        const p = document.createElement(`p`);
         p.setAttribute(`id`, htmlInfoArray[i]);
         p.classList.add(`fullscreen-info`);
         p.innerHTML = value;
@@ -638,30 +555,20 @@ export default class CollectionViewBuilder {
       }
     }
 
-    /*
-     * Binding prev/next button functions.
-     */
-    PageUtil.bindOnClick(`#btn-fs-prev`, function() {
-      var prevIndex = (index + collection.length - 1) % collection.length;
-      cvb._asyncDisplayFullscreenPicture(prevIndex, cvb);
-    });
+    function prev(index) {
+      const prevIndex = (index + collection.length - 1) % collection.length;
+      this._asyncDisplayFullscreenPicture(prevIndex);
+    }
 
-    PageUtil.bindOnClick(`#btn-fs-next`, function() {
-      var nextIndex = (index + 1) % collection.length;
-      cvb._asyncDisplayFullscreenPicture(nextIndex, cvb);
-    });
-  }
+    function next(index) {
+      const nextIndex = (index + 1) % collection.length;
+      this._asyncDisplayFullscreenPicture(nextIndex);
+    }
 
-  /*
-   * Returns the file path of an item of the collection.
-   *
-   * Using the name of the collection and the file name.
-   *
-   * @access  private
-   * @param   JSONObject  item  the item which path we want
-   * @return  string            the path of the item
-   */
-  _getFilePath(item) {
-    return `/images/${this._name}/${item.fileName}`;
+    const boundPrev = prev.bind(this);
+    const boundNext = next.bind(this);
+
+    PageUtil.bindOnClick(`#btn-fs-prev`, function() {boundPrev(index)});
+    PageUtil.bindOnClick(`#btn-fs-next`, function() {boundNext(index)});
   }
 }

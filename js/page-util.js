@@ -2,13 +2,12 @@ import TextUtil from "/js/text-util.js";
 
 `use strict`
 
+const TEMPLATE_PATH = `/templates`;
+
 /**
  * Utility class for page operations.
  */
 export default class PageUtil {
-  static IGNORE_NOT_FOUND_WARNING() {return true;}
-  static TEMPLATE_PATH() {return `/templates`;}
-
   /**
    * Fades element in.
    *
@@ -159,7 +158,7 @@ export default class PageUtil {
        * If a template path is specify we use it, otherwise
        * we use the default one.
        */
-      templatePath = (templatePath === null) ? PageUtil.TEMPLATE_PATH() : templatePath;
+      templatePath = (templatePath === null) ? TEMPLATE_PATH : templatePath;
 
       /*
        * If a template name is specified, we use it, other-
@@ -190,7 +189,7 @@ export default class PageUtil {
    *                               will be used
    */
   static async getTemplateText(templateName, templatePath = null) {
-    templatePath = (templatePath === null) ? PageUtil.TEMPLATE_PATH() : templatePath;
+    templatePath = (templatePath === null) ? TEMPLATE_PATH : templatePath;
     return await TextUtil.getFileText(`${templatePath}/${templateName}.html`);
   }
   

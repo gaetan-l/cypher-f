@@ -173,28 +173,23 @@
     }
 
     /**
-     * Returns the groupings that are available for this
+     * Returns the attributes that are sortable for this
      * type of collection.
      *
-     * Note: a grouping is a property of the items of this
-     * type of collection that can actually be used to sort
-     * it and group it. Example if you use "country" as a
-     * grouping, the groups would be France, Italy, etc.
-     *
      * @return  array  an array containing the various
-     *                 groupings available for this col-
+     *                 sortable attributes for this col-
      *                 lection
      */
-    public function getAvailableGroupings() {
-      $groupingsArray = [];
+    public function getSortableAttributes() {
+      $sortableAttributes = [];
 
       switch ($this->name) {
         case self::TRAVELS:
-          $groupingsArray = array(self::DATE, self::COUNTRY);
+          $sortableAttributes = array(self::DATE, self::COUNTRY);
           break;
       }
 
-      return $groupingsArray;
+      return $sortableAttributes;
     }
   }
 ?>
