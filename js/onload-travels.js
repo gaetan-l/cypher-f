@@ -5,12 +5,12 @@ import {DisplayMode}   from "/js/coll-util.js";
 
 `use strict`
 
-var pageBuilder = new PageBuilder(`Cypher`, `http://cypher-f.com`, `/templates`, `/json/menu.json`);
-var cvBuilder = new CollViewBuilder(`travels`, pageBuilder);
+const pageBuilder = new PageBuilder(`Cypher`, `http://cypher-f.com`);
+const cvBuilder = new CollViewBuilder(`travels`, pageBuilder);
 
 load();
 
 async function load() {
-  await pageBuilder.buildPage();
+  await pageBuilder.asyncBuildPage();
   await cvBuilder.asyncDrawAll(document.getElementById(`collection-view`));
 }

@@ -31,7 +31,6 @@ export class Sorting extends Enum {
   get grouping()  {return this._grouping;}
 
   static from(direction, grouping) {
-    var sorting // undefined
     let items = this.items;
     for (let i = 0 ; i < items.length ; i++) {
       if ((items[i].direction === direction) && (items[i].grouping === grouping)) {

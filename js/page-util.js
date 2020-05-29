@@ -24,7 +24,7 @@ export default class PageUtil {
    *                                     item is not found
    */
   static fadeIn(elemOrSel, ignoreWarning = false) {
-    var uniqueElement = PageUtil.getUniqueElement(elemOrSel, ignoreWarning);
+    const uniqueElement = PageUtil.getUniqueElement(elemOrSel, ignoreWarning);
     if (uniqueElement) {
       uniqueElement.classList.remove(`faded-out-onload`);
       uniqueElement.classList.add(`faded-in`);
@@ -47,7 +47,7 @@ export default class PageUtil {
    *                                     item is not found
    */
   static fadeOut(elemOrSel, ignoreWarning = false) {
-    var uniqueElement = PageUtil.getUniqueElement(elemOrSel, ignoreWarning);
+    const uniqueElement = PageUtil.getUniqueElement(elemOrSel, ignoreWarning);
     if (uniqueElement) {
       uniqueElement.classList.remove(`faded-in`);
     }
@@ -62,38 +62,43 @@ export default class PageUtil {
    * turns it, otherwise, if there is 0 or more than 1 ele-
    * ment, or if selector is another type, returns null.
    *
-   * @param  HTMLElement  elemOrSel      the unique
-   *          or                         HTMLElement or the
-   *         string                      selector used to
-   *                                     access it
-   * @param  boolean      ignoreWarning  indicates the user
-   *                                     doesn't want to be
-   *                                     alerted if the
-   *                                     item is not found
+   * @param  HTMLElement  elemOrSel    the unique
+   *          or                       HTMLElement or the
+   *         string                    selector used to
+   *                                   access it
+   * @param  boolean      ignoreError  indicates the user
+   *                                   doesn't want en ex-
+   *                                   ception to be thrown
+   *                                   in case the element
+   *                                   is not found
    */
-  static getUniqueElement(elemOrSel, ignoreWarning = false) {
+  static getUniqueElement(elemOrSel, ignoreError = false) {
     if (typeof elemOrSel === 'HTMLElement' || elemOrSel instanceof HTMLElement) {
       return elemOrSel;
     }
     else if (typeof elemOrSel === 'string' || elemOrSel instanceof String) {
       var elements = document.querySelectorAll(elemOrSel);
       if (!(elements.length == 1)) {
-        if (!ignoreWarning) {
-          console.warn(`Tried to use PageUtil.getUniqueElement(elemOrSel) with selector "${elemOrSel}", found ${elements.length} element(s), should be 1.`);
+        const error = `Tried to find element with selector "${elemOrSel}", found ${elements.length} element(s), should be 1.`;
+        if (ignoreError) {
+          console.warn(error);
+          return null;
         }
-        return null;
+        else {
+          throw error;
+        }
       }
       else {
         return elements[0];
       }
     }
     else {
-      return null;
+      throw `Tried to find element with selector ${elemOrSel}, should use HTMLElement or string.`;
     }
   }
 
   /**
-   * Replaces a placeholder element with html
+   * Replaces a placeholder element with html.
    *
    * Replaces the specified element with the specified
    * html. The element can be directly passed as an
@@ -102,26 +107,23 @@ export default class PageUtil {
    * ple elements returned with the selector. Does nothing
    * either if html is null.
    *
-   * @access  private
-   * @param   HTMLElement  elemOrSel     the HTMLElement to
-   *           or                        that has to be re-
-   *          string                     replaced, or the
-   *                                     selector used to
-   *                                     access it
-   * @param   string       html          the replacement
-   *                                     html
+   * @param   HTMLElement  elemOrSel  the HTMLElement that
+   *           or                     has to be replaced,
+   *          string                  or the selector used
+   *                                  to access it
+   * @param   string       html       the replacement html
    */
   static replaceElementWithHtml(elemOrSel, html) {
-    var oldElement = PageUtil.getUniqueElement(elemOrSel);
-    if (document.body.contains(oldElement)) {
-      if (oldElement) {
+    const oldElement = PageUtil.getUniqueElement(elemOrSel);
+    if (oldElement) {
+      if (document.body.contains(oldElement)) {
         if (html != null) {
           oldElement.outerHTML = html;
         }
       }
-    }
-    else {
-      console.warn(`PageUtil.replaceElementWithHtml(...) tried to replace element not attached to document.body!`)
+      else {
+        console.warn(`Tried to replace element ${oldElement} not attached to document.body.`)
+      }
     }
   }
 
@@ -136,7 +138,6 @@ export default class PageUtil {
    * returned with the selector. Does nothing either if the
    * template is not found.
    *
-   * @access  private
    * @param   HTMLElement  elemOrSel     the HTMLElement to
    *           or                        that has to be re-
    *          string                     replaced, or the
@@ -152,12 +153,8 @@ export default class PageUtil {
    *                                     late path
    */
   static async replaceElementWithTemplate(elemOrSel, templateName = null, templatePath = null) {
-    var oldElement = PageUtil.getUniqueElement(elemOrSel);
+    const oldElement = PageUtil.getUniqueElement(elemOrSel);
     if (oldElement) {
-      /*
-       * If a template path is specify we use it, otherwise
-       * we use the default one.
-       */
       templatePath = (templatePath === null) ? TEMPLATE_PATH : templatePath;
 
       /*
@@ -172,7 +169,7 @@ export default class PageUtil {
       }
 
       if (templateName != null) {
-        var html = await TextUtil.getFileText(`${templatePath}/${templateName}.html`);
+        const html = await TextUtil.getFileText(`${templatePath}/${templateName}.html`);
 
         PageUtil.replaceElementWithHtml(elemOrSel, html);
       }
@@ -207,7 +204,7 @@ export default class PageUtil {
    *                                    event
    */
   static bindOnClick(elemOrSel, triggered) {
-    var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
+    const uniqueElement = PageUtil.getUniqueElement(elemOrSel);
     if (uniqueElement) {
       uniqueElement.onclick = triggered;
     }
@@ -215,11 +212,10 @@ export default class PageUtil {
 
   // TODO: doc
   static bindOnRightClick(elemOrSel, triggered) {
-    var uniqueElement = PageUtil.getUniqueElement(elemOrSel);
+    const uniqueElement = PageUtil.getUniqueElement(elemOrSel);
     if (uniqueElement) {
       uniqueElement.addEventListener('contextmenu', e => {
         e.preventDefault();
-        //TODO: params ?
         triggered();
       });
     }

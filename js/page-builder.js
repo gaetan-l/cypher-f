@@ -1,6 +1,7 @@
-import PageUtil   from "/js/page-util.js";
-import TextUtil   from "/js/text-util.js";
-import Translator from "/js/translator.js";
+import PageUtil     from "/js/page-util.js";
+import TextUtil     from "/js/text-util.js";
+import TitleElement from "/js/title-element.js"
+import Translator   from "/js/translator.js";
 
 `use strict`
 
@@ -24,49 +25,48 @@ export default class PageBuilder {
    * @param  string  menuPath       path to the json file
    *                                describing the menu
    */
-  constructor(title, root, templatesPath, menuPath = null) {
-    this._url        = TextUtil.formatUrl(window.location.href);
-    this._title      = title;
-    this._root       = root;
-    this._templates  = templatesPath;
-    this._menuPath   = menuPath;
-    this.translator = new Translator();
+  constructor(title, root, templatesPath = `/templates`, menuPath = `/json/menu.json`) {
+    this._url           = TextUtil.formatUrl(window.location.href);
+    this._title         = title;
+    this._root          = root;
+    this._templatesPath = templatesPath;
+    this._menuPath      = menuPath;
+    this._translator    = new Translator();
   }
+
+  get url()           {return this._url;}
+  get title()         {return this._title;}
+  get root()          {return this._root;}
+  get templatesPath() {return this._templatesPath;}
+  get menuPath()      {return this._menuPath;}
+  get translator()    {return this._translator;}
 
   /**
    * Builds the page.
    *
-   * Builds the basic HTML using templates which folder is
-   * specified. Then translates content using a Translator.
-   * Then binds common events. Finally fades the page in when
-   * everything is over.
+   * Builds the basic HTML using templates located in fol-
+   * der specified in constructor. Then translates content
+   * using a Translator. Then binds common events. Finally,
+   * fades the page in when everything is over.
    */
-  async buildPage() {
+  async asyncBuildPage() {
     await this._drawHead();
-    /*
-     * Replacing placeholder elements with tags.
-     */
-    await PageUtil.replaceElementWithTemplate(`header`);
-    await PageUtil.replaceElementWithTemplate(`aside`);
-    await PageUtil.replaceElementWithTemplate(`footer`);
-    document.getElementsByTagName(`main`)[0].setAttribute(`id`, `main-panel`);
 
-    /*
-     * Injecting json menu if specified.
-     */
-    if (this._menuPath != null) {
-      var htmlMenu = await this._buildHtmlMenu();
+    const toBeTemplated = [`header`, `aside`, `footer`];
+    for (let i = 0 ; i < toBeTemplated.length ; i++) {
+      if (document.querySelector(toBeTemplated[i]) !== null) {
+        await PageUtil.replaceElementWithTemplate(toBeTemplated[i]);
+      }
+    }
+    document.querySelector(`main`).setAttribute(`id`, `main-panel`);
+
+    if (this.menuPath != null && document.querySelector(`nav`)) {
+      const htmlMenu = await this._buildHtmlMenu();
       PageUtil.replaceElementWithHtml(`nav`, htmlMenu);
     }
 
-    /*
-     * Once all content is loaded, translating the page.
-     */
     await this.translator.asyncTranslatePage();
 
-    /*
-     * Binding events.
-     */
     PageUtil.bindOnClick(`#btn-translate`, this.translator.asyncSwitchLanguage.bind(this.translator));
 
     /*
@@ -76,18 +76,11 @@ export default class PageBuilder {
      */
     document.onclick = function (e) {
       e = e || window.event;
-      var element = e.target || e.srcElement;
+      const element = e.target || e.srcElement;
 
       if (element.tagName == `A`) { // Capital `A`, not `a`.
-        /*
-         * Prevents default <a> behavior.
-         */
         e.preventDefault();
-
-        /*
-         * Stores target url.
-         */
-        var goTo = element.href;
+        const goTo = element.href;
 
         /*
          * If it's a fake link, like the ones used in
@@ -100,18 +93,12 @@ export default class PageBuilder {
            * Wait for a while to let css transition terminate.
            */
           setTimeout(function () {
-            /*
-             * Navigate to intended destination
-             */
             window.location = goTo;
           }, 250);
         }
       }
     }
 
-    /*
-     * Fading the page in once averything is ready.
-     */
     PageUtil.fadeIn(document.body);
   }
 
@@ -119,15 +106,16 @@ export default class PageBuilder {
    * Draws document head by adding template head to cur-
    * rent page head.
    *
-   * Also orders the different items.
+   * Also orders the different entries.
    *
    * @access  private
    */
   async _drawHead() {
-    var head = document.createElement(`head`);
-    var title = document.createElement(`title`);
-    title.innerHTML = this._title;
+    let head = document.createElement(`head`);
+    const title = document.createElement(`title`);
+    title.innerHTML = this.title;
     head.appendChild(title);
+
     /*
      * We add both the head of the current page and the
      * content of the template in the temporary head.
@@ -141,148 +129,29 @@ export default class PageBuilder {
      * elements is a NodeList it needs to be an array to be
      * sorted.
      */
-    var elements = Array.from(head.querySelectorAll(`head *`));
+    const elements = Array.from(head.querySelectorAll(`head *`));
 
     /*
      * Explicit declaration so we can bind this to it.
      */
     function compareElements(x, y) {
-      var orderX = this._headOrder(x);
-      var orderY = this._headOrder(y);
+      const orderX = TitleElement.from(x).index;
+      const orderY = TitleElement.from(y).index;
 
-      /*
-       * Either those are two different type of elements
-       * and we order them using the _headOrder function...
-       */
       if (orderX != orderY) {
         return orderX - orderY;
       }
-      /*
-       * ...or we simply order them alphabetically if they
-       * are the same type.
-       */
       else {
         return x.outerHTML.localeCompare(y.outerHTML);
       }
     }
     elements.sort(compareElements.bind(this));
 
-    /*
-     * Finally we "clean" document head, an re-write it
-     * with the ordered elements.
-     */
     document.head.innerHTML = ``;
     for (let i = 0 ; i < elements.length ; i++) {
       document.head.appendChild(elements[i]);
     }
   }
-
-  /**
-   * Returns the expected order of head HTMLElements.
-   *
-   * Used to compare and sort HTMLElements.
-   * @see     PageBuilder._drawHead()
-   *
-   * @access  private
-   * @param   HTMLElement  element  the element which order
-   *                                we want to know
-   * @return  int                   the order of the ele-
-   *                                ment
-   */
-  _headOrder(element) {
-    var order = 999;
-
-    switch (element.tagName) {
-      case `TITLE`:
-        order = 100;
-        break;
-
-      case `META`:
-        switch (element.name) {
-          case `description`:
-            order = 101;
-            break;
-
-          case `author`:
-            order = 102;
-            break;
-
-          case ``:
-            order = 199;
-            break;
-        }
-
-      case `LINK`:
-        switch (element.rel) {
-          case `stylesheet`:
-            order = 201;
-            break;
-
-          case `icon`:
-            order = 202;
-            break;
-        }
-        break;
-
-      case `STYLE`:
-        order = 300;
-        break;
-
-      case `SCRIPT`:
-        switch (element.type) {
-          case `module`:
-            order = 401;
-            break;
-
-          case ``:
-            order = 499;
-            break;
-        }
-        break;
-    }
-
-    return order;
-  }
-
-  /**
-   * Fills a placeholder element with the content of a tem-
-   * plate.
-   *
-   * Fills the innerHTML of a placeholder element, for
-   * example <header></header>, with the html specified.
-   * The element is accessed using the specified selector.
-   * If no html is specified, will use the selector to
-   * fetch the template of the same name and return its
-   * html. Does nothing if the specified tag is not found,
-   * or if there are multiple elements returned with the
-   * selector. Does nothing either if the template is not
-   * found.
-   *
-   * @access  private
-   * @param   string   selector   selector used to find the
-   *                              element which html is to
-   *                              be replaced
-   * @param   string   html       the html to inject in the
-   *                              element, if null, it will
-   *                              be used to look for a
-   *                              template whose name is
-   *                              the selector
-   */
-  async _drawElement(selector, html) {
-    var oldElement = PageUtil.getUniqueElement(selector);
-    if (oldElement) {
-      if (html === undefined) {
-        html = await TextUtil.getFileText(`${this._templates}/${selector}.html`);
-      }
-
-      var newElement = document.createElement(`div`);
-      newElement.innerHTML = html;
-
-      while (newElement.firstChild) {
-        oldElement.appendChild(newElement.firstChild);
-      }
-    }
-   }
 
    /**
     * Builds a menu with the specified json file.
@@ -293,20 +162,19 @@ export default class PageBuilder {
     * TODO: Currently limited to a list of depth 2, update
     * code.
     * @access  private
-    * @return  string   the menu in html/string format
     */
   async _buildHtmlMenu() {
-    var response = await fetch(this._menuPath);
-    var json = await response.json();
+    const response = await fetch(this.menuPath);
+    const json = await response.json();
 
     /*
      * Examining current URL to determine which menu
      * options to display or hide. See below.
      */
-    var escapedRoot = this._root.replace(/[.\/]/g, `\\$&`); // $& means the whole matched string
-    var regexString = `${escapedRoot}(([a-z\-\/]*\/)*[a-z\-]*\/)`;
-    var regex       = new RegExp(regexString, `g`);
-    var matches     = regex.exec(this._url);
+    const escapedRoot = this.root.replace(/[.\/]/g, `\\$&`); // $& means the whole matched string
+    const regexString = `${escapedRoot}(([a-z\-\/]*\/)*[a-z\-]*\/)`;
+    const regex       = new RegExp(regexString, `g`);
+    const matches     = regex.exec(this.url);
 
     /*
      * All top-level menu items will be displayed, plus
@@ -320,16 +188,16 @@ export default class PageBuilder {
      *
      * Values for current pages:
      */
-    var currUrl    = TextUtil.formatUrl(matches[0]);
-    var currHref   = TextUtil.formatUrl(matches[1]);
-    var currParent = TextUtil.formatUrl(matches[2] === undefined ? `` : matches[2]);
+    const currUrl    = TextUtil.formatUrl(matches[0]);
+    const currHref   = TextUtil.formatUrl(matches[1]);
+    const currParent = TextUtil.formatUrl(matches[2] === undefined ? `` : matches[2]);
 
-    var nav = document.createElement(`nav`);
+    const nav = document.createElement(`nav`);
     nav.setAttribute(`id`, `menu`);
     /*
      * ul1 is the base level ul
      */
-    var ul1 = document.createElement(`ul`);
+    const ul1 = document.createElement(`ul`);
     ul1.classList.add(`menu-level`);
     nav.appendChild(ul1);
 
@@ -338,17 +206,17 @@ export default class PageBuilder {
      * to know if the current item should be in the
      * same submenu or not.
      */
-    var prevParent = ``;
+    let prevParent = ``;
 
     /*
      * Temporary ul element used to create nested me-
      * nus.
      */
-    var currUl = null;
-    for(var i = 0 ; i < json.length ; i++) {
-      var item = json[i];
-      var itemParent = TextUtil.formatUrl(item[`parent`]);
-      var itemHref   = TextUtil.formatUrl(item[`href`]);
+    let currUl = null;
+    for(let i = 0 ; i < json.length ; i++) {
+      const item = json[i];
+      const itemParent = TextUtil.formatUrl(item[`parent`]);
+      const itemHref   = TextUtil.formatUrl(item[`href`]);
 
       /*
        * Careful, using formatUrl, menu items having no
@@ -357,19 +225,19 @@ export default class PageBuilder {
        * so some items will be considered as both chil-
        * dren and sibling. Watch out for side effects.
        */
-      var base    = itemParent === `/`;
-      var child   = itemParent === currHref;
-      var sibling = itemParent === currParent;
+      const base    = itemParent === `/`;
+      const child   = itemParent === currHref;
+      const sibling = itemParent === currParent;
 
       /*
        * The json item is the page actually being dis-
        * played.
        */
-      var active  = itemHref   === currHref;
+      const active  = itemHref   === currHref;
       if (base || child || sibling) {
-        var levelChange = itemParent != prevParent;
-        var prevSubmenu = !(currUl === null);
-        var currSubmenu = itemParent != `/`;
+        const levelChange = itemParent != prevParent;
+        const prevSubmenu = !(currUl === null);
+        const currSubmenu = itemParent != `/`;
 
         /*
          * If we are changing menu level...
@@ -402,21 +270,20 @@ export default class PageBuilder {
          * built. Items look like this:
          * <li class=`active`><i class=`material-icon`>itemIcon</i><a href=itemHref data-i18n=itemI18n></a></li>
          */
-        var itemIcon = item[`material-icon`];
-        var itemI18n = item[`data-i18n`];
+        const itemIcon = item[`material-icon`];
+        const itemI18n = item[`data-i18n`];
 
-        var li = document.createElement(`li`);
+        const li = document.createElement(`li`);
         li.classList.add(`menu-item`);
         if (active) {
           li.classList.add(`active`);
         }
 
-        var img = document.createElement(`i`);
-        img.classList.add(`material-icons`);
-        img.classList.add(`menu-icon`);
+        const img = document.createElement(`i`);
+        img.classList.add(`material-icons`, `menu-icon`);
         img.innerHTML = itemIcon;
 
-        var a = document.createElement(`a`);
+        const a = document.createElement(`a`);
         a.classList.add(`menu-link`);
         a.setAttribute(`href`, itemHref)
         a.setAttribute(`data-i18n`, itemI18n);

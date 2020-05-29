@@ -150,9 +150,9 @@ export default class CollViewBuilder {
       sortingAttribute = this.sortableAttributes.includes(sortingAttribute) ? sortingAttribute : CollUtil.DATE;
       dateDirection = (sortingAttribute === CollUtil.DATE ? sortingDirection : dateDirection);
 
-      PageUtil.fadeOut(`#collection-content`, true);
       const content = document.getElementById(`collection-content`);
       if (content) {
+        PageUtil.fadeOut(`#collection-content`, true);
         await PageUtil.asyncWaitForIt(250);
         content.parentNode.removeChild(content);
       }
