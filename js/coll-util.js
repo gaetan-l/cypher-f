@@ -3,23 +3,34 @@ import Enum from "/js/enum.js";
 `use strict`
 
 /**
- * Utility class for collection operations.
+ * Specifies the different display modes of a collection.
  */
 export class DisplayMode extends Enum {}
 DisplayMode.GALLERY = new DisplayMode(`gallery`);
 DisplayMode.DETAILS = new DisplayMode(`details`);
 DisplayMode.lock();
 
+/**
+ * Specifies the direction of the sorting of a collection.
+ */
 export class Direction extends Enum {}
 Direction.ASC = new Direction(`ascending`);
 Direction.DESC = new Direction(`descending`);
 Direction.lock();
 
+/**
+ * Specifies if items of a collections have to be grouped by
+ * the attribute that is used to sort them.
+ */
 export class Grouping extends Enum {}
 Grouping.NOT_GROUPED = new Grouping(`not-grouped`);
 Grouping.GROUPED = new Grouping(`grouped`);
 Grouping.lock();
 
+/**
+ * Enumerates and orders the different possible sortings of
+ * a collection.
+ */
 export class Sorting extends Enum {
   constructor(direction, grouping) {
     super([direction, grouping]);
@@ -30,14 +41,24 @@ export class Sorting extends Enum {
   get direction() {return this._direction;}
   get grouping()  {return this._grouping;}
 
+  /**
+   * Returns the Sorting corresponding to the specified pa-
+   * rameters.
+   *
+   * @param   Direction  direction  of the Sorting
+   * @param   Grouping   grouping   of the Sorting
+   * @return  Sorting               the Sorting correspon-
+   *                                ding to these parame-
+   *                                ters
+   */  
   static from(direction, grouping) {
-    let items = this.items;
-    for (let i = 0 ; i < items.length ; i++) {
-      if ((items[i].direction === direction) && (items[i].grouping === grouping)) {
-        return items[i];
-      }
+    const index = Sorting.items.map(item => [item.direction.value, item.grouping.value].toString()).indexOf([direction.value, grouping.value].toString());
+    if (index > -1) {
+      return Sorting.items[index];
     }
-    throw `Tried to find Sorting with direction=${direction} and grouping=${grouping} but failed.`;
+    else {
+      throw `Tried to find Sorting with direction=${direction} and grouping=${grouping} but failed.`;
+    }
   }
 }
 Sorting.ASC_NOT_GROUPED  = new Sorting(Direction.ASC,  Grouping.NOT_GROUPED);

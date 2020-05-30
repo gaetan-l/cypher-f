@@ -3,9 +3,8 @@ import Enum from "/js/enum.js";
 `use strict`
 
 /**
- * Represent an HTMLElement part of document head.
- *
- * Used to sort the items.
+ * Enumerates and orders the possible entry in a document
+ * head.
  * @see PageBuilder._drawHead()
  */
 export default class HeadElement extends Enum {
@@ -18,8 +17,17 @@ export default class HeadElement extends Enum {
   get tagName() {return this._tagName;}
   get details() {return this._details;}
 
+  /**
+   * Returns the HeadElement corresponding to the specified
+   * HTMLElement.
+   *
+   * @param   HTMLElement  htmlElement  the HTMLElement to
+   *                                    classify
+   * @return  HeadElement               the corresponding
+   *                                    HeadElement
+   */
   static from(htmlElement) {
-    var details;
+    let details;
     switch (htmlElement.tagName) {
       case `TITLE`:  details = null;                                              break;
       case `META`:   details = htmlElement.name === `` ? null : htmlElement.name; break;
@@ -28,13 +36,13 @@ export default class HeadElement extends Enum {
       case `SCRIPT`: details = htmlElement.type === `` ? null : htmlElement.type; break;
     }
 
-    let items = this.items;
-    for (let i = 0 ; i < items.length ; i++) {
-      if ((items[i].tagName === htmlElement.tagName) && (items[i].details === details)) {
-        return items[i];
-      }
+    const index = HeadElement.items.map(item => [item.tagName, item.details].toString()).indexOf([htmlElement.tagName, details].toString());
+    if (index > -1) {
+      return HeadElement.items[index];
     }
-    throw `Tried to find HeadElement with ${htmlElement}, tagName=${htmlElement.tagName} and details=${details} but failed.`;
+    else {
+      throw `Tried to find HeadElement with ${htmlElement}, tagName=${htmlElement.tagName} and details=${details} but failed.`;
+    }
   }
 }
 HeadElement.TITLE            = new HeadElement(`TITLE`);
