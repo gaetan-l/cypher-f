@@ -12,89 +12,70 @@ export default class Translator {
   static DEFAULT_LANG() {return `en`;}
 
   constructor() {
-    this._currLang = null;
-    this._dictionary = null;
-
     /*
      * Setting the language using either the cookies if
      * available, or the navigator, or the default langu-
      * age if all else fails.
      */
-    var computedLang = Translator.DEFAULT_LANG();
-    var cookieLang = this.getCookieLang();
+    let computedLang = Translator.DEFAULT_LANG();
+    const cookieLang = this._getCookieLang();
     if (cookieLang != null) {
       computedLang = cookieLang;
     }
     else {
-      var navLang = this.getNavLang();
+      const navLang = this._getNavLang();
       if (navLang != null) {
         computedLang = navLang;
       }
     }
 
-    this._setCurrLang(computedLang);
+    /*
+     * Using setter to set lang cause there is treatment
+     */
+    this.lang = computedLang;
+    this._dictionaries = [];
   }
 
+  get lang() {return this._lang;}
+  get dictionaries() {return this._dictionaries;}
+
   /**
-   * Returns the current language used to display the website.
+   * Sets current Translator lang, also sets cookie lang.
    *
-   * @return  string  the current language
+   * @param  string  lang the language code
    */
-  getCurrLang() {
-    return this._currLang;
+  set lang(lang) {
+    if (Translator.AVAILABLE_LANG().includes(lang)) {
+      this._lang = lang;
+      document.cookie = `lang=${this._lang};path=/`;
+      document.documentElement.lang = this._lang;
+    }
+    else {
+      throw `Tried to set definedLanguage to ${lang}, shound be one of ${Translator.AVAILABLE_LANG()}.`;
+    }    
   }
 
   /*
    * Returns the language set in the cookie.
+   *
+   * @access  private
    **/
-  getCookieLang() {
-    var langRegex = new RegExp(`lang=([^;]+)`);
-    var matches = langRegex.exec(document.cookie);
-    var cookieLang = (matches != null) ? unescape(matches[1]) : null;
+  _getCookieLang() {
+    const langRegex = new RegExp(`lang=([^;]+)`);
+    const matches = langRegex.exec(document.cookie);
+    const cookieLang = (matches != null) ? unescape(matches[1]) : null;
     return cookieLang;
   }
 
   /**
    * Returns the navigator language.
-   */
-  getNavLang() {
-    var navLangs = navigator.languages ? navigator.languages[0] : navigator.language;
-    var navLang  = navLangs.substr(0, 2);
-    return navLang;
-  }
-
-  /**
-   * Sets the current language used to display the website.
-   *
-   * @access private
-   * @param   string  the language to set, must be one of
-   *                  the available languages
-   */
-  _setCurrLang(lang) {
-    if (Translator.AVAILABLE_LANG().includes(lang)) {
-      this._currLang = lang;
-      document.cookie = `lang=${this._currLang};path=/`;
-      document.documentElement.lang = this._currLang;
-    }
-    else {
-      console.error(`Tried to set definedLanguage to ${lang}, shound be one of ${Translator.AVAILABLE_LANG()}.`);
-    }
-  }
-
-  /**
-   * Returns the dictionary currently corresponding to the
-   * language currently in use, or fetches it if null and
-   * saves it for later use.
    *
    * @access  private
-   * @return  string/json  the dictionary
    */
-  async _asyncGetDictionary() {
-    if (this._dictionary === null) {
-      this._dictionary = await this._asyncGetDictionary(this.getCurrLang());
-    }
-
-    return this._dictionary;
+  _getNavLang() {
+    const navLangs = navigator.languages ? navigator.languages[0] : navigator.language;
+    const navLang  = navLangs.substr(0, 2);
+    return navLang;
   }
 
   /**
@@ -108,12 +89,20 @@ export default class Translator {
    */
   async _asyncGetDictionary(lang) {
     if (lang !== null) {
-      var response = await fetch(`/json/lang-${this.getCurrLang()}.json`);
-      return await response.json();
+      let dictionary = this.dictionaries[lang];
+      if (!dictionary) {
+        console.log(`fetching dictionary ${lang}`);
+        const response = await fetch(`/json/lang-${this.lang}.json`);
+        dictionary = response.json();
+        this.dictionaries[lang] = dictionary;
+      }
+      else {
+        console.log(`using saved dictionaries[${lang}]`);
+      }
+      return dictionary;
     }
     else {
-      console.error(`Failed to fetch dictionary with lang "null", should be one of ${Translator.AVAILABLE_LANG()}.`);
-      return null;
+      throw `Failed to fetch dictionary with lang "null", should be one of ${Translator.AVAILABLE_LANG()}.`;
     }
   }
 
@@ -128,20 +117,18 @@ export default class Translator {
    * @return  string        the translated word
    */
   async asyncGetTranslatedWord(code, lang = null) {
-    lang = lang === null ? this.getCurrLang() : lang;
-    var dictionary = await this._asyncGetDictionary(lang);
-    //var keys = code.split(`.`);
-    //var text = keys.reduce((obj, i) => obj[i], dictionary);
-    var text = TextUtil.getJsonValue(code, dictionary);
+    lang = lang === null ? this.lang : lang;
+    const dictionary = await this._asyncGetDictionary(lang);
+    let text = TextUtil.getJsonValue(code, dictionary);
 
     if (text === undefined) {
-      var tmp = document.createElement(`div`);
-      var span = document.createElement(`span`);
+      const tmp = document.createElement(`div`);
+      const span = document.createElement(`span`);
       span.classList.add(`translation-error`);
       span.innerHTML = code;
       tmp.appendChild(span);
       text = span.outerHTML;
-      console.error(`Failed to translate code "${code}" with lang "${lang}".`);
+      console.warn(`Failed to translate code "${code}" with lang "${lang}".`);
     }
 
     return text === undefined ? code : text;
@@ -152,10 +139,10 @@ export default class Translator {
    * dictionary.
    */
   async asyncTranslatePage() {
-    var elements = document.querySelectorAll(`[data-i18n]`);
+    const elements = document.querySelectorAll(`[data-i18n]`);
 
     for (let i = 0 ; i < elements.length ; i++) {
-      var element = elements[i];
+      const element = elements[i];
       /*
        * The dataset read-only property of the
        * HTMLOrForeignElement interface provides read/write
@@ -163,8 +150,8 @@ export default class Translator {
        * set on the element.
        * @link https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/dataset
        */
-      var code = element.dataset.i18n;
-      var translation = await this.asyncGetTranslatedWord(code);
+      const code = element.dataset.i18n;
+      const translation = await this.asyncGetTranslatedWord(code);
 
       if (translation) {
         element.innerHTML = translation;
@@ -177,16 +164,14 @@ export default class Translator {
    * the page.
    */
   async asyncSwitchLanguage() {
-    var currLang = this.getCurrLang();
-    var index = Translator.AVAILABLE_LANG().indexOf(currLang);
+    const index = Translator.AVAILABLE_LANG().indexOf(this.lang);
     if (index > -1) {
       var next = Translator.AVAILABLE_LANG()[(index + 1) % Translator.AVAILABLE_LANG().length];
+      this.lang = next;
+      await this.asyncTranslatePage();
     }
     else {
-      console.error(`Failed to switch lang, current lang ${currLang} unknown, should be one of ${Translator.AVAILABLE_LANG()}.`)
+      throw `Failed to switch lang, current lang ${this.lang} unknown, should be one of ${Translator.AVAILABLE_LANG()}.`;
     }
-
-    this._setCurrLang(next);
-    await this.asyncTranslatePage();
   }
 }

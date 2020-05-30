@@ -325,16 +325,19 @@ export default class CollViewBuilder {
       for (let i = 0 ; i < length ; i++) {
         const item = JSON.parse((await this._asyncGetCollection())[i]);
         let translatedGroup = ``;
+        let i18n = null;
         switch (sortingAttribute) {
           case CollUtil.DATE:
             translatedGroup = item[sortingAttribute].substring(0, 4);
             break;
 
           default:
-            translatedGroup = await this._pageBuilder.translator.asyncGetTranslatedWord(`${sortingAttribute}.${item[sortingAttribute]}`);
+            i18n = `${sortingAttribute}.${item[sortingAttribute]}`;
+            translatedGroup = await this._pageBuilder.translator.asyncGetTranslatedWord(i18n);
             break;
         }
         item[`translatedGroup`] = translatedGroup;
+        item[`i18n`] = i18n;
         (await this._asyncGetCollection())[i] = JSON.stringify(item);
       }
     }
@@ -472,6 +475,9 @@ export default class CollViewBuilder {
 
           const title = document.createElement(`h1`);
           title.innerHTML = currGroup;
+          if (picture.i18n) {
+            title.setAttribute(`data-i18n`, picture.i18n);
+          }
           group.appendChild(title);
 
           groupContent = document.createElement(`div`);
