@@ -91,13 +91,9 @@ export default class Translator {
     if (lang !== null) {
       let dictionary = this.dictionaries[lang];
       if (!dictionary) {
-        console.log(`fetching dictionary ${lang}`);
-        const response = await fetch(`/json/lang-${this.lang}.json`);
-        dictionary = response.json();
+        const response = await fetch(`/json/lang-${lang}.json`);
+        dictionary = await response.json();
         this.dictionaries[lang] = dictionary;
-      }
-      else {
-        console.log(`using saved dictionaries[${lang}]`);
       }
       return dictionary;
     }

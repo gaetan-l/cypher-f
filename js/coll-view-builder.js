@@ -1,6 +1,7 @@
+import * as CollUtil from "/js/coll-util.js";
 import      PageUtil from "/js/page-util.js";
 import      TextUtil from "/js/text-util.js";
-import * as CollUtil from "/js/coll-util.js";
+import    Translator from "/js/translator.js";
 
 `use strict`
 
@@ -195,6 +196,34 @@ export default class CollViewBuilder {
     switch (displayMode) {
       case CollUtil.DisplayMode.GALLERY:
         const input = document.createElement(`input`);
+        input.addEventListener(`input`, function (e) {
+          const allFrames = document.querySelectorAll(`.collection-item`);
+          const selector = `.collection-item[item-date*="${this.value}"], `
+                         + `.collection-item[item-location*="${this.value}"], `
+                         + `.collection-item[item-description*="${this.value}"], `
+                         + `.collection-item[item-tags*="${this.value}"],`
+                         + `.collection-item[item-translated-attributes*="${this.value}"]`;
+          const relevantFrames = Array.from(document.querySelectorAll(selector));
+          for (let i = 0 ; i < allFrames.length ; i++) {
+            const frame = allFrames[i];
+            if ((this.value === ``) || relevantFrames.includes(frame)) {
+              frame.classList.remove(`irrelevant`);
+            }
+            else {
+              frame.classList.add(`irrelevant`);
+            }
+          }
+          const allGroups = document.querySelectorAll(`.collection-group`);
+          for (let i = 0 ; i < allGroups.length ; i++) {
+            const relevantContent = allGroups[i].querySelectorAll(`.collection-item:not(.irrelevant)`);
+            if (relevantContent.length > 0) {
+              allGroups[i].classList.remove(`irrelevant`);
+            }
+            else {
+              allGroups[i].classList.add(`irrelevant`);
+            }
+          }
+        });
         toolbar.appendChild(input);
 
         const toolbarButtonContainer = document.createElement(`div`);
@@ -324,20 +353,41 @@ export default class CollViewBuilder {
       const length = (await this._asyncGetCollection()).length;
       for (let i = 0 ; i < length ; i++) {
         const item = JSON.parse((await this._asyncGetCollection())[i]);
-        let translatedGroup = ``;
-        let i18n = null;
-        switch (sortingAttribute) {
-          case CollUtil.DATE:
-            translatedGroup = item[sortingAttribute].substring(0, 4);
-            break;
 
-          default:
-            i18n = `${sortingAttribute}.${item[sortingAttribute]}`;
-            translatedGroup = await this._pageBuilder.translator.asyncGetTranslatedWord(i18n);
-            break;
+        let trlanslatedCurrentSortingAttribute = ``;
+        let i18nCurrentSortingAttribute = null;
+
+        const translatedAttributes = [...this.sortableAttributes];
+        const i18nCodes = [];
+        for (let i = 0 ; i < translatedAttributes.length ; i++) {
+          const attributeName = this.sortableAttributes[i];
+
+          let translatedAttribute = null;
+          if (attributeName === CollUtil.DATE) {
+            translatedAttribute = item[CollUtil.DATE].substring(0, 4);
+          }
+          else {
+            i18nCodes[i] = `${attributeName}.${item[attributeName]}`;
+            translatedAttribute = [];
+            const availableLang = Translator.AVAILABLE_LANG();
+            for (let j = 0 ; j < availableLang.length ; j++) {
+              const lang = availableLang[j];
+              const translation = await this._pageBuilder.translator.asyncGetTranslatedWord(i18nCodes[i], availableLang[j]);
+              translatedAttribute[lang] = translation;
+            }
+          }
+          translatedAttributes[i] = translatedAttribute;
         }
-        item[`translatedGroup`] = translatedGroup;
-        item[`i18n`] = i18n;
+
+        if (sortingAttribute === CollUtil.DATE) {
+          item.trlanslatedCurrentSortingAttribute = translatedAttributes[this.sortableAttributes.indexOf(sortingAttribute)];
+        }
+        else {
+          const attributeIndex = this.sortableAttributes.indexOf(sortingAttribute)
+          item.trlanslatedCurrentSortingAttribute = translatedAttributes[attributeIndex][this.pageBuilder.translator.lang];
+          item.i18nCurrentSortingAttribute = i18nCodes[attributeIndex];
+        }
+        item.allTranslatedAttributes = translatedAttributes.map((translation, index) => this.sortableAttributes[index] + ":" + ((this.sortableAttributes[index] === CollUtil.DATE) ? translation : Object.values(translation).join(`/`))).join(`,`);
         (await this._asyncGetCollection())[i] = JSON.stringify(item);
       }
     }
@@ -354,8 +404,8 @@ export default class CollViewBuilder {
        * collection is sorted by date anyway below.
        */
       if (!(sortingAttribute === CollUtil.DATE)) {
-        const groupX = jsonX[`translatedGroup`];
-        const groupY = jsonY[`translatedGroup`];
+        const groupX = jsonX[`trlanslatedCurrentSortingAttribute`];
+        const groupY = jsonY[`trlanslatedCurrentSortingAttribute`];
 
         if (groupX !== groupY) {
           return (sortingDirection === CollUtil.Direction.DESC ? groupY.localeCompare(groupX) : groupX.localeCompare(groupY));
@@ -443,7 +493,7 @@ export default class CollViewBuilder {
 
     let group = document.createElement(`div`);
     group.setAttribute(`id`, `polaroid-group-`)
-    group.classList.add(`polaroid-group`);
+    group.classList.add(`collection-group`, `polaroid-group`);
     let openGroup = ``;
 
     let groupContent = document.createElement(`div`);
@@ -457,7 +507,7 @@ export default class CollViewBuilder {
       const picture = JSON.parse(collection[i]);
 
       if (grouping === CollUtil.Grouping.GROUPED) {
-        const currGroup = picture[`translatedGroup`];
+        const currGroup = picture.trlanslatedCurrentSortingAttribute;
         if (currGroup !== openGroup) {
           /*
            * Prevents from appending empty group created by
@@ -471,12 +521,12 @@ export default class CollViewBuilder {
 
           group = document.createElement(`div`);
           group.setAttribute(`id`, `polaroid-group-${currGroup}`);
-          group.classList.add(`polaroid-group`);
+          group.classList.add(`collection-group`, `polaroid-group`);
 
           const title = document.createElement(`h1`);
           title.innerHTML = currGroup;
-          if (picture.i18n) {
-            title.setAttribute(`data-i18n`, picture.i18n);
+          if (picture[`i18nCurrentSortingAttribute`]) {
+            title.setAttribute(`data-i18n`, picture.i18nCurrentSortingAttribute);
           }
           group.appendChild(title);
 
@@ -492,12 +542,16 @@ export default class CollViewBuilder {
        * Picture frame.
        */
       const frame = document.createElement(`div`);
-      frame.classList.add(`polaroid-frame`);
+      frame.classList.add(`collection-item`,`polaroid-frame`);
+      frame.setAttribute(`coll-index`,                 i);
+      frame.setAttribute(`item-date`,                  picture[CollUtil.READABLE_DATE]);
+      frame.setAttribute(`item-description`,           picture[CollUtil.DESCRIPTION]);
+      frame.setAttribute(`item-location`,              picture[CollUtil.LOCATION]);
+      frame.setAttribute(`item-tags`,                  picture[CollUtil.TAGS].split(`;`).map(tag => `#${tag}`).join(` `));
+      frame.setAttribute(`item-translated-attributes`, picture.allTranslatedAttributes);
 
       frame.onclick = function() {
-        const clicked = this.querySelector(`img`);
-        const index = parseInt(clicked.getAttribute(`index`));
-        _boundAsyncDisplayFullscreenPicture(index);
+        _boundAsyncDisplayFullscreenPicture(this);
         PageUtil.fadeIn(`#polaroid-fullscreen`);
       };
 
@@ -518,7 +572,6 @@ export default class CollViewBuilder {
        * when clicked (see onclick above).
        */
       img.classList.add(`polaroid-image`);
-      img.setAttribute(`index`, i);
       img.src = `${this.imgPath}${picture.fileName}`;
 
       /*
@@ -537,44 +590,50 @@ export default class CollViewBuilder {
    * navigation buttons and picture information labels.
    *
    * @access  private
-   * @param   int      the index (in the collection) of the
-   *                    picture to display
+   * @param   HTMLElement  frame  the clicked picture frame
    */
-  async _asyncDisplayFullscreenPicture(index) {
-    const collection = await this._asyncGetCollection();
-    const jsonItem = JSON.parse(collection[index]);
-
-    document.getElementById(`fullscreen-image`).src = `${this.imgPath}${jsonItem.fileName}`;
+  async _asyncDisplayFullscreenPicture(frame) {
+    document.getElementById(`fullscreen-image`).src = frame.querySelector(`img`).src;
 
     const infoDiv = document.getElementById(`fullscreen-infobox`);
     infoDiv.innerHTML = ``;
-    const jsonInfoArray = [CollUtil.READABLE_DATE, CollUtil.LOCATION,     CollUtil.DESCRIPTION];
-    const htmlInfoArray = [`fullscreen-date`,      `fullscreen-location`, `fullscreen-description`];
-    for (let i = 0 ; i < jsonInfoArray.length ; i++) {
-      const value = jsonItem[jsonInfoArray[i]];
+    const picInfosIds = [`item-date`,       `item-location`,       `item-description`,       `item-tags`];
+    const  fsInfosIds = [`fullscreen-date`, `fullscreen-location`, `fullscreen-description`, `fullscreen-tags`];
+    for (let i = 0 ; i < picInfosIds.length ; i++) {
+      const value = frame.getAttribute(picInfosIds[i]);
       if (value != null) {
         const p = document.createElement(`p`);
-        p.setAttribute(`id`, htmlInfoArray[i]);
+        p.setAttribute(`id`, fsInfosIds[i]);
         p.classList.add(`fullscreen-info`);
         p.innerHTML = value;
         infoDiv.appendChild(p);
       }
     }
 
-    function prev(index) {
-      const prevIndex = (index + collection.length - 1) % collection.length;
-      this._asyncDisplayFullscreenPicture(prevIndex);
+    /*
+     * Calculating the index of the HTML element among the
+     * actually displayed pictures (collection minus those
+     * hidden).
+     */
+    const allFrames = Array.from(document.querySelectorAll(`.polaroid-frame:not(.irrelevant)`));
+    const htmlIndex = allFrames.indexOf(frame);
+
+    function prev() {
+      const prevHtmlIndex = (htmlIndex + allFrames.length - 1) % allFrames.length;
+      const prevFrame = allFrames[prevHtmlIndex];
+      this._asyncDisplayFullscreenPicture(prevFrame);
     }
 
-    function next(index) {
-      const nextIndex = (index + 1) % collection.length;
-      this._asyncDisplayFullscreenPicture(nextIndex);
+    function next() {
+      const nextHtmlIndex = (htmlIndex + 1) % allFrames.length;
+      const nextFrame = allFrames[nextHtmlIndex];
+      this._asyncDisplayFullscreenPicture(nextFrame);
     }
 
     const boundPrev = prev.bind(this);
     const boundNext = next.bind(this);
 
-    PageUtil.bindOnClick(`#btn-fs-prev`, function() {boundPrev(index)});
-    PageUtil.bindOnClick(`#btn-fs-next`, function() {boundNext(index)});
+    PageUtil.bindOnClick(`#btn-fs-prev`, function() {boundPrev()});
+    PageUtil.bindOnClick(`#btn-fs-next`, function() {boundNext()});
   }
 }

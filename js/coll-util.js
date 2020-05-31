@@ -71,3 +71,4 @@ export const DATE          = `date`;
 export const READABLE_DATE = `readableDate`;
 export const LOCATION      = `location`;
 export const DESCRIPTION   = `description`;
+export const TAGS          = `tags`;

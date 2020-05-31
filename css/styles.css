@@ -9,7 +9,7 @@
  * 4.  MAIN STRUCTURE
  * 5.  SITE TITLE DIV
  * 6.  MENU
- * 7.  BUTTONS AND NOTIFICATIONS
+ * 7.  CONTROLS AND NOTIFICATIONS
  * 8.  COLLECTIONS
  * 8.1 Picture gallery
  * 8.2 Fullscreen view
@@ -255,7 +255,7 @@ input {
 
 /*
  * ========================================================
- * ============= 7.  BUTTONS AND NOTIFICATIONS ============
+ * ============= 7.  CONTROLS AND NOTIFICATIONS ===========
  * ========================================================
  */
 .button {
@@ -268,6 +268,10 @@ input {
    * Changes to size and margins are in structure.css.
    */
   transition: all 0.1s ease-in-out;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
 }
 
 .notification {

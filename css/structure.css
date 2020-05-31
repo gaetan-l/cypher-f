@@ -8,7 +8,7 @@
  * 4.  MAIN STRUCTURE
  * 5.  SITE TITLE DIV
  * 6.  MENU
- * 7.  BUTTONS AND NOTIFICATIONS
+ * 7.  CONTROLS AND NOTIFICATIONS
  * 8.  COLLECTIONS
  * 8.1 Picture gallery
  * 8.2 Fullscreen view
@@ -242,7 +242,7 @@ input {
 
 /*
  * ========================================================
- * ============= 7.  BUTTONS AND NOTIFICATIONS ============
+ * ============= 7.  CONTROLS AND NOTIFICATIONS ===========
  * ========================================================
  */
  .button-container {
@@ -309,6 +309,10 @@ input {
   padding: var(--button-margin) var(--button-margin) var(--button-margin) calc(2 * var(--button-margin));
 
   border-bottom-width: var(--collection-toolbar-border-width);
+}
+
+.irrelevant {
+  display: none !important;
 }
 
 /*
