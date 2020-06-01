@@ -172,6 +172,7 @@ export default class CollViewBuilder {
       }
 
       await this._pageBuilder.translator.asyncTranslatePage();
+      this.filterCollection(document.getElementById(`inp-filter`).value);
       PageUtil.fadeIn(`#collection-content`);
 
       this._redrawUnlock();
@@ -195,35 +196,10 @@ export default class CollViewBuilder {
 
     switch (displayMode) {
       case CollUtil.DisplayMode.GALLERY:
+        const boundFilter = this.filterCollection.bind(this);
         const input = document.createElement(`input`);
-        input.addEventListener(`input`, function (e) {
-          const allFrames = document.querySelectorAll(`.collection-item`);
-          const selector = `.collection-item[item-date*="${this.value}"], `
-                         + `.collection-item[item-location*="${this.value}"], `
-                         + `.collection-item[item-description*="${this.value}"], `
-                         + `.collection-item[item-tags*="${this.value}"],`
-                         + `.collection-item[item-translated-attributes*="${this.value}"]`;
-          const relevantFrames = Array.from(document.querySelectorAll(selector));
-          for (let i = 0 ; i < allFrames.length ; i++) {
-            const frame = allFrames[i];
-            if ((this.value === ``) || relevantFrames.includes(frame)) {
-              frame.classList.remove(`irrelevant`);
-            }
-            else {
-              frame.classList.add(`irrelevant`);
-            }
-          }
-          const allGroups = document.querySelectorAll(`.collection-group`);
-          for (let i = 0 ; i < allGroups.length ; i++) {
-            const relevantContent = allGroups[i].querySelectorAll(`.collection-item:not(.irrelevant)`);
-            if (relevantContent.length > 0) {
-              allGroups[i].classList.remove(`irrelevant`);
-            }
-            else {
-              allGroups[i].classList.add(`irrelevant`);
-            }
-          }
-        });
+        input.setAttribute(`id`, `inp-filter`);
+        input.addEventListener(`input`, function (e) {boundFilter(this.value);});
         toolbar.appendChild(input);
 
         const toolbarButtonContainer = document.createElement(`div`);
@@ -583,6 +559,41 @@ export default class CollViewBuilder {
     }
 
     view.appendChild(group);
+  }
+
+  /**
+   * Filters the collection by the value passed in parameter.
+   *
+   * @param  string  filter  with which to filter the collec-
+   *                         tion
+   */
+  filterCollection(filter) {
+    const allFrames = document.querySelectorAll(`.collection-item`);
+    const selector = `.collection-item[item-date*="${filter}"], `
+                   + `.collection-item[item-location*="${filter}"], `
+                   + `.collection-item[item-description*="${filter}"], `
+                   + `.collection-item[item-tags*="${filter}"],`
+                   + `.collection-item[item-translated-attributes*="${filter}"]`;
+    const relevantFrames = Array.from(document.querySelectorAll(selector));
+    for (let i = 0 ; i < allFrames.length ; i++) {
+      const frame = allFrames[i];
+      if ((filter === ``) || relevantFrames.includes(frame)) {
+        frame.classList.remove(`irrelevant`);
+      }
+      else {
+        frame.classList.add(`irrelevant`);
+      }
+    }
+    const allGroups = document.querySelectorAll(`.collection-group`);
+    for (let i = 0 ; i < allGroups.length ; i++) {
+      const relevantContent = allGroups[i].querySelectorAll(`.collection-item:not(.irrelevant)`);
+      if (relevantContent.length > 0) {
+        allGroups[i].classList.remove(`irrelevant`);
+      }
+      else {
+        allGroups[i].classList.add(`irrelevant`);
+      }
+    }
   }
 
   /*
