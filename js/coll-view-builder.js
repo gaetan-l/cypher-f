@@ -349,7 +349,7 @@ export default class CollViewBuilder {
             for (let j = 0 ; j < availableLang.length ; j++) {
               const lang = availableLang[j];
               const translation = await this._pageBuilder.translator.asyncGetTranslatedWord(i18nCodes[i], availableLang[j]);
-              translatedAttribute[lang] = translation;
+              translatedAttribute[lang] = TextUtil.flattenString(translation);
             }
           }
           translatedAttributes[i] = translatedAttribute;
@@ -521,8 +521,10 @@ export default class CollViewBuilder {
       frame.classList.add(`collection-item`,`polaroid-frame`);
       frame.setAttribute(`coll-index`,                 i);
       frame.setAttribute(`item-date`,                  picture[CollUtil.READABLE_DATE]);
-      frame.setAttribute(`item-description`,           picture[CollUtil.DESCRIPTION]);
+      frame.setAttribute(`item-description`,           picture[CollUtil.DESCRIPTION].split(`;`).map(tag => tag).join(`, `));
+      frame.setAttribute(`item-description-i`,         picture[CollUtil.DESCRIPTION].split(`;`).map(tag => TextUtil.flattenString(tag)).join(`, `));
       frame.setAttribute(`item-location`,              picture[CollUtil.LOCATION]);
+      frame.setAttribute(`item-location-i`,            TextUtil.flattenString(picture[CollUtil.LOCATION]));
       frame.setAttribute(`item-tags`,                  picture[CollUtil.TAGS].split(`;`).map(tag => `#${tag}`).join(` `));
       frame.setAttribute(`item-translated-attributes`, picture.allTranslatedAttributes);
 
@@ -568,12 +570,13 @@ export default class CollViewBuilder {
    *                         tion
    */
   filterCollection(filter) {
+    filter = TextUtil.flattenString(filter);
     const allFrames = document.querySelectorAll(`.collection-item`);
-    const selector = `.collection-item[item-date*="${filter}"], `
-                   + `.collection-item[item-location*="${filter}"], `
-                   + `.collection-item[item-description*="${filter}"], `
-                   + `.collection-item[item-tags*="${filter}"],`
-                   + `.collection-item[item-translated-attributes*="${filter}"]`;
+    const selector = `.collection-item[item-date*`                    + `="${filter}"], `
+                   + `.collection-item[item-location-i*`              + `="${filter}"], `
+                   + `.collection-item[item-description-i*`           + `="${filter}"], `
+                   + `.collection-item[item-tags*`                    + `="${filter}"], `
+                   + `.collection-item[item-translated-attributes*`   + `="${filter}"]`;
     const relevantFrames = Array.from(document.querySelectorAll(selector));
     for (let i = 0 ; i < allFrames.length ; i++) {
       const frame = allFrames[i];

@@ -41,6 +41,7 @@ export default class TextUtil {
 
   /**
    * Returns the value of a json entry with its code.
+   * @link https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript
    *
    * @param   string  code  the code of the entry to browse
    * @param   json    json  the json to browse
@@ -49,5 +50,16 @@ export default class TextUtil {
   static getJsonValue(code, json) {
     var keys = code.split(`.`);
     return keys.reduce((obj, i) => obj[i], json);
+  }
+
+  /**
+   * Transforms a string to a format suitable for looklup,
+   * that is to say lowercase and without accent.
+   *
+   * @param   string  string  the string to format
+   * @return  string          the formatted string
+   */
+  static flattenString(string) {
+    return string.normalize(`NFD`).replace(/[\u0300-\u036f]/g, ``).toLowerCase();
   }
 }

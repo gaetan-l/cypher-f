@@ -19,12 +19,12 @@
     // Patterns
     const DATE_PATTERN        = "\[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]";
     const TAG_PATTERN         = "[a-z]+(?:-[a-z]+)*";
-    const REGROUPMENT_PATTERN = "\[(" . self::TAG_PATTERN . ")?\]";
     const TAGLIST_PATTERN     = "\[((?:" . self::TAG_PATTERN . ")?(?:;(?:" . self::TAG_PATTERN . "))*)\]";
     const COUNTRY_PATTERN     = "\[([a-z]{2})\]";
     const FREE_PATTERN        = "\[([^\[\]]*)\]";
-    const EXTENSION_PATTERN   = "\.(jpg|png)";
     const REPETITION_PATTERN  = "(?:\(\d+\))?";
+    const EXTENSION_PATTERN   = "\.(jpg|png)";
+    // FULL_PATTERN           = \[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]\[((?:[a-z]+(?:-[a-z]+)*)?(?:;(?:[a-z]+(?:-[a-z]+)*))*)\]\[([a-z]{2})\]\[([^\[\]]*)\]\[([^\[\]]*)\](?:\(\d+\))?\.(jpg|png)
 
     /*
      * Name of the collection, used to build folder path
@@ -104,7 +104,7 @@
       $pattern = "";
       switch ($this->name) {
         case self::TRAVELS:
-          $pattern = "/^" . self::DATE_PATTERN . self::REGROUPMENT_PATTERN . self::TAGLIST_PATTERN . self::COUNTRY_PATTERN . self::FREE_PATTERN . self::FREE_PATTERN . self::REPETITION_PATTERN . self::EXTENSION_PATTERN . "$/";
+          $pattern = "/^" . self::DATE_PATTERN . self::TAGLIST_PATTERN . self::COUNTRY_PATTERN . self::FREE_PATTERN . self::FREE_PATTERN . self::REPETITION_PATTERN . self::EXTENSION_PATTERN . "$/";
           break;
       }
 
@@ -159,12 +159,11 @@
               "fileName"     => $fileName,
               self::DATE     => "$matches[1]-$matches[3]-$matches[4]",
               "readableDate" => "$matches[4]/$matches[3]/$matches[1]",
-              "regroupment"  => $matches[5],
-              "tags"         => $matches[6],
-              self::COUNTRY  => $matches[7],
-              "location"     => $matches[8],
-              "description"  => $matches[9],
-              "extension"    => $matches[10]
+              "tags"         => $matches[5],
+              self::COUNTRY  => $matches[6],
+              "location"     => $matches[7],
+              "description"  => $matches[8],
+              "extension"    => $matches[9]
             );
           break;
       }
