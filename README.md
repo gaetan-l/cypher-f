@@ -16,8 +16,8 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 - *css/structure.css, css/styles.css*: Improved **responsive design**
 
 ### Security
-- Make website **HTTPS**
-- Add HTTPS forced **redirection**
+- ~~Make website **HTTPS**~~
+- ~~Add HTTPS forced **redirection**~~
 - *js/*: Add **login feature** and allow private pages display only if connected
 
 ### Misc functions

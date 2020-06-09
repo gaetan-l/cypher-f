@@ -3,7 +3,7 @@ import PageUtil    from "/js/page-util.js";
 
 `use strict`
 
-const pageBuilder = new PageBuilder(`Cypher`, `http://cypher-f.com`);
+const pageBuilder = new PageBuilder(`Cypher`, `https://cypher-f.com`);
 
 load();
 
