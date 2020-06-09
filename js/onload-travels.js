@@ -12,5 +12,5 @@ load();
 
 async function load() {
   await pageBuilder.asyncBuildPage();
-  await cvBuilder.asyncDrawAll(document.getElementById(`collection-view`));
+  await cvBuilder.asyncDrawAll(document.getElementById(`collection-view`), DisplayMode.GALLERY);
 }
