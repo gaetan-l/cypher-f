@@ -20,7 +20,12 @@
     "sort": "Trier"
   },
   "attributes": {
-    "country":    "Pays"
+    "country": "Pays",
+    "description": "Description",
+    "file-name": "Fichier",
+    "location": "Position",
+    "readable-date": "Date",
+    "tags": "Tags"
   },
   "country": {
     "at": "Autriche",

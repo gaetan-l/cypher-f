@@ -64,6 +64,7 @@
 --menu-link-margin-left:           var(--size-2);
 
 /* ------------- Collections ------------------------------ */
+--collection-toolbar-height:       calc(var(--button-size) + 2 * var(--button-margin));
 --collection-toolbar-border-width: var(--border-thin-width);
 --polaroid-group-title-height:     var(--size-16);
 --polaroid-frame-border-width:     var(--border-thin-width);
@@ -88,6 +89,10 @@
 
 html, body {
   height: 100%;
+}
+
+body {
+  overflow: hidden;
 }
 
 
@@ -118,11 +123,6 @@ input {
 
 #main-panel {
   margin-left: calc(var(--side-panel-width) + var(--side-panel-right-border-width));
-
-  /*
-   * Always display scrollbar.
-   */
-  overflow-y: scroll;
 }
 
 #side-panel {
@@ -299,21 +299,34 @@ input {
  * ========================================================
  *
  */
+#collection-view {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+}
+
 .collection-toolbar {
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
 
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
   z-index: 2;
 
-  height: calc(var(--button-size) + 2 * var(--button-margin));
+  height: var(--collection-toolbar-height);
   padding: var(--button-margin) var(--button-margin) var(--button-margin) calc(2 * var(--button-margin));
 
   border-bottom-width: var(--collection-toolbar-border-width);
+}
+
+#collection-content {
+  display: block;
+  height: 100%;
+
+  /*
+   * Always display vertical scrollbar.
+   */
+  overflow-y: scroll;
 }
 
 .irrelevant {
@@ -326,7 +339,7 @@ input {
 .polaroid-group h1 {
   position: -webkit-sticky;
   position: sticky;
-  top: calc(var(--collection-toolbar-height) + var(--collection-toolbar-border-width));
+  top: 0;
   z-index: 1;
   margin: 0;
   padding-left: var(--polaroid-frame-margin);
@@ -337,7 +350,9 @@ input {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
-  align-items: flex-start;/* 
+  align-items: flex-start;
+
+  /* 
    * Picture frames have margins on the right and the bot-
    * tom, so gallery container has padding on the top and
    * the left

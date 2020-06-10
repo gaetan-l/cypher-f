@@ -20,40 +20,75 @@ export default class CollViewBuilder {
    *                                   to build the page
    */
   constructor(name, pageBuilder) {
-    this._name               = name;
-    this._pageBuilder        = pageBuilder;
+    this._name                = name;
+    this._pageBuilder         = pageBuilder;
 
-    this._apiPath            = `/api/collection/get-collection.php?name=${this.name}`;
-    this._iconsJsonPath      = `/json/icons.json`;
-    this._imgPath            = `/images/${name}/`
+    this._apiPath             = `/api/collection/get-collection.php?name=${this.name}`;
+    this._iconsJsonPath       = `/json/icons.json`;
+    this._imgPath             = `/images/${name}/`
 
-    this._redrawLocked       = false;
+    this._redrawLocked        = false;
 
-    this._collection         = null;
-    this._sortableAttributes = [];
-    this._lookupAttributes   = [];
-    this._currDisplayMode    = CollUtil.DisplayMode.GALLERY;
-    this._currDateDirection  = CollUtil.Direction.ASC;
+    this._collection          = null;
+    this._sortableAttributes  = [];
+    this._lookupAttributes    = [];
+
+    /*
+     * Indicate attributes that are excluded from html
+     * tags or from display.
+     */
+    this._excludedFromHtml    = [CollUtil.DATE, CollUtil.EXTENSION, `trlanslatedCurrentSortingAttribute`];
+    this._excludedFromDisplay = [`translatedAttributes`]; // + excludedFromHtml
+
+    /*
+     * Indicate attributes that have multiple values,
+     * separated by semicolons and need to be rewritten
+     * properly with commas and spaces, and aventually
+     * with hashes.
+     */
+    this._needsHashtag        = [CollUtil.TAGS];
+    this._needsJoining        = [CollUtil.DESCRIPTION];
+
+    /*
+     * Indicates attributes that have to be flattened for
+     * lookup purpose.
+     */
+    this._needsFlattening     = [CollUtil.DESCRIPTION, CollUtil.LOCATION];
+
+    /*
+     * Indicates attributes that are codes that can be
+     * translated.
+     */
+    this._needsTranslation    = [CollUtil.COUNTRY];
+
+    this._currDisplayMode     = CollUtil.DisplayMode.GALLERY;
+    this._currDateDirection   = CollUtil.Direction.ASC;
   }
 
-  get name()                 {return this._name;}
-  get pageBuilder()          {return this._pageBuilder;}
+  get name()                  {return this._name;}
+  get pageBuilder()           {return this._pageBuilder;}
 
-  get apiPath()              {return this._apiPath;}
-  get iconsJsonPath()        {return this._iconsJsonPath;}
-  get imgPath()              {return this._imgPath;}
+  get apiPath()               {return this._apiPath;}
+  get iconsJsonPath()         {return this._iconsJsonPath;}
+  get imgPath()               {return this._imgPath;}
 
-  get redrawLocked()         {return this._redrawLocked;}
+  get redrawLocked()          {return this._redrawLocked;}
 
-  get collection()           {return this._collection;}
-  get sortableAttributes()   {return this._sortableAttributes;}
-  get lookupAttributes()     {return this._lookupAttributes;}
+  get collection()            {return this._collection;}
+  get sortableAttributes()    {return this._sortableAttributes;}
+  get lookupAttributes()      {return this._lookupAttributes;}
+  get excludedFromHtml()      {return this._excludedFromHtml;}
+  get excludedFromDisplay()   {return this._excludedFromDisplay;}
+  get needsHashtag()          {return this._needsHashtag;}
+  get needsJoining()          {return this._needsHashtag;}
+  get needsFlattening()       {return this._needsFlattening;}
+  get needsTranslation()      {return this._needsTranslation;}
 
-  get currDisplayMode()      {return this._currDisplayMode;}
-  get currSortingAttribute() {return this._currSortingAttribute;}
-  get currSortingDirection() {return this._currSortingDirection;}
-  get currGrouping()         {return this._currGrouping;}
-  get currDateDirection()    {return this._currDateDirection;}
+  get currDisplayMode()       {return this._currDisplayMode;}
+  get currSortingAttribute()  {return this._currSortingAttribute;}
+  get currSortingDirection()  {return this._currSortingDirection;}
+  get currGrouping()          {return this._currGrouping;}
+  get currDateDirection()     {return this._currDateDirection;}
 
   _redrawLock()   {this._redrawLocked = true;}
   _redrawUnlock() {this._redrawLocked = false;}
@@ -186,7 +221,7 @@ export default class CollViewBuilder {
       }
 
       await this._pageBuilder.translator.asyncTranslatePage();
-      this.filterCollection(document.getElementById(`inp-filter`).value);
+      this._filterCollection(document.getElementById(`inp-filter`).value);
       PageUtil.fadeIn(`#collection-content`);
 
       this._redrawUnlock();
@@ -214,7 +249,7 @@ export default class CollViewBuilder {
     filterLabel.setAttribute(`data-i18n`, `labels.filter`);
     filterContainer.appendChild(filterLabel);
 
-    const boundFilter = this.filterCollection.bind(this);
+    const boundFilter = this._filterCollection.bind(this);
     const input = document.createElement(`input`);
     input.setAttribute(`id`, `inp-filter`);
     input.addEventListener(`input`, function (e) {boundFilter(this.value);});
@@ -602,11 +637,13 @@ export default class CollViewBuilder {
    *                                  be grouped or not
    */
   async _asyncDrawDetailsView(container, grouping) {
-    let view = document.getElementById(`collection-content`);
-    view = view ? view : document.createElement(`table`);
-    view.setAttribute(`id`, `collection-content`);
-    view.classList.add(`fadable`);
-    container.appendChild(view);
+    let wrapper = document.getElementById(`collection-content`);
+    wrapper = wrapper ? wrapper : document.createElement(`div`);
+    wrapper.setAttribute(`id`, `collection-content`);
+    wrapper.classList.add(`fadable`);
+    const view = document.createElement(`table`);
+    wrapper.appendChild(view);
+    container.appendChild(wrapper);
 
     const collection = await this._asyncGetCollection();
 
@@ -614,10 +651,13 @@ export default class CollViewBuilder {
     const exampleHeaders = Object.keys(JSON.parse(collection[0]));
     const headers = new Array();
     for (let i = 0 ; i < exampleHeaders.length ; i++) {
-      const th = document.createElement(`th`);
-      th.innerHTML = exampleHeaders[i];
-      thead.appendChild(th);
-      headers.push(exampleHeaders[i]);
+      const header = exampleHeaders[i];
+      if (!(this.excludedFromHtml.includes(header) || this.excludedFromDisplay.includes(header))) {
+        const th = document.createElement(`th`);
+        th.setAttribute(`data-i18n`, TextUtil.toDashCase(`attributes.${header}`));
+        thead.appendChild(th);
+        headers.push(header);
+      }
     }
     view.appendChild(thead);
 
@@ -639,7 +679,7 @@ export default class CollViewBuilder {
            * grouping is selected because openGroup === ``
            * when created.
            */
-          if (groupContent.firstChild) {
+          if (groupTbody.firstChild) {
             view.appendChild(groupTbody);
           }
 
@@ -676,7 +716,13 @@ export default class CollViewBuilder {
 
       for (let i = 0 ; i < headers.length ; i++) {
         const td = document.createElement(`td`);
-        td.innerHTML = item[headers[i]];
+        const attributeName = headers[i];
+        const value = item[attributeName];
+        td.innerHTML = await this._asyncBeautify(attributeName, value);
+        if (this._needsTranslation.includes(attributeName)) {
+          td.setAttribute(`data-i18n`, `${attributeName}.${value}`);
+        }
+
         itemTr.appendChild(td);
       }
 
@@ -690,17 +736,12 @@ export default class CollViewBuilder {
    * Adds item information into the HTMLElement in the form
    * of custom attributes.
    *
-   * @param  HTMLElement  element  the html element repre-
-   *                               senting the item
-   * @param  JSON object  item     the item
+   * @access  private
+   * @param   HTMLElement  element  the html element repre-
+   *                                senting the item
+   * @param   JSON object  item     the item
    */
   _addItemMeta(element, item) {
-    /*
-     * Indicates attributes that dont need to be saved in
-     * html.
-     */
-    const excluded = [CollUtil.DATE, CollUtil.EXTENSION, `trlanslatedCurrentSortingAttribute`];
-
     /*
      * Indicates attributes that have multiple values,
      * separated by semicolons and need to be rewritten
@@ -719,8 +760,8 @@ export default class CollViewBuilder {
     const attributes = Object.keys(item);
     for (let i = 0 ; i < attributes.length ; i ++) {
       const attr = attributes[i];
-      if (!excluded.includes(attr)) {
-        const attrDashName = `item-` + attr.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
+      if (!this.excludedFromHtml.includes(attr)) {
+        const attrDashName = TextUtil.toDashCase(`item-${attr}`);
         let value = item[attr];
 
         /*
@@ -756,10 +797,11 @@ export default class CollViewBuilder {
   /**
    * Filters the collection by the value passed in parameter.
    *
+   * @access  private
    * @param  string  filter  with which to filter the collec-
    *                         tion
    */
-  filterCollection(filter) {
+  _filterCollection(filter) {
     filter = TextUtil.flattenString(filter);
     const allElements = document.querySelectorAll(`.collection-item`);
     const selector = this.lookupAttributes.map(attribute => `.collection-item[${attribute}*="${filter}"]`).join(`, `);
@@ -837,5 +879,59 @@ export default class CollViewBuilder {
 
     PageUtil.bindOnClick(`#btn-fs-prev`, function() {boundPrev()});
     PageUtil.bindOnClick(`#btn-fs-next`, function() {boundNext()});
+  }
+
+  /**
+   * Returns the value into a format suitable to the speci-
+   * fied attribute.
+   *
+   * @access  private
+   * @param   string     attributeName  the name of the at-
+   *                                    tribute
+   * @param   string     value          the unformatted va-
+   *                                    lue
+   * @param   boolean    flatten        if the value has to
+   *                                    be flattened (lower
+   *                                    case and unaccent-
+   *                                    uated)
+   * @param   TransMode  transMode      NONE if no transla-
+   *                                    tion is needed,
+   *                                    CURRENT for current
+   *                                    language only, ALL
+   *                                    for a concatenation
+   *                                    of all translations
+   * @return  string                    the formatted value
+   */
+  async _asyncBeautify(attributeName, value, flatten = false, transMode = CollUtil.TransMode.NONE) {
+    const values = value.split(`;`);
+
+    if ((transMode !== CollUtil.TransMode.NONE) && (this.needsTranslation.includes(attributeName))) {
+      for (let i = 0 ; i < values.length ; i++) {
+        const translations = [];
+        const langs = (transMode === CollUtil.TransMode.ALL) ? Translator.AVAILABLE_LANG() : [this.pageBuilder.translator.lang];
+
+        for (let j = 0 ; j < langs.length ; j++) {
+          const valueI18nCode = `${TextUtil.toDashCase(attributeName)}.${values[i]}`;
+          const translation = await this._pageBuilder.translator.asyncGetTranslatedWord(valueI18nCode, langs[j]);
+          translations.push(translation);
+        }
+
+        values[i] = translations.join(`/`);
+      }
+    }
+
+    var value = ``;
+    if (this.needsHashtag.includes(attributeName)) {
+      value = values.join(`/`).split(`/`).map(val => `#${val}`).join(" ");
+    }
+    else {
+      value = values.join(`, `);
+    }
+
+    if (flatten) {
+      value = TextUtil.flattenString(value);
+    }
+
+    return value;
   }
 }

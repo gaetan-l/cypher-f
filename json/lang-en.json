@@ -20,7 +20,12 @@
     "sort": "Sort"
   },
   "attributes" : {
-    "country":    "Country"
+    "country":    "Country",
+    "description": "Description",
+    "file-name": "File",
+    "location": "Location",
+    "readable-date": "Date",
+    "tags": "Tags"
   },
   "country": {
     "at": "Austria",

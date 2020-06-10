@@ -67,9 +67,16 @@ Sorting.DESC_NOT_GROUPED = new Sorting(Direction.DESC, Grouping.NOT_GROUPED);
 Sorting.DESC_GROUPED     = new Sorting(Direction.DESC, Grouping.GROUPED);
 Sorting.lock();
 
+export class TransMode extends Enum {}
+TransMode.NONE = new TransMode(`none`);
+TransMode.CURRENT = new TransMode(`current`);
+TransMode.ALL = new TransMode(`all`);
+TransMode.lock();
+
+export const COUNTRY       = `country`;
 export const DATE          = `date`;
-export const READABLE_DATE = `readableDate`;
-export const LOCATION      = `location`;
 export const DESCRIPTION   = `description`;
-export const TAGS          = `tags`;
 export const EXTENSION     = `extension`;
+export const LOCATION      = `location`;
+export const READABLE_DATE = `readableDate`;
+export const TAGS          = `tags`;

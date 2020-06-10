@@ -62,4 +62,14 @@ export default class TextUtil {
   static flattenString(string) {
     return string.normalize(`NFD`).replace(/[\u0300-\u036f]/g, ``).toLowerCase();
   }
+
+  /**
+   * Transforms CamelCaseString to dash-case-string.
+   *
+   * @param   string  string  the string to transform
+   * @return  string          the dash case string
+   */
+  static toDashCase(string) {
+    return string.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
+  }
 }
