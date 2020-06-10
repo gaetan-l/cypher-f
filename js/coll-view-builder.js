@@ -31,6 +31,7 @@ export default class CollViewBuilder {
 
     this._collection         = null;
     this._sortableAttributes = [];
+    this._lookupAttributes   = [];
     this._currDisplayMode    = CollUtil.DisplayMode.GALLERY;
     this._currDateDirection  = CollUtil.Direction.ASC;
   }
@@ -46,6 +47,7 @@ export default class CollViewBuilder {
 
   get collection()           {return this._collection;}
   get sortableAttributes()   {return this._sortableAttributes;}
+  get lookupAttributes()     {return this._lookupAttributes;}
 
   get currDisplayMode()      {return this._currDisplayMode;}
   get currSortingAttribute() {return this._currSortingAttribute;}
@@ -397,7 +399,7 @@ export default class CollViewBuilder {
           item.trlanslatedCurrentSortingAttribute = translatedAttributes[attributeIndex][this.pageBuilder.translator.lang];
           item.i18nCurrentSortingAttribute = i18nCodes[attributeIndex];
         }
-        item.allTranslatedAttributes = translatedAttributes.map((translation, index) => this.sortableAttributes[index] + ":" + ((this.sortableAttributes[index] === CollUtil.DATE) ? translation : Object.values(translation).join(`/`))).join(`,`);
+        item.translatedAttributes = translatedAttributes.map((translation, index) => this.sortableAttributes[index] + ":" + ((this.sortableAttributes[index] === CollUtil.DATE) ? translation : Object.values(translation).join(`/`))).join(`,`);
         (await this._asyncGetCollection())[i] = JSON.stringify(item);
       }
     }
@@ -511,10 +513,10 @@ export default class CollViewBuilder {
     const _boundAsyncDisplayFullscreenPicture = this._asyncDisplayFullscreenPicture.bind(this);
 
     for (let i = 0 ; i < collection.length ; i++) {
-      const picture = JSON.parse(collection[i]);
+      const item = JSON.parse(collection[i]);
 
       if (grouping === CollUtil.Grouping.GROUPED) {
-        const currGroup = picture.trlanslatedCurrentSortingAttribute;
+        const currGroup = item.trlanslatedCurrentSortingAttribute;
         if (currGroup !== openGroup) {
           /*
            * Prevents from appending empty group created by
@@ -532,8 +534,8 @@ export default class CollViewBuilder {
 
           const title = document.createElement(`h1`);
           title.innerHTML = currGroup;
-          if (picture[`i18nCurrentSortingAttribute`]) {
-            title.setAttribute(`data-i18n`, picture.i18nCurrentSortingAttribute);
+          if (item[`i18nCurrentSortingAttribute`]) {
+            title.setAttribute(`data-i18n`, item.i18nCurrentSortingAttribute);
           }
           group.appendChild(title);
 
@@ -550,15 +552,8 @@ export default class CollViewBuilder {
        */
       const frame = document.createElement(`div`);
       frame.classList.add(`collection-item`,`polaroid-frame`);
-      frame.setAttribute(`coll-index`,                 i);
-      frame.setAttribute(`item-date`,                  picture[CollUtil.READABLE_DATE]);
-      frame.setAttribute(`item-description`,           picture[CollUtil.DESCRIPTION].split(`;`).map(tag => tag).join(`, `));
-      frame.setAttribute(`item-description-i`,         picture[CollUtil.DESCRIPTION].split(`;`).map(tag => TextUtil.flattenString(tag)).join(`, `));
-      frame.setAttribute(`item-location`,              picture[CollUtil.LOCATION]);
-      frame.setAttribute(`item-location-i`,            TextUtil.flattenString(picture[CollUtil.LOCATION]));
-      frame.setAttribute(`item-tags`,                  picture[CollUtil.TAGS].split(`;`).map(tag => `#${tag}`).join(` `));
-      frame.setAttribute(`item-translated-attributes`, picture.allTranslatedAttributes);
-      frame.setAttribute(`item-filename`,              this.imgPath + picture.fileName);
+      frame.setAttribute(`coll-index`, i);
+      this._addItemMeta(frame, item);
 
       frame.onclick = function() {
         _boundAsyncDisplayFullscreenPicture(this);
@@ -582,7 +577,7 @@ export default class CollViewBuilder {
        * when clicked (see onclick above).
        */
       img.classList.add(`polaroid-image`);
-      img.src = `${this.imgPath}${picture.fileName}`;
+      img.src = `${this.imgPath}${item.fileName}`;
 
       /*
        * Adding picture to frame and frame to temporary container.
@@ -671,15 +666,8 @@ export default class CollViewBuilder {
        */
       const itemTr = document.createElement(`tr`);
       itemTr.classList.add(`collection-item`,`details-row`);
-      itemTr.setAttribute(`coll-index`,                 i);
-      itemTr.setAttribute(`item-date`,                  item[CollUtil.READABLE_DATE]);
-      itemTr.setAttribute(`item-description`,           item[CollUtil.DESCRIPTION].split(`;`).map(tag => tag).join(`, `));
-      itemTr.setAttribute(`item-description-i`,         item[CollUtil.DESCRIPTION].split(`;`).map(tag => TextUtil.flattenString(tag)).join(`, `));
-      itemTr.setAttribute(`item-location`,              item[CollUtil.LOCATION]);
-      itemTr.setAttribute(`item-location-i`,            TextUtil.flattenString(item[CollUtil.LOCATION]));
-      itemTr.setAttribute(`item-tags`,                  item[CollUtil.TAGS].split(`;`).map(tag => `#${tag}`).join(` `));
-      itemTr.setAttribute(`item-translated-attributes`, item.allTranslatedAttributes);
-      itemTr.setAttribute(`item-filename`,              this.imgPath + item.fileName);
+      itemTr.setAttribute(`coll-index`, i);
+      this._addItemMeta(itemTr, item);
 
       itemTr.onclick = function() {
         _boundAsyncDisplayFullscreenPicture(this);
@@ -699,6 +687,73 @@ export default class CollViewBuilder {
   }
 
   /**
+   * Adds item information into the HTMLElement in the form
+   * of custom attributes.
+   *
+   * @param  HTMLElement  element  the html element repre-
+   *                               senting the item
+   * @param  JSON object  item     the item
+   */
+  _addItemMeta(element, item) {
+    /*
+     * Indicates attributes that dont need to be saved in
+     * html.
+     */
+    const excluded = [CollUtil.DATE, CollUtil.EXTENSION, `trlanslatedCurrentSortingAttribute`];
+
+    /*
+     * Indicates attributes that have multiple values,
+     * separated by semicolons and need to be rewritten
+     * properly with commas and spaces, and aventually
+     * with hashes.
+     */
+    const needsHashtag = [CollUtil.TAGS];
+    const needsJoining = [CollUtil.DESCRIPTION];
+
+    /*
+     * Indicates attributes that have to be flattened for
+     * lookup purpose.
+     */
+    const needsFlattening = [CollUtil.DESCRIPTION, CollUtil.LOCATION];
+
+    const attributes = Object.keys(item);
+    for (let i = 0 ; i < attributes.length ; i ++) {
+      const attr = attributes[i];
+      if (!excluded.includes(attr)) {
+        const attrDashName = `item-` + attr.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
+        let value = item[attr];
+
+        /*
+         * Rewrite values if necessary.
+         */
+        if (needsHashtag.includes(attr)) {
+          value = value.split(`;`).map(tag => `#${tag}`).join(` `);
+        }
+        else if (needsJoining.includes(attr)) {
+          value = value.split(`;`).join(`, `);
+        }
+
+        element.setAttribute(`${attrDashName}`, value);
+
+        /*
+         * Adding flattened values if neccessary for look-
+         * up.
+         */
+        if (needsFlattening.includes(attr)) {
+          const attrIName = `${attrDashName}-i`;
+          element.setAttribute(attrIName, TextUtil.flattenString(value));
+          if (!this.lookupAttributes.includes(attrIName)) {
+            this.lookupAttributes.push(attrIName);
+          }
+        }
+        else if (!this.lookupAttributes.includes(attrDashName)) {
+          this.lookupAttributes.push(attrDashName);
+        }
+      }
+    }
+  }
+
+  /**
    * Filters the collection by the value passed in parameter.
    *
    * @param  string  filter  with which to filter the collec-
@@ -706,22 +761,20 @@ export default class CollViewBuilder {
    */
   filterCollection(filter) {
     filter = TextUtil.flattenString(filter);
-    const allFrames = document.querySelectorAll(`.collection-item`);
-    const selector = `.collection-item[item-date*`                    + `="${filter}"], `
-                   + `.collection-item[item-location-i*`              + `="${filter}"], `
-                   + `.collection-item[item-description-i*`           + `="${filter}"], `
-                   + `.collection-item[item-tags*`                    + `="${filter}"], `
-                   + `.collection-item[item-translated-attributes*`   + `="${filter}"]`;
-    const relevantFrames = Array.from(document.querySelectorAll(selector));
-    for (let i = 0 ; i < allFrames.length ; i++) {
-      const frame = allFrames[i];
-      if ((filter === ``) || relevantFrames.includes(frame)) {
-        frame.classList.remove(`irrelevant`);
+    const allElements = document.querySelectorAll(`.collection-item`);
+    const selector = this.lookupAttributes.map(attribute => `.collection-item[${attribute}*="${filter}"]`).join(`, `);
+    const relevantElements = Array.from(document.querySelectorAll(selector));
+
+    for (let i = 0 ; i < allElements.length ; i++) {
+      const element = allElements[i];
+      if ((filter === ``) || relevantElements.includes(element)) {
+        element.classList.remove(`irrelevant`);
       }
       else {
-        frame.classList.add(`irrelevant`);
+        element.classList.add(`irrelevant`);
       }
     }
+
     const allGroups = document.querySelectorAll(`.collection-group`);
     for (let i = 0 ; i < allGroups.length ; i++) {
       const relevantContent = allGroups[i].querySelectorAll(`.collection-item:not(.irrelevant)`);
@@ -739,17 +792,17 @@ export default class CollViewBuilder {
    * navigation buttons and picture information labels.
    *
    * @access  private
-   * @param   HTMLElement  frame  the clicked picture frame
+   * @param   HTMLElement  element  the clicked element
    */
-  async _asyncDisplayFullscreenPicture(frame) {
-    document.getElementById(`fullscreen-image`).src = frame.getAttribute(`item-filename`);
+  async _asyncDisplayFullscreenPicture(element) {
+    document.getElementById(`fullscreen-image`).src = this.imgPath + element.getAttribute(`item-file-name`);
 
     const infoDiv = document.getElementById(`fullscreen-infobox`);
     infoDiv.innerHTML = ``;
     const picInfosIds = [`item-date`,       `item-location`,       `item-description`,       `item-tags`];
     const  fsInfosIds = [`fullscreen-date`, `fullscreen-location`, `fullscreen-description`, `fullscreen-tags`];
     for (let i = 0 ; i < picInfosIds.length ; i++) {
-      const value = frame.getAttribute(picInfosIds[i]);
+      const value = element.getAttribute(picInfosIds[i]);
       if (value != null) {
         const p = document.createElement(`p`);
         p.setAttribute(`id`, fsInfosIds[i]);
@@ -764,19 +817,19 @@ export default class CollViewBuilder {
      * actually displayed pictures (collection minus those
      * hidden).
      */
-    const allFrames = Array.from(document.querySelectorAll(`.collection-item:not(.irrelevant)`));
-    const htmlIndex = allFrames.indexOf(frame);
+    const allElements = Array.from(document.querySelectorAll(`.collection-item:not(.irrelevant)`));
+    const htmlIndex = allElements.indexOf(element);
 
     function prev() {
-      const prevHtmlIndex = (htmlIndex + allFrames.length - 1) % allFrames.length;
-      const prevFrame = allFrames[prevHtmlIndex];
-      this._asyncDisplayFullscreenPicture(prevFrame);
+      const prevHtmlIndex = (htmlIndex + allElements.length - 1) % allElements.length;
+      const prevElement = allElements[prevHtmlIndex];
+      this._asyncDisplayFullscreenPicture(prevElement);
     }
 
     function next() {
-      const nextHtmlIndex = (htmlIndex + 1) % allFrames.length;
-      const nextFrame = allFrames[nextHtmlIndex];
-      this._asyncDisplayFullscreenPicture(nextFrame);
+      const nextHtmlIndex = (htmlIndex + 1) % allElements.length;
+      const nextElement = allElements[nextHtmlIndex];
+      this._asyncDisplayFullscreenPicture(nextElement);
     }
 
     const boundPrev = prev.bind(this);
