@@ -40,6 +40,7 @@
 --font-size-medium:                calc(1.5 * var(--font-size-default));
 --font-size-big:                   calc(2.0 * var(--font-size-default));
 --border-thin-width:                 1px;
+--input-margin:                    var(--size-2);
 --button-size:                     var(--size-6);
 --button-margin:                   var(--size-2);
 --notification-size:               var(--size-6);
@@ -149,7 +150,7 @@ input {
   font-size: var(--font-size-medium);
 }
 
-#site-footer .button-container {
+#site-footer .toolbar-container {
   /*
    * Has to take the max possible size so 1 * size of hove-
    * red button + (total nb of buttons - 1) * size of un-
@@ -245,7 +246,7 @@ input {
  * ============= 7.  CONTROLS AND NOTIFICATIONS ===========
  * ========================================================
  */
- .button-container {
+ .toolbar-container {
   display: flex;
   flex-flow: row nowrap;
 
@@ -257,12 +258,16 @@ input {
   align-items: center;
 }
 
-.button-container.left-side {
+.toolbar-container.left-side {
   justify-content: flex-start;
 }
 
-.button-container.right-side {
+.toolbar-container.right-side {
   justify-content: flex-end;
+}
+
+input {
+  margin: var(--input-margin);
 }
 
 .button {

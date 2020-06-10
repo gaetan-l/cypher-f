@@ -292,6 +292,14 @@ input:focus, textarea:focus, select:focus {
   color: rgba(var(--color-tertiary), 1.0);
 }
 
+.label::after {
+  content: ":";
+}
+
+:lang(fr) .label::after {
+  content: " :";
+}
+
 
 
 /*

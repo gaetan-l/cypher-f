@@ -31,6 +31,7 @@ export default class CollViewBuilder {
 
     this._collection         = null;
     this._sortableAttributes = [];
+    this._currDisplayMode    = CollUtil.DisplayMode.GALLERY;
     this._currDateDirection  = CollUtil.Direction.ASC;
   }
 
@@ -45,6 +46,8 @@ export default class CollViewBuilder {
 
   get collection()           {return this._collection;}
   get sortableAttributes()   {return this._sortableAttributes;}
+
+  get currDisplayMode()      {return this._currDisplayMode;}
   get currSortingAttribute() {return this._currSortingAttribute;}
   get currSortingDirection() {return this._currSortingDirection;}
   get currGrouping()         {return this._currGrouping;}
@@ -55,6 +58,8 @@ export default class CollViewBuilder {
 
   set collection          (collection)           {this._collection           = collection;}
   set sortableAttributes  (sortableAttributes)   {this._sortableAttributes   = sortableAttributes;}
+
+  set currDisplayMode     (displayMode)          {this._currDisplayMode      = displayMode;}
   set currSortingAttribute(currSortingAttribute) {this._currSortingAttribute = currSortingAttribute;}
   set currSortingDirection(currSortingDirection) {this._currSortingDirection = currSortingDirection;}
   set currGrouping        (currGrouping)         {this._currGrouping         = currGrouping;}
@@ -109,7 +114,7 @@ export default class CollViewBuilder {
      */
     await this._asyncGetCollection();
 
-    await this._asyncDrawToolbarView(container, displayMode);
+    await this._asyncDrawToolbarView(container);
     await this._asyncRedraw(container, displayMode, sortingAttribute, sortingDirection, grouping, dateDirection);
     await this._asyncDrawFullscreenView();
     PageUtil.fadeIn(`#main-panel`);
@@ -147,6 +152,12 @@ export default class CollViewBuilder {
 
     if (!this.redrawLocked) {
       this._redrawLock();
+
+      this.currDisplayMode      = displayMode;
+      this.currSortingAttribute = sortingAttribute;
+      this.currSortingDirection = sortingDirection;
+      this.currGrouping         = grouping;
+      this.currDateDirection    = dateDirection;
 
       container = PageUtil.getUniqueElement(container);
       sortingAttribute = this.sortableAttributes.includes(sortingAttribute) ? sortingAttribute : CollUtil.DATE;
@@ -188,25 +199,51 @@ export default class CollViewBuilder {
    *           or                       which to draw the
    *          string                    view, or selector
    *                                    to access it
-   * @param   DisplayMode  displayMode  the type of view to
-   *                                    draw
    */
-  async _asyncDrawToolbarView(container, displayMode) {
+  async _asyncDrawToolbarView(container) {
     const toolbar = document.createElement(`div`);
     toolbar.classList.add(`collection-toolbar`);
+
+    const filterContainer = document.createElement(`div`);
+    filterContainer.classList.add(`toolbar-container`);
+
+    const filterLabel = document.createElement(`p`);
+    filterLabel.classList.add(`label`);
+    filterLabel.setAttribute(`data-i18n`, `labels.filter`);
+    filterContainer.appendChild(filterLabel);
 
     const boundFilter = this.filterCollection.bind(this);
     const input = document.createElement(`input`);
     input.setAttribute(`id`, `inp-filter`);
     input.addEventListener(`input`, function (e) {boundFilter(this.value);});
-    toolbar.appendChild(input);
+    filterContainer.appendChild(input);
+
+    toolbar.appendChild(filterContainer);
 
     const toolbarButtonContainer = document.createElement(`div`);
-    toolbarButtonContainer.setAttribute(`id`, `collection-toolbar-button-container`);
-    toolbarButtonContainer.classList.add(`button-container`, `right-side`);
+    toolbarButtonContainer.setAttribute(`id`, `collection-toolbar-toolbar-container`);
+    toolbarButtonContainer.classList.add(`toolbar-container`, `right-side`);
 
     const response = await fetch(this.iconsJsonPath);
     const icons = await response.json();
+
+    async function changeDisplayMode() {
+      await this._asyncRedraw(container, this.currDisplayMode.next, this.currSortingAttribute, this.currSortingDirection, this.currGrouping, this.currDateDirection);
+      document.getElementById(`btn-display-mode`).innerHTML = TextUtil.getJsonValue(`display-${this.currDisplayMode.next.value}`, icons);
+    }
+
+    const boundChangeDisplayMode = changeDisplayMode.bind(this);
+    const changeDisplayButton = document.createElement(`i`);
+    changeDisplayButton.setAttribute(`id`, `btn-display-mode`);
+    changeDisplayButton.classList.add(`material-icons`, `button`);
+    PageUtil.bindOnClick(changeDisplayButton, function() {boundChangeDisplayMode();});
+    changeDisplayButton.innerHTML = TextUtil.getJsonValue(`display-${this.currDisplayMode.next.value}`, icons);
+
+    const displayModeLabel = document.createElement(`p`);
+    displayModeLabel.classList.add(`label`);
+    displayModeLabel.setAttribute(`data-i18n`, `labels.display-mode`);
+    toolbarButtonContainer.appendChild(displayModeLabel);
+    toolbarButtonContainer.appendChild(changeDisplayButton);
 
     async function changeSorting(selectedSortingAttribute) {
       let selectedDirection;
@@ -234,17 +271,22 @@ export default class CollViewBuilder {
         selectedDateDirection = this.currDateDirection;
       }
 
-      await this._asyncRedraw(container, displayMode, selectedSortingAttribute, selectedDirection, selectedGrouping, selectedDateDirection);
+      await this._asyncRedraw(container, this.currDisplayMode, selectedSortingAttribute, selectedDirection, selectedGrouping, selectedDateDirection);
     }
 
     async function changeDateDirection() {
       if (this.currSortingAttribute !== CollUtil.DATE) {
-        await this._asyncRedraw(container, displayMode, this.currSortingAttribute, this.currSortingDirection, this.currGrouping, this.currDateDirection.next);
+        await this._asyncRedraw(container, this.currDisplayMode, this.currSortingAttribute, this.currSortingDirection, this.currGrouping, this.currDateDirection.next);
       }
     }
 
     const boundChangeSorting = changeSorting.bind(this);
     const boundChangeDateDirection = changeDateDirection.bind(this);
+
+    const sortLabel = document.createElement(`p`);
+    sortLabel.classList.add(`label`);
+    sortLabel.setAttribute(`data-i18n`, `labels.sort`);
+    toolbarButtonContainer.appendChild(sortLabel);
 
     for (let i = 0 ; i < this.sortableAttributes.length ; i++) {
       let sorting = this.sortableAttributes[i];
@@ -257,7 +299,7 @@ export default class CollViewBuilder {
       PageUtil.bindOnRightClick(button, sorting === CollUtil.DATE ? function() {boundChangeDateDirection();} : function() {});
 
       let iconName = TextUtil.getJsonValue(sorting, icons);
-      if (!iconName) {iconName = TextUtil.getJsonValue(`default`, icons);}
+      if (!iconName) {iconName = TextUtil.getJsonValue(`default-sorting`, icons);}
       button.innerHTML = iconName;
 
       const iconNotifContainer = document.createElement(`div`);

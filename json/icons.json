@@ -1,5 +1,7 @@
 {
-  "default": "dynamic_feed",
+  "display-details": "list",
+  "display-gallery": "view_module",
+  "default-sorting": "dynamic_feed",
   "country": "flag",
   "date":    "event"
 }

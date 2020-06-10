@@ -14,7 +14,12 @@
     "travels": "Voyages",
     "interests": "Interêts"
   },
-  "attributes" : {
+  "labels": {
+    "filter": "Filtrer",
+    "display-mode": "Afficher",
+    "sort": "Trier"
+  },
+  "attributes": {
     "country":    "Pays"
   },
   "country": {
