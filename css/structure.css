@@ -110,6 +110,11 @@ input {
   height: var(--input-height);
 }
 
+td, th {
+  white-space: nowrap;
+  text-align: left;
+}
+
 
 
 /*

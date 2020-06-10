@@ -80,7 +80,7 @@ export default class CollViewBuilder {
   get excludedFromHtml()      {return this._excludedFromHtml;}
   get excludedFromDisplay()   {return this._excludedFromDisplay;}
   get needsHashtag()          {return this._needsHashtag;}
-  get needsJoining()          {return this._needsHashtag;}
+  get needsJoining()          {return this._needsJoining;}
   get needsFlattening()       {return this._needsFlattening;}
   get needsTranslation()      {return this._needsTranslation;}
 
@@ -903,7 +903,7 @@ export default class CollViewBuilder {
    * @return  string                    the formatted value
    */
   async _asyncBeautify(attributeName, value, flatten = false, transMode = CollUtil.TransMode.NONE) {
-    const values = value.split(`;`);
+    const values = this.needsJoining.includes(attributeName) ? value.split(`;`) : [value];
 
     if ((transMode !== CollUtil.TransMode.NONE) && (this.needsTranslation.includes(attributeName))) {
       for (let i = 0 ; i < values.length ; i++) {
