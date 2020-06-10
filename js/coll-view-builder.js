@@ -648,6 +648,7 @@ export default class CollViewBuilder {
     const collection = await this._asyncGetCollection();
 
     const thead = document.createElement(`thead`);
+    const theadTr = document.createElement(`tr`);
     const exampleHeaders = Object.keys(JSON.parse(collection[0]));
     const headers = new Array();
     for (let i = 0 ; i < exampleHeaders.length ; i++) {
@@ -655,10 +656,11 @@ export default class CollViewBuilder {
       if (!(this.excludedFromHtml.includes(header) || this.excludedFromDisplay.includes(header))) {
         const th = document.createElement(`th`);
         th.setAttribute(`data-i18n`, TextUtil.toDashCase(`attributes.${header}`));
-        thead.appendChild(th);
+        theadTr.appendChild(th);
         headers.push(header);
       }
     }
+    thead.appendChild(theadTr);
     view.appendChild(thead);
 
     let groupTbody = document.createElement(`tbody`);
@@ -903,7 +905,8 @@ export default class CollViewBuilder {
    * @return  string                    the formatted value
    */
   async _asyncBeautify(attributeName, value, flatten = false, transMode = CollUtil.TransMode.NONE) {
-    const values = this.needsJoining.includes(attributeName) ? value.split(`;`) : [value];
+    const split = this.needsJoining.includes(attributeName) || this.needsHashtag.includes(attributeName);
+    const values = split ? value.split(`;`) : [value];
 
     if ((transMode !== CollUtil.TransMode.NONE) && (this.needsTranslation.includes(attributeName))) {
       for (let i = 0 ; i < values.length ; i++) {

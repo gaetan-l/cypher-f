@@ -41,10 +41,10 @@
 --font-size-big:                   calc(2.0 * var(--font-size-default));
 --border-thin-width:                 1px;
 --input-margin:                    var(--size-2);
+--input-height:                    var(--size-6);
 --button-size:                     var(--size-6);
 --button-margin:                   var(--size-2);
 --notification-size:               var(--size-6);
---input-height:                    var(--size-6);
 
 /* ------------- Main structure --------------------------- */
 --side-panel-width:                var(--size-50);
@@ -113,6 +113,8 @@ input {
 td, th {
   white-space: nowrap;
   text-align: left;
+  line-height: var(--size-10);
+  padding: 0 var(--size-2) 0 var(--size-2);
 }
 
 
