@@ -322,10 +322,10 @@ export default class CollViewBuilder {
    */
   async _asyncDrawFullscreenView() {
     const fsView = document.createElement(`div`);
-    fsView.setAttribute(`id`, `polaroid-fullscreen`);
+    fsView.setAttribute(`id`, `picture-fullscreen`);
     document.body.appendChild(fsView);
-    await PageUtil.replaceElementWithTemplate(`#polaroid-fullscreen`);
-    PageUtil.bindOnClick(`#btn-fs-close`,  function() {PageUtil.fadeOut(`#polaroid-fullscreen`);});
+    await PageUtil.replaceElementWithTemplate(`#picture-fullscreen`);
+    PageUtil.bindOnClick(`#btn-fs-close`,  function() {PageUtil.fadeOut(`#picture-fullscreen`);});
   }
 
   /**
@@ -557,7 +557,7 @@ export default class CollViewBuilder {
 
       frame.onclick = function() {
         _boundAsyncDisplayFullscreenPicture(this);
-        PageUtil.fadeIn(`#polaroid-fullscreen`);
+        PageUtil.fadeIn(`#picture-fullscreen`);
       };
 
       /*
@@ -671,7 +671,7 @@ export default class CollViewBuilder {
 
       itemTr.onclick = function() {
         _boundAsyncDisplayFullscreenPicture(this);
-        PageUtil.fadeIn(`#polaroid-fullscreen`);
+        PageUtil.fadeIn(`#picture-fullscreen`);
       };
 
       for (let i = 0 ; i < headers.length ; i++) {

@@ -323,12 +323,6 @@ input {
 /*
  * ------------- 8.1 Picture gallery ----------------------
  */
-.polaroid-gallery {
-}
-
-.polaroid-group {
-}
-
 .polaroid-group h1 {
   position: -webkit-sticky;
   position: sticky;
