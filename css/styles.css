@@ -11,8 +11,9 @@
  * 6.  MENU
  * 7.  CONTROLS AND NOTIFICATIONS
  * 8.  COLLECTIONS
- * 8.1 Picture gallery
- * 8.2 Fullscreen view
+ * 8.1 Gallery view
+ * 8.2 Details view
+ * 8.3 Fullscreen view
  * 9.  PAGE-SPECIFIC
  * 9.1 Homepage
  */
@@ -35,7 +36,7 @@
 
   --tertiary-r:              22;
   --tertiary-g:             226;
-  --tertiary-b:             0;
+  --tertiary-b:               0;
 
   --quaternary-r:           221;
   --quaternary-g:           221;
@@ -130,7 +131,7 @@ thead th {
   color: white;
 }
 
-tbody tr:nth-child(even) td {
+tbody tr.even td {
   background-color: rgba(var(--color-primary), 0.25);
 }
 
@@ -151,7 +152,6 @@ tbody tr:nth-child(even) td {
 #side-panel {
   border-right-style: solid;
   border-right-color: rgba(var(--color-quaternary-light), 1.0);
-  box-shadow: 1px 1px 1px;
 }
 
 #site-footer {
@@ -325,7 +325,6 @@ input:focus, textarea:focus, select:focus {
   background-color: rgba(var(--color-neutral), 1.0);
   border-bottom-color: rgba(var(--color-quaternary-light), 1.0);
   border-bottom-style: solid;
-  box-shadow: 1px 1px 1px;
 }
 
 .collection-toolbar .button {
@@ -333,7 +332,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 /*
- * ------------- 8.1 Picture gallery ----------------------
+ * ------------- 8.1 gallery view -------------------------
  */
 .polaroid-group h1 {
   -webkit-user-select: none;
@@ -371,7 +370,11 @@ input:focus, textarea:focus, select:focus {
 }
 
 /*
- * ------------- 8.2 Fullscreen view ----------------------
+ * ------------- 8.2 Details view -------------------------
+ */
+
+/*
+ * ------------- 8.3 Fullscreen view ----------------------
  */
  /*
   * Height trick (height must be applied after fade-out
@@ -401,6 +404,6 @@ input:focus, textarea:focus, select:focus {
  *
  * ------------- 9.1 Homepage -----------------------------
  */
-#pge-home > #main-panel {
+#pge-home #main-panel {
   background-image: url('../images/background.jpg');
 }

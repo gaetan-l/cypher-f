@@ -537,7 +537,7 @@ export default class CollViewBuilder {
 
     let group = document.createElement(`div`);
     group.setAttribute(`id`, `polaroid-group-`)
-    group.classList.add(`collection-group`, `polaroid-group`);
+    group.classList.add(`collection-group`, `polaroid-group`, `relevant`);
     let openGroup = ``;
 
     let groupContent = document.createElement(`div`);
@@ -565,7 +565,7 @@ export default class CollViewBuilder {
 
           group = document.createElement(`div`);
           group.setAttribute(`id`, `polaroid-group-${currGroup}`);
-          group.classList.add(`collection-group`, `polaroid-group`);
+          group.classList.add(`collection-group`, `polaroid-group`, `relevant`);
 
           const title = document.createElement(`h1`);
           title.innerHTML = currGroup;
@@ -586,7 +586,7 @@ export default class CollViewBuilder {
        * Picture frame.
        */
       const frame = document.createElement(`div`);
-      frame.classList.add(`collection-item`,`polaroid-frame`);
+      frame.classList.add(`collection-item`, `polaroid-frame`, `relevant`);
       frame.setAttribute(`coll-index`, i);
       this._addItemMeta(frame, item);
 
@@ -687,7 +687,7 @@ export default class CollViewBuilder {
 
           groupTbody = document.createElement(`tbody`);
           groupTbody.setAttribute(`id`, `details-group-${currGroup}`);
-          groupTbody.classList.add(`collection-group`, `details-group`);
+          groupTbody.classList.add(`collection-group`, `details-group`, `relevant`);
 
           const groupTr = document.createElement(`tr`);
           const groupTh = document.createElement(`th`);
@@ -707,7 +707,7 @@ export default class CollViewBuilder {
        * Picture frame.
        */
       const itemTr = document.createElement(`tr`);
-      itemTr.classList.add(`collection-item`,`details-row`);
+      itemTr.classList.add(`collection-item`, `details-row`, `relevant`);
       itemTr.setAttribute(`coll-index`, i);
       this._addItemMeta(itemTr, item);
 
@@ -797,7 +797,8 @@ export default class CollViewBuilder {
   }
 
   /**
-   * Filters the collection by the value passed in parameter.
+   * Filters the collection by the value passed in para-
+   * meter.
    *
    * @access  private
    * @param  string  filter  with which to filter the collec-
@@ -809,10 +810,18 @@ export default class CollViewBuilder {
     const selector = this.lookupAttributes.map(attribute => `.collection-item[${attribute}*="${filter}"]`).join(`, `);
     const relevantElements = Array.from(document.querySelectorAll(selector));
 
+    let actualIndex = 0;
     for (let i = 0 ; i < allElements.length ; i++) {
       const element = allElements[i];
+
+      element.classList.remove(`relevant`);
+      element.classList.remove(`irrelevant`);
+      element.classList.remove(`odd`);
+      element.classList.remove(`even`);
+
       if ((filter === ``) || relevantElements.includes(element)) {
-        element.classList.remove(`irrelevant`);
+        element.classList.add(`relevant`);
+        element.classList.add((actualIndex++ % 2 == 0) ? `even` : `odd`);
       }
       else {
         element.classList.add(`irrelevant`);
@@ -824,8 +833,10 @@ export default class CollViewBuilder {
       const relevantContent = allGroups[i].querySelectorAll(`.collection-item:not(.irrelevant)`);
       if (relevantContent.length > 0) {
         allGroups[i].classList.remove(`irrelevant`);
+        allGroups[i].classList.add(`relevant`);
       }
       else {
+        allGroups[i].classList.remove(`relevant`);
         allGroups[i].classList.add(`irrelevant`);
       }
     }
