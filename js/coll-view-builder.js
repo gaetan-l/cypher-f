@@ -38,7 +38,7 @@ export default class CollViewBuilder {
      * tags or from display.
      */
     this._excludedFromHtml    = [CollUtil.DATE, CollUtil.EXTENSION, `trlanslatedCurrentSortingAttribute`];
-    this._excludedFromDisplay = [`translatedAttributes`]; // + excludedFromHtml
+    this._excludedFromDisplay = [`i18nCurrentSortingAttribute`, `translatedAttributes`]; // + excludedFromHtml
 
     /*
      * Indicate attributes that have multiple values,
@@ -395,6 +395,7 @@ export default class CollViewBuilder {
     /*
      * Translates the groups so that they are ordered pro-
      * perly.
+     * TODO: rewrite with the new translateWord function
      */
     async function translateGroups(sortingAttribute, grouping) {
       const length = (await this._asyncGetCollection()).length;
@@ -428,6 +429,7 @@ export default class CollViewBuilder {
 
         if (sortingAttribute === CollUtil.DATE) {
           item.trlanslatedCurrentSortingAttribute = translatedAttributes[this.sortableAttributes.indexOf(sortingAttribute)];
+          item.i18nCurrentSortingAttribute = null;
         }
         else {
           const attributeIndex = this.sortableAttributes.indexOf(sortingAttribute)
@@ -647,6 +649,9 @@ export default class CollViewBuilder {
 
     const collection = await this._asyncGetCollection();
 
+    /*
+     * Selecting which headers to display
+     */
     const thead = document.createElement(`thead`);
     const theadTr = document.createElement(`tr`);
     const exampleHeaders = Object.keys(JSON.parse(collection[0]));
@@ -654,11 +659,33 @@ export default class CollViewBuilder {
     for (let i = 0 ; i < exampleHeaders.length ; i++) {
       const header = exampleHeaders[i];
       if (!(this.excludedFromHtml.includes(header) || this.excludedFromDisplay.includes(header))) {
-        const th = document.createElement(`th`);
-        th.setAttribute(`data-i18n`, TextUtil.toDashCase(`attributes.${header}`));
-        theadTr.appendChild(th);
         headers.push(header);
       }
+    }
+    /*
+     * Sorting headers with Column class in CollUtil
+     */
+    const collName = this.name;
+    headers.sort(function (x, y) {
+      const ix = CollUtil.Column.from(collName, x).index;
+      const iy = CollUtil.Column.from(collName, y).index;
+      let result = 0;
+      if (ix < iy) {
+        result = -1;
+      }
+      else if (ix > iy) {
+        result = 1;
+      }
+      return result;
+    });
+    /*
+     * Creating html elements.
+     */
+    for (let i = 0 ; i < headers.length ; i++) {
+      const header = headers[i];
+      const th = document.createElement(`th`);
+      th.setAttribute(`data-i18n`, TextUtil.toDashCase(`attributes.${header}`));
+      theadTr.appendChild(th);
     }
     thead.appendChild(theadTr);
     view.appendChild(thead);

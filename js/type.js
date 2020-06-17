@@ -113,6 +113,10 @@ export class Enum {
     let unchecked = (this.index - 1) % this.constructor.items.length;
     return this.constructor.items[unchecked < 0 ? unchecked + this.constructor.items.length : unchecked];
   }
+
+  toString() {
+    return this.value;
+  }
 }
 
 /**
@@ -139,7 +143,7 @@ export class EnumPair extends Enum {
    *                             ding to these members
    */  
   static from(member1, member2) {
-    const index = this.items.map(item => [item.member1.value, item.member2.value].toString()).indexOf([member1.value, member2.value].toString());
+    const index = this.items.map(item => [item.member1.toString(), item.member2.toString()].toString()).indexOf([member1.toString(), member2.toString()].toString());
     if (index > -1) {
       return this.items[index];
     }

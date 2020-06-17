@@ -2,6 +2,17 @@ import * as Type from "/js/type.js";
 
 `use strict`
 
+export const PHOTOS         = `photos`
+
+export const COUNTRY        = `country`;
+export const DATE           = `date`;
+export const DESCRIPTION    = `description`;
+export const EXTENSION      = `extension`;
+export const FILE_NAME      = `fileName`
+export const LOCATION       = `location`;
+export const READABLE_DATE  = `readableDate`;
+export const TAGS           = `tags`;
+
 /**
  * Specifies the different display modes of a collection.
  */
@@ -47,10 +58,14 @@ TransMode.CURRENT = new TransMode(`current`);
 TransMode.ALL = new TransMode(`all`);
 TransMode.lock();
 
-export const COUNTRY       = `country`;
-export const DATE          = `date`;
-export const DESCRIPTION   = `description`;
-export const EXTENSION     = `extension`;
-export const LOCATION      = `location`;
-export const READABLE_DATE = `readableDate`;
-export const TAGS          = `tags`;
+export class Column extends Type.EnumPair {
+  get collection() {return this.member1;}
+  get attribute()  {return this.member2;}
+}
+Column.PHOTOS_READABLE_DATE = new Column(PHOTOS, READABLE_DATE);
+Column.PHOTOS_COUNTRY       = new Column(PHOTOS, COUNTRY);
+Column.PHOTOS_LOCATION      = new Column(PHOTOS, LOCATION);
+Column.PHOTOS_DESCRIPTION   = new Column(PHOTOS, DESCRIPTION);
+Column.PHOTOS_TAGS          = new Column(PHOTOS, TAGS);
+Column.PHOTOS_FILE_NAME     = new Column(PHOTOS, FILE_NAME);
+Column.lock();
