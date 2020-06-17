@@ -8,7 +8,7 @@
  *
  * @link https://stackoverflow.com/questions/62041969/method-in-enum-type
  */
-export default class Enum {
+export class Enum {
   /**
    * Locks the Enum, preventing to add more values to it.
    */
@@ -112,5 +112,39 @@ export default class Enum {
   get prev() {
     let unchecked = (this.index - 1) % this.constructor.items.length;
     return this.constructor.items[unchecked < 0 ? unchecked + this.constructor.items.length : unchecked];
+  }
+}
+
+/**
+ * A specific enum with a pair of members instead of just
+ * one.
+ */
+export class EnumPair extends Enum {
+  constructor(member1, member2) {
+    super([member1, member2]);
+    this._member1 = member1;
+    this._member2  = member2;
+  }
+
+  get member1() {return this._member1;}
+  get member2()  {return this._member2;}
+
+  /**
+   * Returns the EnumPair corresponding to the specified mem-
+   * bers.
+   *
+   * @param   member1   member1  of the pair
+   * @param   member2   member2  of the pair
+   * @return  EnumPair           the EnumPair correspon-
+   *                             ding to these members
+   */  
+  static from(member1, member2) {
+    const index = this.items.map(item => [item.member1.value, item.member2.value].toString()).indexOf([member1.value, member2.value].toString());
+    if (index > -1) {
+      return this.items[index];
+    }
+    else {
+      throw `Tried to find EnumPair with member1=${member1} and member2=${member2} but failed.`;
+    }
   }
 }

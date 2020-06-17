@@ -1,4 +1,4 @@
-import Enum from "/js/enum.js";
+import * as Type from "/js/type.js";
 
 `use strict`
 
@@ -7,7 +7,7 @@ import Enum from "/js/enum.js";
  * head.
  * @see PageBuilder._drawHead()
  */
-export default class HeadElement extends Enum {
+export default class HeadElement extends Type.Enum {
   constructor(tagName, details = null) {
     super([tagName, details]);
     this._tagName = tagName;

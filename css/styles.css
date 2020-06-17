@@ -57,6 +57,7 @@
   --color-quaternary-light: calc(1.0 * var(--quaternary-r)), calc(1.0 * var(--quaternary-g)), calc(1.0 * var(--quaternary-b));
   --color-quaternary:       calc(0.8 * var(--quaternary-r)), calc(0.8 * var(--quaternary-g)), calc(0.8 * var(--quaternary-b));
   --color-quaternary-dark:  calc(0.5 * var(--quaternary-r)), calc(0.5 * var(--quaternary-g)), calc(0.5 * var(--quaternary-b));
+
   --color-neutral:          255, 255, 255;
 
   --font-body:              'Yantra', Helvetica, sans-serif;
@@ -372,6 +373,11 @@ input:focus, textarea:focus, select:focus {
 /*
  * ------------- 8.2 Details view -------------------------
  */
+.group-header-row th {
+  background-color: rgba(var(--color-neutral), 1);
+  color: rgba(var(--color-primary), 1);
+  font-weight: bold;
+}
 
 /*
  * ------------- 8.3 Fullscreen view ----------------------

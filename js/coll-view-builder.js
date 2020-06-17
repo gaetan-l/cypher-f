@@ -690,6 +690,7 @@ export default class CollViewBuilder {
           groupTbody.classList.add(`collection-group`, `details-group`, `relevant`);
 
           const groupTr = document.createElement(`tr`);
+          groupTr.classList.add(`group-header-row`);
           const groupTh = document.createElement(`th`);
           groupTh.setAttribute(`colspan`, headers.length);
           groupTh.innerHTML = currGroup;

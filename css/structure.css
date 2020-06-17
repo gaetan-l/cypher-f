@@ -27,13 +27,14 @@
 :root {
 /* ------------- Default values --------------------------- */
 --size-1:                            6px;
---size-2:                          calc(2 * var(--size-1)); /*   12px */
---size-4:                          calc(4 * var(--size-1)); /*   24px */
---size-6:                          calc(6 * var(--size-1)); /*   36px */
---size-10:                         calc(10 * var(--size-1)); /*  60px */
---size-16:                         calc(16 * var(--size-1)); /*  96px */
---size-50:                         calc(50 * var(--size-1)); /* 300px */
---size-34:                         calc(34 * var(--size-1)); /* 204px */
+--size-2:                          calc(2 * var(--size-1));  /*   12px */
+--size-4:                          calc(4 * var(--size-1));  /*   24px */
+--size-6:                          calc(6 * var(--size-1));  /*   36px */
+--size-10:                         calc(10 * var(--size-1));  /*  60px */
+--size-16:                         calc(16 * var(--size-1));  /*  96px */
+--size-34:                         calc(34 * var(--size-1));  /* 204px */
+--size-50:                         calc(50 * var(--size-1));  /* 300px */
+--size-120:                        calc(120 * var(--size-1)); /* 720px */
 
 /* ------------- General styles --------------------------- */
 --font-size-default:               var(--size-4);
@@ -46,6 +47,7 @@
 --button-size:                     var(--size-6);
 --button-margin:                   var(--size-2);
 --notification-size:               var(--size-6);
+--tr-height:                       var(--size-10);
 
 /* ------------- Main structure --------------------------- */
 --side-panel-width:                var(--size-50);
@@ -126,7 +128,7 @@ input {
 td, th {
   white-space: nowrap;
   text-align: left;
-  line-height: var(--size-10);
+  line-height: var(--tr-height);
   padding: 0 var(--size-2) 0 var(--size-2);
 }
 
@@ -147,6 +149,7 @@ td, th {
 #main-panel {
   flex: 1 1 auto;
   overflow-x: auto;
+  min-width: var(--size-120);
 
   z-index: var(--zi-main-panel);
 }
@@ -359,7 +362,7 @@ input {
 }
 
 /*
- * ------------- 8.1 Picture gallery ----------------------
+ * ------------- 8.1 Gallery view -------------------------
  */
 .polaroid-group h1 {
   position: -webkit-sticky;
@@ -420,6 +423,18 @@ input {
  */
 #collection-content table {
   min-width: 100%;
+}
+
+th {
+  position: sticky;
+}
+
+thead th {
+  top: 0;
+}
+
+.group-header-row th {
+  top: var(--tr-height);
 }
 
 /*
