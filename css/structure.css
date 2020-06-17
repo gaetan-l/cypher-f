@@ -434,6 +434,10 @@ input {
   width: 100%;
 }
 
+.fullscreen-container:not(.faded-in) * {
+  display: none;
+}
+
 #fullscreen-image {
   max-width: calc(100% - 2 * var(--button-size) - 4 * var(--button-margin));
   max-height: 100%;
