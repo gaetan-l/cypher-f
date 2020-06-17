@@ -7,26 +7,26 @@
   },
   {
     "parent": "",
-    "href": "/travels",
-    "data-i18n": "nav.travels",
-    "material-icon": "flight"
+    "href": "/photos",
+    "data-i18n": "nav.photos",
+    "material-icon": "photo_camera"
   },
   {
     "parent": "",
-    "href": "/pins",
-    "data-i18n": "nav.pins",
+    "href": "/favorites",
+    "data-i18n": "nav.favorites",
     "material-icon": "bookmark"
   },
   {
-    "parent": "/pins",
-    "href": "/pins/media",
-    "data-i18n": "nav.pins-media",
+    "parent": "/favorites",
+    "href": "/favorites/media",
+    "data-i18n": "nav.favorites-media",
     "material-icon": "movie"
   },
   {
-    "parent": "/pins",
-    "href": "/pins/misc",
-    "data-i18n": "nav.pins-misc",
+    "parent": "/favorites",
+    "href": "/favorites/misc",
+    "data-i18n": "nav.favorites-misc",
     "material-icon": "casino"
   },
   {

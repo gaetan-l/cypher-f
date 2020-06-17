@@ -8,10 +8,10 @@
   },
   "nav": {
     "main": "Home",
-    "pins": "Pins",
-    "pins-media": "Media",
-    "pins-misc": "Misc",
-    "travels": "Travels",
+    "favorites": "Favorites",
+    "favorites-media": "Media",
+    "favorites-misc": "Misc",
+    "photos": "Photos",
     "interests": "Interests"
   },
   "labels": {

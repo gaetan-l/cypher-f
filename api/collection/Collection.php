@@ -10,7 +10,7 @@
    */
   class Collection {
     // Collection names
-    const TRAVELS = "travels";
+    const PHOTOS = "photos";
 
     // Groupings
     const DATE = "date";
@@ -103,7 +103,7 @@
     private function buildParsePattern() {
       $pattern = "";
       switch ($this->name) {
-        case self::TRAVELS:
+        case self::PHOTOS:
           $pattern = "/^" . self::DATE_PATTERN . self::TAGLIST_PATTERN . self::COUNTRY_PATTERN . self::FREE_PATTERN . self::FREE_PATTERN . self::REPETITION_PATTERN . self::EXTENSION_PATTERN . "$/";
           break;
       }
@@ -123,7 +123,7 @@
     private function buildExclusionPattern() {
       $pattern = "";
       switch ($this->name) {
-        case self::TRAVELS:
+        case self::PHOTOS:
           $pattern = "/\bexcluded|me|people|celeb\b/"; // excluding pictures with people on them
           break;
       }
@@ -154,7 +154,7 @@
       $arrayItem = [];
 
       switch ($this->name) {
-        case self::TRAVELS:
+        case self::PHOTOS:
           $arrayItem = array(
               "fileName"     => $fileName,
               self::DATE     => "$matches[1]-$matches[3]-$matches[4]",
@@ -183,7 +183,7 @@
       $sortableAttributes = [];
 
       switch ($this->name) {
-        case self::TRAVELS:
+        case self::PHOTOS:
           $sortableAttributes = array(self::DATE, self::COUNTRY);
           break;
       }
