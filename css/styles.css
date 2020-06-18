@@ -332,6 +332,10 @@ input:focus, textarea:focus, select:focus {
   color: rgba(var(--color-primary), 1.0);;
 }
 
+.collection-item {
+  cursor: pointer;
+}
+
 /*
  * ------------- 8.1 gallery view -------------------------
  */
@@ -350,7 +354,6 @@ input:focus, textarea:focus, select:focus {
   border-color: rgba(var(--color-quaternary-light), 1.0);
   box-shadow: 6px 6px 6px;
   transition: box-shadow 0.25s ease-in-out;
-  cursor: pointer;
 }
 
 .polaroid-frame:hover {

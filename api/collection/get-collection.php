@@ -26,7 +26,7 @@
        * in "content" variable, the rest is in an array in
        * variable "extra".
        */
-      if (!($collection === false)) {
+      if ($collection->exists()) {
         http_response_code(200);
         echo json_encode(array(
           "message" => "Gallery $name found.",

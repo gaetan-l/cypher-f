@@ -10,21 +10,38 @@
    */
   class Collection {
     // Collection names
-    const PHOTOS = "photos";
+    const PHOTOS        = "photos";
+    const MEDIA         = "media";
+    const COLLECTIONS   = array(self::PHOTOS, self::MEDIA);
 
-    // Groupings
-    const DATE = "date";
-    const COUNTRY = "country";
+    // Attributes
+    const COUNTRY       = "country";
+    const DATE          = "date";
+    const DESCRIPTION   = "description";
+    const EXTENSION     = "extension";
+    const FILE_NAME     = "fileName";
+    const LOCATION      = "location";
+    const READABLE_DATE = "readableDate";
+    const TAGS          = "tags";
 
     // Patterns
     const DATE_PATTERN        = "\[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]";
+    const YEAR_PATTERN        = "\d{4}";
+
+    /*
+     * Do not use TAG_PATTERN as-is, use SINGLE_TAG_PATTERN
+     * or TAGLIST_PATTERN for capturing group.
+     */
     const TAG_PATTERN         = "[a-z]+(?:-[a-z]+)*";
+    const SINGLE_TAG_PATTERN  = "\[(" . self::TAG_PATTERN . ")\]";
     const TAGLIST_PATTERN     = "\[((?:" . self::TAG_PATTERN . ")?(?:;(?:" . self::TAG_PATTERN . "))*)\]";
+
     const COUNTRY_PATTERN     = "\[([a-z]{2})\]";
     const FREE_PATTERN        = "\[([^\[\]]*)\]";
     const REPETITION_PATTERN  = "(?:\(\d+\))?";
     const EXTENSION_PATTERN   = "\.(jpg|png)";
-    // FULL_PATTERN           = \[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]\[((?:[a-z]+(?:-[a-z]+)*)?(?:;(?:[a-z]+(?:-[a-z]+)*))*)\]\[([a-z]{2})\]\[([^\[\]]*)\]\[([^\[\]]*)\](?:\(\d+\))?\.(jpg|png)
+
+    // PHOTO_FULL_PATTERN     = \[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]\[((?:[a-z]+(?:-[a-z]+)*)?(?:;(?:[a-z]+(?:-[a-z]+)*))*)\]\[([a-z]{2})\]\[([^\[\]]*)\]\[([^\[\]]*)\](?:\(\d+\))?\.(jpg|png)
 
     /*
      * Name of the collection, used to build folder path
@@ -42,6 +59,15 @@
      */
     function __construct($name) {
       $this->name = $name;
+    }
+
+    /**
+     * Returns true if the gallery exists.
+     *
+     * @return  boolean  if the gallery exists
+     */
+    public function exists() {
+      return in_array($this->name, self::COLLECTIONS);
     }
 
     /**
@@ -71,7 +97,7 @@
           $matches = array();
           $doMatch = preg_match($fullPattern, $fileName, $matches);
 
-          $tags = $matches[6];
+          $tags = $matches[5];
           $excluded = preg_match($exclusionPattern, $tags);
 
           if ($doMatch && !$excluded) {
@@ -124,7 +150,8 @@
       $pattern = "";
       switch ($this->name) {
         case self::PHOTOS:
-          $pattern = "/\bexcluded|me|people|celeb\b/"; // excluding pictures with people on them
+          $pattern = "/\bexcluded\b/";
+          // $pattern = "/\bexcluded|me|people|celeb\b/"; // excluding pictures with people on them
           break;
       }
 
@@ -140,7 +167,7 @@
      *
      * @param   string  fileName  name of the file corres-
      *                            ponding to the item to
-     *                            build by
+     *                            build
      * @param   array   matches   the different matches ex-
      *                            tracted via the execution
      *                            of the relevant regex on
@@ -156,14 +183,14 @@
       switch ($this->name) {
         case self::PHOTOS:
           $arrayItem = array(
-              "fileName"     => $fileName,
-              self::DATE     => "$matches[1]-$matches[3]-$matches[4]",
-              "readableDate" => "$matches[4]/$matches[3]/$matches[1]",
-              "tags"         => $matches[5],
-              self::COUNTRY  => $matches[6],
-              "location"     => $matches[7],
-              "description"  => $matches[8],
-              "extension"    => $matches[9]
+              self::FILE_NAME     => $fileName,
+              self::DATE          => "$matches[1]-$matches[3]-$matches[4]",
+              self::READABLE_DATE => "$matches[4]/$matches[3]/$matches[1]",
+              self::TAGS          => $matches[5],
+              self::COUNTRY       => $matches[6],
+              self::LOCATION      => $matches[7],
+              self::DESCRIPTION   => $matches[8],
+              self::EXTENSION     => $matches[9]
             );
           break;
       }
