@@ -113,21 +113,27 @@ export default class Translator {
    * @return  string        the translated word
    */
   async asyncGetTranslatedWord(code, lang = null) {
-    lang = lang === null ? this.lang : lang;
-    const dictionary = await this._asyncGetDictionary(lang);
-    let text = TextUtil.getJsonValue(code, dictionary);
+    try {
+      lang = lang === null ? this.lang : lang;
+      const dictionary = await this._asyncGetDictionary(lang);
+      let text = TextUtil.getJsonValue(code, dictionary);
 
-    if (text === undefined) {
-      const tmp = document.createElement(`div`);
-      const span = document.createElement(`span`);
-      span.classList.add(`translation-error`);
-      span.innerHTML = code;
-      tmp.appendChild(span);
-      text = span.outerHTML;
-      console.warn(`Failed to translate code "${code}" with lang "${lang}".`);
+      if (text === undefined) {
+        const tmp = document.createElement(`div`);
+        const span = document.createElement(`span`);
+        span.classList.add(`translation-error`);
+        span.innerHTML = code;
+        tmp.appendChild(span);
+        text = span.outerHTML;
+        console.warn(`Failed to translate code "${code}" with lang "${lang}".`);
+      }
+
+      return text === undefined ? code : text;
     }
-
-    return text === undefined ? code : text;
+    catch(error) {
+      console.error(error);
+      return code;
+    }
   }
 
   /**

@@ -21,12 +21,15 @@
     const EXTENSION     = "extension";
     const FILE_NAME     = "fileName";
     const LOCATION      = "location";
+    const NAME          = "name";
     const READABLE_DATE = "readableDate";
     const TAGS          = "tags";
+    const TYPE          = "type";
+    const YEAR          = "year";
 
     // Patterns
     const DATE_PATTERN        = "\[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]";
-    const YEAR_PATTERN        = "\d{4}";
+    const YEAR_PATTERN        = "\[((\d{4})(?:\-(\d{4}))?)\]"; // "year" or "year-year"
 
     /*
      * Do not use TAG_PATTERN as-is, use SINGLE_TAG_PATTERN
@@ -41,6 +44,7 @@
     const REPETITION_PATTERN  = "(?:\(\d+\))?";
     const EXTENSION_PATTERN   = "\.(jpg|png)";
 
+    // MEDIA_FULL_PATTERN     = \[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]\[([a-z]+(?:-[a-z]+)*)\]\[([^\[\]]*)\]\[([a-z]{2})\]\[((?:[a-z]+(?:-[a-z]+)*)?(?:;(?:[a-z]+(?:-[a-z]+)*))*)\]\[((\d{4})(?:\-(\d{4}))?)\]\[([^\[\]]*)\](?:\(\d+\))?\.(jpg|png)
     // PHOTO_FULL_PATTERN     = \[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]\[((?:[a-z]+(?:-[a-z]+)*)?(?:;(?:[a-z]+(?:-[a-z]+)*))*)\]\[([a-z]{2})\]\[([^\[\]]*)\]\[([^\[\]]*)\](?:\(\d+\))?\.(jpg|png)
 
     /*
@@ -129,6 +133,10 @@
     private function buildParsePattern() {
       $pattern = "";
       switch ($this->name) {
+        case self::MEDIA:
+          $pattern = "/^" . self::DATE_PATTERN . self::SINGLE_TAG_PATTERN . self::FREE_PATTERN . self::COUNTRY_PATTERN . self::TAGLIST_PATTERN . self::YEAR_PATTERN . self::FREE_PATTERN . self::REPETITION_PATTERN . self::EXTENSION_PATTERN . "$/";
+          break;
+
         case self::PHOTOS:
           $pattern = "/^" . self::DATE_PATTERN . self::TAGLIST_PATTERN . self::COUNTRY_PATTERN . self::FREE_PATTERN . self::FREE_PATTERN . self::REPETITION_PATTERN . self::EXTENSION_PATTERN . "$/";
           break;
@@ -149,6 +157,10 @@
     private function buildExclusionPattern() {
       $pattern = "";
       switch ($this->name) {
+        case self::MEDIA:
+          $pattern = "/\bexcluded\b/";
+          break;
+
         case self::PHOTOS:
           $pattern = "/\bexcluded\b/";
           // $pattern = "/\bexcluded|me|people|celeb\b/"; // excluding pictures with people on them
@@ -181,17 +193,32 @@
       $arrayItem = [];
 
       switch ($this->name) {
+        case self::MEDIA:
+          $arrayItem = array(
+            self::FILE_NAME     => $fileName,
+            self::DATE          => "$matches[1]-$matches[3]-$matches[4]",
+            self::READABLE_DATE => "$matches[4]/$matches[3]/$matches[1]",
+            self::TYPE          => $matches[5],
+            self::NAME          => $matches[6],
+            self::COUNTRY       => $matches[7],
+            self::TAGS          => $matches[8],
+            self::YEAR          => $matches[9],
+            self::DESCRIPTION   => $matches[12],
+            self::EXTENSION     => $matches[13]
+          );
+          break;
+
         case self::PHOTOS:
           $arrayItem = array(
-              self::FILE_NAME     => $fileName,
-              self::DATE          => "$matches[1]-$matches[3]-$matches[4]",
-              self::READABLE_DATE => "$matches[4]/$matches[3]/$matches[1]",
-              self::TAGS          => $matches[5],
-              self::COUNTRY       => $matches[6],
-              self::LOCATION      => $matches[7],
-              self::DESCRIPTION   => $matches[8],
-              self::EXTENSION     => $matches[9]
-            );
+            self::FILE_NAME     => $fileName,
+            self::DATE          => "$matches[1]-$matches[3]-$matches[4]",
+            self::READABLE_DATE => "$matches[4]/$matches[3]/$matches[1]",
+            self::TAGS          => $matches[5],
+            self::COUNTRY       => $matches[6],
+            self::LOCATION      => $matches[7],
+            self::DESCRIPTION   => $matches[8],
+            self::EXTENSION     => $matches[9]
+          );
           break;
       }
 
@@ -210,6 +237,10 @@
       $sortableAttributes = [];
 
       switch ($this->name) {
+        case self::MEDIA:
+          $sortableAttributes = array(self::DATE, self::TYPE, self::NAME, self::COUNTRY, self::YEAR);
+          break;
+
         case self::PHOTOS:
           $sortableAttributes = array(self::DATE, self::COUNTRY);
           break;
