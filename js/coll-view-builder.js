@@ -38,7 +38,7 @@ export default class CollViewBuilder {
      * tags or from display.
      */
     this._excludedFromHtml    = [CollUtil.DATE, CollUtil.EXTENSION, `trlanslatedCurrentSortingAttribute`];
-    this._excludedFromDisplay = [`i18nCurrentSortingAttribute`, `translatedAttributes`]; // + excludedFromHtml
+    this._excludedFromDisplay = []; // + excludedFromHtml
 
     /*
      * Indicate attributes that have multiple values,
@@ -53,7 +53,7 @@ export default class CollViewBuilder {
      * Indicates attributes that have to be flattened for
      * lookup purpose.
      */
-    this._needsFlattening     = [CollUtil.DESCRIPTION, CollUtil.LOCATION];
+    this._needsFlattening     = [CollUtil.COUNTRY, CollUtil.DESCRIPTION, CollUtil.LOCATION];
 
     /*
      * Indicates attributes that are codes that can be
@@ -363,6 +363,33 @@ export default class CollViewBuilder {
     PageUtil.bindOnClick(`#btn-fs-close`,  function() {PageUtil.fadeOut(`#picture-fullscreen`);});
   }
 
+  /*
+   * Translates the attributes so that they can be looked
+   * up and sorted properly.
+   * @access  private
+   * @param   string  sortingAttribute  the attribute cur-
+   *                                       rently used to
+   *                                       sort the collec-
+   *                                       tion
+   */
+  async _asyncTranslateSortAttribute(sortingAttribute) {
+    const length = (await this._asyncGetCollection()).length;
+    const needsTranslation = this.needsTranslation.includes(sortingAttribute);
+    for (let i = 0 ; i < length ; i++) {
+      const item = JSON.parse((await this._asyncGetCollection())[i]);
+      let value = item[sortingAttribute];
+      if (sortingAttribute === CollUtil.DATE) {
+        value = value.substring(0, 4);
+      }
+      else if (needsTranslation) {
+        const i18nCode = `${sortingAttribute}.${value}`;
+        value = await this.pageBuilder.translator.asyncGetTranslatedWord(i18nCode);
+      }
+      item.trlanslatedCurrentSortingAttribute = value;
+      (await this._asyncGetCollection())[i] = JSON.stringify(item);
+    }
+  }
+
   /**
    * Sorts and groups the collection.
    *
@@ -392,57 +419,8 @@ export default class CollViewBuilder {
       await PageUtil.asyncWaitForIt(250);
     }
 
-    /*
-     * Translates the groups so that they are ordered pro-
-     * perly.
-     * TODO: rewrite with the new translateWord function
-     */
-    async function translateGroups(sortingAttribute, grouping) {
-      const length = (await this._asyncGetCollection()).length;
-      for (let i = 0 ; i < length ; i++) {
-        const item = JSON.parse((await this._asyncGetCollection())[i]);
-
-        let trlanslatedCurrentSortingAttribute = ``;
-        let i18nCurrentSortingAttribute = null;
-
-        const translatedAttributes = [...this.sortableAttributes];
-        const i18nCodes = [];
-        for (let i = 0 ; i < translatedAttributes.length ; i++) {
-          const attributeName = this.sortableAttributes[i];
-
-          let translatedAttribute = null;
-          if (attributeName === CollUtil.DATE) {
-            translatedAttribute = item[CollUtil.DATE].substring(0, 4);
-          }
-          else {
-            i18nCodes[i] = `${attributeName}.${item[attributeName]}`;
-            translatedAttribute = [];
-            const availableLang = Translator.AVAILABLE_LANG();
-            for (let j = 0 ; j < availableLang.length ; j++) {
-              const lang = availableLang[j];
-              const translation = await this._pageBuilder.translator.asyncGetTranslatedWord(i18nCodes[i], availableLang[j]);
-              translatedAttribute[lang] = TextUtil.flattenString(translation);
-            }
-          }
-          translatedAttributes[i] = translatedAttribute;
-        }
-
-        if (sortingAttribute === CollUtil.DATE) {
-          item.trlanslatedCurrentSortingAttribute = translatedAttributes[this.sortableAttributes.indexOf(sortingAttribute)];
-          item.i18nCurrentSortingAttribute = null;
-        }
-        else {
-          const attributeIndex = this.sortableAttributes.indexOf(sortingAttribute)
-          item.trlanslatedCurrentSortingAttribute = translatedAttributes[attributeIndex][this.pageBuilder.translator.lang];
-          item.i18nCurrentSortingAttribute = i18nCodes[attributeIndex];
-        }
-        item.translatedAttributes = translatedAttributes.map((translation, index) => this.sortableAttributes[index] + ":" + ((this.sortableAttributes[index] === CollUtil.DATE) ? translation : Object.values(translation).join(`/`))).join(`,`);
-        (await this._asyncGetCollection())[i] = JSON.stringify(item);
-      }
-    }
-
-    const boundTranslateGroups = translateGroups.bind(this);
-    await boundTranslateGroups(sortingAttribute, grouping);
+    const boundTranslateSortAttribute = this._asyncTranslateSortAttribute.bind(this);
+    await boundTranslateSortAttribute(sortingAttribute);
 
     this.collection.sort(function (x, y) {
       const jsonX = JSON.parse(x);
@@ -453,8 +431,8 @@ export default class CollViewBuilder {
        * collection is sorted by date anyway below.
        */
       if (!(sortingAttribute === CollUtil.DATE)) {
-        const groupX = jsonX[`trlanslatedCurrentSortingAttribute`];
-        const groupY = jsonY[`trlanslatedCurrentSortingAttribute`];
+        const groupX = jsonX.trlanslatedCurrentSortingAttribute;
+        const groupY = jsonY.trlanslatedCurrentSortingAttribute;
 
         if (groupX !== groupY) {
           return (sortingDirection === CollUtil.Direction.DESC ? groupY.localeCompare(groupX) : groupX.localeCompare(groupY));
@@ -571,8 +549,8 @@ export default class CollViewBuilder {
 
           const title = document.createElement(`h1`);
           title.innerHTML = currGroup;
-          if (item[`i18nCurrentSortingAttribute`]) {
-            title.setAttribute(`data-i18n`, item.i18nCurrentSortingAttribute);
+          if (this.needsTranslation.includes(this.currGrouping)) {
+            title.setAttribute(`data-i18n`, `${this.currGrouping}.${item[this.currGrouping]}`);
           }
           group.appendChild(title);
 
@@ -590,7 +568,7 @@ export default class CollViewBuilder {
       const frame = document.createElement(`div`);
       frame.classList.add(`collection-item`, `polaroid-frame`, `relevant`);
       frame.setAttribute(`coll-index`, i);
-      this._addItemMeta(frame, item);
+      await this._addItemLookup(frame, item);
 
       frame.onclick = function() {
         _boundAsyncDisplayFullscreenPicture(this);
@@ -721,8 +699,8 @@ export default class CollViewBuilder {
           const groupTh = document.createElement(`th`);
           groupTh.setAttribute(`colspan`, headers.length);
           groupTh.innerHTML = currGroup;
-          if (item[`i18nCurrentSortingAttribute`]) {
-            groupTh.setAttribute(`data-i18n`, item.i18nCurrentSortingAttribute);
+          if (this.needsTranslation.includes(this.currGrouping)) {
+            groupTh.setAttribute(`data-i18n`, `${this.currGrouping}.${item[this.currGrouping]}`);
           }
           groupTr.appendChild(groupTh);
           groupTbody.appendChild(groupTr);
@@ -737,7 +715,7 @@ export default class CollViewBuilder {
       const itemTr = document.createElement(`tr`);
       itemTr.classList.add(`collection-item`, `details-row`, `relevant`);
       itemTr.setAttribute(`coll-index`, i);
-      this._addItemMeta(itemTr, item);
+      await this._addItemLookup(itemTr, item);
 
       itemTr.onclick = function() {
         _boundAsyncDisplayFullscreenPicture(this);
@@ -764,29 +742,14 @@ export default class CollViewBuilder {
 
   /**
    * Adds item information into the HTMLElement in the form
-   * of custom attributes.
+   * of custom attributes and updates the lookup array.
    *
    * @access  private
    * @param   HTMLElement  element  the html element repre-
    *                                senting the item
    * @param   JSON object  item     the item
    */
-  _addItemMeta(element, item) {
-    /*
-     * Indicates attributes that have multiple values,
-     * separated by semicolons and need to be rewritten
-     * properly with commas and spaces, and aventually
-     * with hashes.
-     */
-    const needsHashtag = [CollUtil.TAGS];
-    const needsJoining = [CollUtil.DESCRIPTION];
-
-    /*
-     * Indicates attributes that have to be flattened for
-     * lookup purpose.
-     */
-    const needsFlattening = [CollUtil.DESCRIPTION, CollUtil.LOCATION];
-
+  async _addItemLookup(element, item) {
     const attributes = Object.keys(item);
     for (let i = 0 ; i < attributes.length ; i ++) {
       const attr = attributes[i];
@@ -794,31 +757,32 @@ export default class CollViewBuilder {
         const attrDashName = TextUtil.toDashCase(`item-${attr}`);
         let value = item[attr];
 
-        /*
-         * Rewrite values if necessary.
-         */
-        if (needsHashtag.includes(attr)) {
-          value = value.split(`;`).map(tag => `#${tag}`).join(` `);
-        }
-        else if (needsJoining.includes(attr)) {
-          value = value.split(`;`).join(`, `);
-        }
-
-        element.setAttribute(`${attrDashName}`, value);
-
-        /*
-         * Adding flattened values if neccessary for look-
-         * up.
-         */
-        if (needsFlattening.includes(attr)) {
-          const attrIName = `${attrDashName}-i`;
-          element.setAttribute(attrIName, TextUtil.flattenString(value));
-          if (!this.lookupAttributes.includes(attrIName)) {
-            this.lookupAttributes.push(attrIName);
+        if (value !== ``) {
+          /*
+           * If value is gonna be joined later, no need to add it
+           * splitted.
+           */
+          if (!(this.needsHashtag.includes(attr) || this.needsJoining.includes(attr))) {
+            element.setAttribute(attrDashName, value);
           }
-        }
-        else if (!this.lookupAttributes.includes(attrDashName)) {
-          this.lookupAttributes.push(attrDashName);
+
+          let flags = ``;
+          if (this.needsHashtag.includes(attr) || this.needsJoining.includes(attr)) {flags += `j`;}
+          if (this.needsTranslation.includes(attr)) {flags += `t`;}
+          if (flags !== ``) {
+            value = await this._asyncBeautify(attr, value, false, CollUtil.TransMode.ALL);
+            const attrWithFlags = `${attrDashName}-${flags}`;
+            element.setAttribute(attrWithFlags, value);
+            if (!this.lookupAttributes.includes(attrWithFlags)) {this.lookupAttributes.push(attrWithFlags);}
+          }
+
+          if (this.needsFlattening.includes(attr)) {
+            flags += `i`;
+            value = await this._asyncBeautify(attr, value, true);
+            const attrWithFlags = `${attrDashName}-${flags}`;
+            element.setAttribute(attrWithFlags, value);
+            if (!this.lookupAttributes.includes(attrWithFlags)) {this.lookupAttributes.push(attrWithFlags);}
+          }
         }
       }
     }
