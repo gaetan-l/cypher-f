@@ -652,16 +652,23 @@ export default class CollViewBuilder {
      */
     const collName = this.name;
     headers.sort(function (x, y) {
-      const ix = CollUtil.Column.from(collName, x).index;
-      const iy = CollUtil.Column.from(collName, y).index;
       let result = 0;
-      if (ix < iy) {
-        result = -1;
+      try {
+        const ix = CollUtil.Column.from(collName, x).index;
+        const iy = CollUtil.Column.from(collName, y).index;
+        if (ix < iy) {
+          result = -1;
+        }
+        else if (ix > iy) {
+          result = 1;
+        }
       }
-      else if (ix > iy) {
-        result = 1;
+      catch(error) {
+        console.alert(error);
       }
-      return result;
+      finally {
+        return result;
+      }
     });
     /*
      * Creating html elements.
