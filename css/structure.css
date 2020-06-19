@@ -10,9 +10,10 @@
  * 6.  MENU
  * 7.  CONTROLS AND NOTIFICATIONS
  * 8.  COLLECTIONS
- * 8.1 Gallery view
- * 8.2 Details view
- * 8.3 Fullscreen view
+ * 8.1 Polaroid gallery view
+ * 8.2 Stacked gallery view
+ * 8.3 Details view
+ * 8.4 Fullscreen view
  * 9.  PAGE-SPECIFIC
  * 9.1 Homepage
  */
@@ -85,7 +86,7 @@
 --polaroid-frame-border-width:     var(--border-thin-width);
 --polaroid-frame-margin:           var(--size-6);
 --polaroid-frame-padding:          var(--size-2);
---polaroid-size:                   var(--size-34);
+--gallery-image-size:              var(--size-34);
 --fullscreen-view-margin:          var(--size-2);
 }
 
@@ -357,12 +358,27 @@ input {
   z-index: var(--zi-collection-content);
 }
 
+.image-shadow {
+  display: flex;
+  position: relative;
+  margin: auto;
+}
+
+.image-shadow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
 .irrelevant {
   display: none !important;
 }
 
 /*
- * ------------- 8.1 Gallery view -------------------------
+ * ------------- 8.1 Polaroid gallery view ----------------
  */
 .polaroid-group h1 {
   position: -webkit-sticky;
@@ -391,54 +407,56 @@ input {
 
 .polaroid-frame {
   display: flex;
-  width: var(--polaroid-size);
-  height: var(--polaroid-size);
+  width: var(--gallery-image-size);
+  height: var(--gallery-image-size);
   margin: 0 var(--polaroid-frame-margin) var(--polaroid-frame-margin) 0;
   padding: var(--polaroid-frame-padding);
   border-width: var(--polaroid-frame-border-width);
 }
 
-.polaroid-shadow {
-  display: flex;
-  position: relative;
-  margin: auto;
-}
-
-.polaroid-shadow::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
 .polaroid-image {
-  max-width: var(--polaroid-size);
-  max-height: var(--polaroid-size);
+  max-width: var(--gallery-image-size);
+  max-height: var(--gallery-image-size);
 }
 
 /*
- * ------------- 8.2 Details view -------------------------
+ * ------------- 8.2 Stacked gallery view -----------------
  */
-#collection-content table {
+.stacked-group-content {
+  column-width: var(--gallery-image-size);
+  padding: var(--polaroid-frame-margin);
+  text-align: center;
+}
+
+.stacked-frame {
+  display: inline-block;
+}
+
+.stacked-image {
+  width: var(--gallery-image-size);
+}
+
+/*
+ * ------------- 8.3 Details view -------------------------
+ */
+.details-view-table {
   min-width: 100%;
 }
 
-th {
+.details-view-table th {
   position: sticky;
 }
 
-thead th {
+.details-view-table thead th {
   top: 0;
 }
 
-.group-header-row th {
+.details-view-table .group-header-row th {
   top: var(--tr-height);
 }
 
 /*
- * ------------- 8.3 Fullscreen view ----------------------
+ * ------------- 8.4 Fullscreen view ----------------------
  */
  .fullscreen-container {
   display: flex;

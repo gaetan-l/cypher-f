@@ -17,7 +17,8 @@ export const TAGS           = `tags`;
  * Specifies the different display modes of a collection.
  */
 export class DisplayMode extends Type.Enum {}
-DisplayMode.GALLERY = new DisplayMode(`gallery`);
+DisplayMode.POLAROID_GALLERY = new DisplayMode(`polaroid-gallery`);
+DisplayMode.STACKED_GALLERY = new DisplayMode(`stacked-gallery`);
 DisplayMode.DETAILS = new DisplayMode(`details`);
 DisplayMode.lock();
 

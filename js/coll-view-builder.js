@@ -61,7 +61,7 @@ export default class CollViewBuilder {
      */
     this._needsTranslation    = [CollUtil.COUNTRY];
 
-    this._currDisplayMode     = CollUtil.DisplayMode.GALLERY;
+    this._currDisplayMode     = CollUtil.DisplayMode.POLAROID_GALLERY;
     this._currDateDirection   = CollUtil.Direction.ASC;
   }
 
@@ -144,7 +144,7 @@ export default class CollViewBuilder {
    * @param  Direction    dateDirection     the chronologi-
    *                                        cal sorting
    */
-  async asyncDrawAll(container, displayMode = CollUtil.DisplayMode.GALLERY, sortingAttribute, sortingDirection, grouping, dateDirection) {
+  async asyncDrawAll(container, displayMode = CollUtil.DisplayMode.POLAROID_GALLERY, sortingAttribute, sortingDirection, grouping, dateDirection) {
     const dm = displayMode;
     /*
      * Initializes the collection before anything is done.
@@ -181,7 +181,7 @@ export default class CollViewBuilder {
    *                                         cal sorting
    */
   async _asyncRedraw(container,
-                     displayMode =      CollUtil.DisplayMode.GALLERY,
+                     displayMode =      CollUtil.DisplayMode.POLAROID_GALLERY,
                      sortingAttribute = CollUtil.DATE,
                      sortingDirection = CollUtil.Direction.ASC,
                      grouping =         CollUtil.Grouping.NOT_GROUPED,
@@ -211,7 +211,8 @@ export default class CollViewBuilder {
       await this._asyncSort(sortingAttribute, sortingDirection, grouping, dateDirection);
 
       switch (displayMode) {
-        case CollUtil.DisplayMode.GALLERY:
+        case CollUtil.DisplayMode.POLAROID_GALLERY:
+        case CollUtil.DisplayMode.STACKED_GALLERY:
           await this._asyncDrawGalleryView(container, grouping);
           break;
 
@@ -507,6 +508,11 @@ export default class CollViewBuilder {
    *                                  be grouped or not
    */
   async _asyncDrawGalleryView(container, grouping) {
+    /*
+     * Can either be stacked or polaroid
+     */
+    const stacked  = this.currDisplayMode === CollUtil.DisplayMode.STACKED_GALLERY;
+
     let view = document.getElementById(`collection-content`);
     view = view ? view : document.createElement(`div`);
     view.setAttribute(`id`, `collection-content`);
@@ -516,12 +522,12 @@ export default class CollViewBuilder {
     const collection = await this._asyncGetCollection();
 
     let group = document.createElement(`div`);
-    group.setAttribute(`id`, `polaroid-group-`)
-    group.classList.add(`collection-group`, `polaroid-group`, `relevant`);
+    group.setAttribute(`id`, `collection-group-`)
+    group.classList.add(`collection-group`, stacked ? `stacked-group` : `polaroid-group`, `relevant`);
     let openGroup = ``;
 
     let groupContent = document.createElement(`div`);
-    groupContent.classList.add(`polaroid-group-content`);
+    groupContent.classList.add(stacked ? `stacked-group-content` : `polaroid-group-content`);
     group.appendChild(groupContent);
 
     const cvb = this;
@@ -544,8 +550,8 @@ export default class CollViewBuilder {
           }
 
           group = document.createElement(`div`);
-          group.setAttribute(`id`, `polaroid-group-${currGroup}`);
-          group.classList.add(`collection-group`, `polaroid-group`, `relevant`);
+          group.setAttribute(`id`, `collection-group-${currGroup}`);
+          group.classList.add(`collection-group`, stacked ? `stacked-group` : `polaroid-group`, `relevant`);
 
           const title = document.createElement(`h1`);
           title.innerHTML = currGroup;
@@ -555,7 +561,7 @@ export default class CollViewBuilder {
           group.appendChild(title);
 
           groupContent = document.createElement(`div`);
-          groupContent.classList.add(`polaroid-group-content`);
+          groupContent.classList.add(stacked ? `stacked-group-content` : `polaroid-group-content`);
           group.appendChild(groupContent);
 
           openGroup = currGroup;
@@ -566,7 +572,7 @@ export default class CollViewBuilder {
        * Picture frame.
        */
       const frame = document.createElement(`div`);
-      frame.classList.add(`collection-item`, `polaroid-frame`, `relevant`);
+      frame.classList.add(`collection-item`, stacked ? `stacked-frame` : `polaroid-frame`, `relevant`);
       frame.setAttribute(`coll-index`, i);
       await this._addItemLookup(frame, item);
 
@@ -581,7 +587,7 @@ export default class CollViewBuilder {
        */
       const a = document.createElement(`a`);
       a.setAttribute(`href`, `#`);
-      a.classList.add(`dummy-link`, `polaroid-shadow`);
+      a.classList.add(`dummy-link`, `image-shadow`);
 
       /*
        * Picture.
@@ -591,7 +597,7 @@ export default class CollViewBuilder {
        * Index is used to retrieve info from collection
        * when clicked (see onclick above).
        */
-      img.classList.add(`polaroid-image`);
+      img.classList.add(stacked ? `stacked-image` : `polaroid-image`);
       img.src = `${this.imgPath}${item.fileName}`;
 
       /*
@@ -622,6 +628,7 @@ export default class CollViewBuilder {
     wrapper.setAttribute(`id`, `collection-content`);
     wrapper.classList.add(`fadable`);
     const view = document.createElement(`table`);
+    view.classList.add(`details-view-table`);
     wrapper.appendChild(view);
     container.appendChild(wrapper);
 

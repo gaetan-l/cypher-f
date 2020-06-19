@@ -1,7 +1,11 @@
 {
   "display-details": "list",
-  "display-gallery": "view_module",
-  "default-sorting": "dynamic_feed",
+  "display-polaroid-gallery": "view_module",
+  "display-stacked-gallery": "dashboard",
+  "default-sorting": "clear_all",
   "country": "flag",
-  "date":    "event"
+  "date": "event",
+  "name": "sort_by_alpha",
+  "type": "device_hub",
+  "year": "date_range"
 }
