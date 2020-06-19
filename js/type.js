@@ -148,7 +148,7 @@ export class EnumPair extends Enum {
       return this.items[index];
     }
     else {
-      throw `Tried to find EnumPair with member1=${member1} and member2=${member2} but failed.`;
+      throw `Tried to find ${this.name} with member1=${member1} and member2=${member2} but doesn't exist, existing values are ${this.items.map(item => `${item.member1.toString()}.${item.member2.toString()}`)}.`;
     }
   }
 }

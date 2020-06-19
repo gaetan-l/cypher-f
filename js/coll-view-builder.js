@@ -59,7 +59,7 @@ export default class CollViewBuilder {
      * Indicates attributes that are codes that can be
      * translated.
      */
-    this._needsTranslation    = [CollUtil.COUNTRY];
+    this._needsTranslation    = [CollUtil.COUNTRY, CollUtil.TAGS, CollUtil.TYPE];
 
     this._currDisplayMode     = CollUtil.DisplayMode.POLAROID_GALLERY;
     this._currDateDirection   = CollUtil.Direction.ASC;
@@ -653,20 +653,21 @@ export default class CollViewBuilder {
     const collName = this.name;
     headers.sort(function (x, y) {
       let result = 0;
+      let ix, iy;
       try {
-        const ix = CollUtil.Column.from(collName, x).index;
-        const iy = CollUtil.Column.from(collName, y).index;
+        try {ix = CollUtil.Column.from(collName, x).index;} catch(error) {ix = 9999; throw error;}
+        try {iy = CollUtil.Column.from(collName, y).index;} catch(error) {iy = 9999; throw error;}
+      }
+      catch(error) {
+        console.warn(error);
+      }
+      finally {
         if (ix < iy) {
           result = -1;
         }
         else if (ix > iy) {
           result = 1;
         }
-      }
-      catch(error) {
-        console.alert(error);
-      }
-      finally {
         return result;
       }
     });

@@ -28,14 +28,14 @@
 :root {
 /* ------------- Default values --------------------------- */
 --size-1:                            6px;
---size-2:                          calc(2 * var(--size-1));  /*   12px */
---size-4:                          calc(4 * var(--size-1));  /*   24px */
---size-6:                          calc(6 * var(--size-1));  /*   36px */
---size-10:                         calc(10 * var(--size-1));  /*  60px */
---size-16:                         calc(16 * var(--size-1));  /*  96px */
---size-34:                         calc(34 * var(--size-1));  /* 204px */
---size-50:                         calc(50 * var(--size-1));  /* 300px */
---size-120:                        calc(120 * var(--size-1)); /* 720px */
+--size-2:                          calc(2 * var(--size-1));     /* 12px */
+--size-4:                          calc(4 * var(--size-1));     /* 24px */
+--size-6:                          calc(6 * var(--size-1));     /* 36px */
+--size-10:                         calc(10 * var(--size-1));    /* 60px */
+--size-16:                         calc(16 * var(--size-1));    /* 96px */
+--size-34:                         calc(34 * var(--size-1));   /* 204px */
+--size-50:                         calc(50 * var(--size-1));   /* 300px */
+--size-150:                        calc(150 * var(--size-1));  /* 900px */
 
 /* ------------- General styles --------------------------- */
 --font-size-default:               var(--size-4);
@@ -150,7 +150,7 @@ td, th {
 #main-panel {
   flex: 1 1 auto;
   overflow-x: auto;
-  min-width: var(--size-120);
+  min-width: var(--size-150);
 
   z-index: var(--zi-main-panel);
 }

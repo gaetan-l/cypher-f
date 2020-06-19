@@ -1,8 +1,8 @@
 import * as Type from "/js/type.js";
 
 `use strict`
-
-export const PHOTOS         = `photos`
+export const MEDIA          = `media`;
+export const PHOTOS         = `photos`;
 
 export const COUNTRY        = `country`;
 export const DATE           = `date`;
@@ -10,8 +10,11 @@ export const DESCRIPTION    = `description`;
 export const EXTENSION      = `extension`;
 export const FILE_NAME      = `fileName`
 export const LOCATION       = `location`;
+export const NAME           = `name`;
 export const READABLE_DATE  = `readableDate`;
 export const TAGS           = `tags`;
+export const TYPE           = `type`;
+export const YEAR           = `year`;
 
 /**
  * Specifies the different display modes of a collection.
@@ -63,6 +66,14 @@ export class Column extends Type.EnumPair {
   get collection() {return this.member1;}
   get attribute()  {return this.member2;}
 }
+Column.MEDIA_NAME           = new Column(MEDIA,  NAME);
+Column.MEDIA_TYPE           = new Column(MEDIA,  TYPE);
+Column.MEDIA_COUNTRY        = new Column(MEDIA,  COUNTRY);
+Column.MEDIA_YEAR           = new Column(MEDIA,  YEAR);
+Column.MEDIA_TAGS           = new Column(MEDIA,  TAGS);
+Column.MEDIA_DESCRIPTION    = new Column(MEDIA,  DESCRIPTION);
+Column.MEDIA_READABLE_DATE  = new Column(MEDIA,  READABLE_DATE);
+Column.MEDIA_FILE_NAME      = new Column(MEDIA,  FILE_NAME);
 Column.PHOTOS_READABLE_DATE = new Column(PHOTOS, READABLE_DATE);
 Column.PHOTOS_COUNTRY       = new Column(PHOTOS, COUNTRY);
 Column.PHOTOS_LOCATION      = new Column(PHOTOS, LOCATION);
