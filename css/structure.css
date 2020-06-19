@@ -422,18 +422,31 @@ input {
 /*
  * ------------- 8.2 Stacked gallery view -----------------
  */
+.stacked-group-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, var(--gallery-image-size));
+  padding: var(--polaroid-frame-margin);
+  justify-content: center;
+  overflow: hidden;
+}
+
 .stacked-group-content {
   column-width: var(--gallery-image-size);
-  padding: var(--polaroid-frame-margin);
-  text-align: center;
+  column-gap: 0;
+  grid-column: 1/-1;
 }
 
 .stacked-frame {
-  display: inline-block;
+  display: block;
+  margin: 0 0.15em 0 0.15em;
 }
 
 .stacked-image {
   width: var(--gallery-image-size);
+}
+
+.stacked-group img {
+  width: 100%
 }
 
 /*

@@ -61,7 +61,6 @@ export default class CollViewBuilder {
      */
     this._needsTranslation    = [CollUtil.COUNTRY, CollUtil.TAGS, CollUtil.TYPE];
 
-    this._currDisplayMode     = CollUtil.DisplayMode.POLAROID_GALLERY;
     this._currDateDirection   = CollUtil.Direction.ASC;
   }
 
@@ -150,6 +149,8 @@ export default class CollViewBuilder {
      * Initializes the collection before anything is done.
      */
     await this._asyncGetCollection();
+
+    this.currDisplayMode      = displayMode;
 
     await this._asyncDrawToolbarView(container);
     await this._asyncRedraw(container, displayMode, sortingAttribute, sortingDirection, grouping, dateDirection);
@@ -528,7 +529,15 @@ export default class CollViewBuilder {
 
     let groupContent = document.createElement(`div`);
     groupContent.classList.add(stacked ? `stacked-group-content` : `polaroid-group-content`);
-    group.appendChild(groupContent);
+    if (stacked) {
+      const groupWrapper = document.createElement(`div`);
+      groupWrapper.classList.add(`stacked-group-wrapper`);
+      groupWrapper.appendChild(groupContent);
+      group.appendChild(groupWrapper);
+    }
+    else {
+      group.appendChild(groupContent);
+    }
 
     const cvb = this;
     const _boundAsyncDisplayFullscreenPicture = this._asyncDisplayFullscreenPicture.bind(this);
@@ -562,7 +571,15 @@ export default class CollViewBuilder {
 
           groupContent = document.createElement(`div`);
           groupContent.classList.add(stacked ? `stacked-group-content` : `polaroid-group-content`);
-          group.appendChild(groupContent);
+          if (stacked) {
+            const groupWrapper = document.createElement(`div`);
+            groupWrapper.classList.add(`stacked-group-wrapper`);
+            groupWrapper.appendChild(groupContent);
+            group.appendChild(groupWrapper);
+          }
+          else {
+            group.appendChild(groupContent);
+          }
 
           openGroup = currGroup;
         }
@@ -581,13 +598,6 @@ export default class CollViewBuilder {
         PageUtil.fadeIn(`#picture-fullscreen`);
       };
 
-      /*
-       * Picture inset box-shadow wrapper.
-       * @link https://stackoverflow.com/questions/61961334/css-img-inset-box-shadow-trick-center-vh-anchor-max-height
-       */
-      const a = document.createElement(`a`);
-      a.setAttribute(`href`, `#`);
-      a.classList.add(`dummy-link`, `image-shadow`);
 
       /*
        * Picture.
@@ -603,8 +613,20 @@ export default class CollViewBuilder {
       /*
        * Adding picture to frame and frame to temporary container.
        */
-      a.appendChild(img);
-      frame.appendChild(a);
+      /*
+       * Picture inset box-shadow wrapper.
+       * @link https://stackoverflow.com/questions/61961334/css-img-inset-box-shadow-trick-center-vh-anchor-max-height
+       */
+      if (stacked) {
+        frame.appendChild(img);
+      }
+      else {
+        const a = document.createElement(`a`);
+        a.setAttribute(`href`, `#`);
+        a.classList.add(`dummy-link`, `image-shadow`);
+        a.appendChild(img);
+        frame.appendChild(a);
+      }
       groupContent.appendChild(frame);
     }
 
