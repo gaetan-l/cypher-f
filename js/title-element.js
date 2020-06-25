@@ -46,6 +46,7 @@ export default class HeadElement extends Type.Enum {
   }
 }
 HeadElement.TITLE            = new HeadElement(`TITLE`);
+HeadElement.META_VIEWPORT    = new HeadElement(`META`,   `viewport`);
 HeadElement.META_DESCRIPTION = new HeadElement(`META`,   `description`);
 HeadElement.META_AUTHOR      = new HeadElement(`META`,   `author`);
 HeadElement.META_OTHER       = new HeadElement(`META`);

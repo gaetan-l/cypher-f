@@ -17,6 +17,8 @@
  * 8.4 Fullscreen view
  * 9.  PAGE-SPECIFIC
  * 9.1 Homepage
+ * 9.2 Media
+ * 9.3 Interests
  */
 
 
@@ -142,6 +144,14 @@ tbody tr.even td {
   text-decoration: underline wavy rgba(var(--color-secondary), 1.0);
 }
 
+.text-box {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.text-box * {
+  color: white;
+}
+
 
 
 /*
@@ -159,6 +169,7 @@ tbody tr.even td {
 #side-panel {
   border-right-style: solid;
   border-right-color: rgba(var(--color-quaternary-light), 1.0);
+  transition: flex-basis 0.25s ease-in-out;
 }
 
 #site-footer {
@@ -182,40 +193,44 @@ tbody tr.even td {
  * ============= 5.  SITE TITLE DIV =======================
  * ========================================================
  */
-#site-title-normal {
-  text-align: center;
-  border-bottom-style: solid;
-  border-bottom-color: rgba(var(--color-quaternary-light), 1.0);
-  font-family: 'Alata', Arial, sans-serif;
-  transition: color 0.25s ease-in-out;
-}
-
+#site-title-height-setter,
+#site-title-normal,
 #site-title-shadow {
   text-align: center;
   font-family: 'Alata', Arial, sans-serif;
+}
+
+#site-title-height-setter {
+  color: transparent;
+  border-bottom-style: solid;
+  border-bottom-color: rgba(var(--color-quaternary-light), 1.0);
+}
+
+#site-title-normal,
+#site-title-shadow {
+  transition: color 0.25s ease-in-out, left 0.25s ease-in-out;
+}
+
+#site-title-shadow {
   color: rgba(var(--color-primary), 1.0);
-  transition: color 0.25s ease-in-out;
 }
 
 #site-title:hover > #site-title-normal,
 #site-title:hover > #site-subtitle > span {
   color: rgba(var(--color-primary), 1.0);
-  transition: color 0.25s ease-in-out;
 }
 
 #site-title:hover > #site-title-shadow {
   color: rgba(var(--color-quaternary-dark), 1.0);
-  transition: color 0.25s ease-in-out;
 }
 
 #site-title:hover > #site-subtitle {
   letter-spacing: 5px;
-  transition: letter-spacing 0.25s ease-in-out;
 }
 
 #site-subtitle {
   letter-spacing: 3px;
-  transition: all 0.25s ease-in-out;
+  transition: letter-spacing 0.25s ease-in-out, left 0.25s ease-in-out;
 }
 
 
@@ -424,5 +439,19 @@ input:focus, textarea:focus, select:focus {
  * ------------- 9.1 Homepage -----------------------------
  */
 #pge-home #main-panel {
-  background-image: url('../images/background.jpg');
+  background-image: url('../images/background/home.jpg');
+}
+
+/*
+ * ------------- 9.2 Media --------------------------------
+ */
+#pge-favs #main-panel {
+  background-image: url('../images/background/media.jpg');
+}
+
+/*
+ * ------------- 9.3 Interests ----------------------------
+ */
+#pge-interests #main-panel {
+  background-image: url('../images/background/interests.jpg');
 }

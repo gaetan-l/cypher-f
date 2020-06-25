@@ -68,6 +68,7 @@ export default class PageBuilder {
     await this.translator.asyncTranslatePage();
 
     PageUtil.bindOnClick(`#btn-translate`, this.translator.asyncSwitchLanguage.bind(this.translator));
+    PageUtil.bindOnClick(`#btn-menu`, function() {document.getElementById(`side-panel`).classList.toggle(`collapsed`);})
 
     /*
      * Override default behavior when leaving a page.
