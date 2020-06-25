@@ -969,7 +969,10 @@ export default class CollViewBuilder {
              * Only pushing if translation is correct in non-
              * html mode.
              */
-            if (html || !translation.includes(`translation-error`)) {
+            if (!html && translation.includes(`translation-error`)) {
+              allValues.push(valueI18nCode);
+            }
+            else {
               allValues.push(translation);
             }
           }
@@ -991,6 +994,11 @@ export default class CollViewBuilder {
     else {
       allValues = splitted;
     }
+
+    /*
+     * Eliminating duplicates.
+     */
+    allValues = [...new Set(allValues)];
 
     var value = ``;
     if (this.needsHashtag.includes(attributeName)) {
