@@ -77,7 +77,7 @@ Column.MEDIA_FILE_NAME      = new Column(MEDIA,  FILE_NAME);
 Column.PHOTOS_READABLE_DATE = new Column(PHOTOS, READABLE_DATE);
 Column.PHOTOS_COUNTRY       = new Column(PHOTOS, COUNTRY);
 Column.PHOTOS_LOCATION      = new Column(PHOTOS, LOCATION);
-Column.PHOTOS_DESCRIPTION   = new Column(PHOTOS, DESCRIPTION);
 Column.PHOTOS_TAGS          = new Column(PHOTOS, TAGS);
+Column.PHOTOS_DESCRIPTION   = new Column(PHOTOS, DESCRIPTION);
 Column.PHOTOS_FILE_NAME     = new Column(PHOTOS, FILE_NAME);
 Column.lock();

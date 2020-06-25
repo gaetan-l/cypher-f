@@ -746,9 +746,6 @@ export default class CollViewBuilder {
         }
       }
 
-      /*
-       * Picture frame.
-       */
       const itemTr = document.createElement(`tr`);
       itemTr.classList.add(`collection-item`, `details-row`, `relevant`);
       itemTr.setAttribute(`coll-index`, i);
@@ -763,8 +760,8 @@ export default class CollViewBuilder {
         const td = document.createElement(`td`);
         const attributeName = headers[i];
         const value = item[attributeName];
-        td.innerHTML = await this._asyncBeautify(attributeName, value);
-        if (this._needsTranslation.includes(attributeName)) {
+        td.innerHTML = await this._asyncBeautify(attributeName, value, false, CollUtil.TransMode.CURRENT, true);
+        if (this._needsTranslation.includes(attributeName) && !this._needsHashtag.includes(attributeName) && !this._needsJoining.includes(attributeName)) {
           td.setAttribute(`data-i18n`, `${attributeName}.${value}`);
         }
 
@@ -942,33 +939,65 @@ export default class CollViewBuilder {
    *                                    language only, ALL
    *                                    for a concatenation
    *                                    of all translations
+   * @param   Boolean    html           indicates the re-
+   *                                    sult is in html
+   *                                    format and can
+   *                                    contain html tags
    * @return  string                    the formatted value
    */
-  async _asyncBeautify(attributeName, value, flatten = false, transMode = CollUtil.TransMode.NONE) {
+  async _asyncBeautify(attributeName, value, flatten = false, transMode = CollUtil.TransMode.NONE, html = false) {
     const split = this.needsJoining.includes(attributeName) || this.needsHashtag.includes(attributeName);
-    const values = split ? value.split(`;`) : [value];
+    const splitted = split ? value.split(`;`) : [value];
+    let allValues = [];
 
-    if ((transMode !== CollUtil.TransMode.NONE) && (this.needsTranslation.includes(attributeName))) {
-      for (let i = 0 ; i < values.length ; i++) {
-        const translations = [];
+    /*
+     * Only neet to translate if not in html mode or if all
+     * translations are asked cause data-i18n can then not
+     * be used.
+     */
+    if (this.needsTranslation.includes(attributeName)) {
+      if ((html && transMode === CollUtil.TransMode.ALL) || (!html && CollUtil !== CollUtil.TransMode.NONE)) {
         const langs = (transMode === CollUtil.TransMode.ALL) ? Translator.AVAILABLE_LANG() : [this.pageBuilder.translator.lang];
 
-        for (let j = 0 ; j < langs.length ; j++) {
-          const valueI18nCode = `${TextUtil.toDashCase(attributeName)}.${values[i]}`;
-          const translation = await this._pageBuilder.translator.asyncGetTranslatedWord(valueI18nCode, langs[j]);
-          translations.push(translation);
-        }
+        for (let i = 0 ; i < splitted.length ; i++) {
 
-        values[i] = translations.join(`/`);
+          for (let j = 0 ; j < langs.length ; j++) {
+            const valueI18nCode = `${TextUtil.toDashCase(attributeName)}.${splitted[i]}`;
+            let translation = await this._pageBuilder.translator.asyncGetTranslatedWord(valueI18nCode, langs[j]);
+
+            /*
+             * Only pushing if translation is correct in non-
+             * html mode.
+             */
+            if (html || !translation.includes(`translation-error`)) {
+              allValues.push(translation);
+            }
+          }
+        }
       }
+      /*
+       * Only adding i18n html attribute if result is html
+       * and translation in current language only. No need
+       * to translate because it will be done automatically
+       * by the PageBuilder when page is loaded.
+       */
+      else if (html && transMode === CollUtil.TransMode.CURRENT) {
+        allValues = splitted.map(val => `<span data-i18n=${TextUtil.toDashCase(attributeName)}.${val}></span>`);
+      }
+    }
+    /*
+     * For non-translation cases.
+     */
+    else {
+      allValues = splitted;
     }
 
     var value = ``;
     if (this.needsHashtag.includes(attributeName)) {
-      value = values.join(`/`).split(`/`).map(val => `#${val}`).join(" ");
+      value = allValues.map(val => `#${val}`).join(" ");
     }
     else {
-      value = values.join(`, `);
+      value = allValues.join(`, `);
     }
 
     if (flatten) {
