@@ -53,7 +53,7 @@ export default class CollViewBuilder {
      * Indicates attributes that have to be flattened for
      * lookup purpose.
      */
-    this._needsFlattening     = [CollUtil.COUNTRY, CollUtil.DESCRIPTION, CollUtil.LOCATION];
+    this._needsFlattening     = [CollUtil.COUNTRY, CollUtil.DESCRIPTION, CollUtil.LOCATION, CollUtil.NAME];
 
     /*
      * Indicates attributes that are codes that can be
@@ -791,6 +791,8 @@ export default class CollViewBuilder {
         const attrDashName = TextUtil.toDashCase(`item-${attr}`);
         let value = item[attr];
 
+        if (!this.lookupAttributes.includes(attrDashName)) {this.lookupAttributes.push(attrDashName);}
+
         if (value !== ``) {
           /*
            * If value is gonna be joined later, no need to add it
@@ -804,17 +806,17 @@ export default class CollViewBuilder {
           if (this.needsHashtag.includes(attr) || this.needsJoining.includes(attr)) {flags += `j`;}
           if (this.needsTranslation.includes(attr)) {flags += `t`;}
           if (flags !== ``) {
-            value = await this._asyncBeautify(attr, value, false, CollUtil.TransMode.ALL);
+            const valueJT = await this._asyncBeautify(attr, value, false, CollUtil.TransMode.ALL);
             const attrWithFlags = `${attrDashName}-${flags}`;
-            element.setAttribute(attrWithFlags, value);
+            element.setAttribute(attrWithFlags, valueJT);
             if (!this.lookupAttributes.includes(attrWithFlags)) {this.lookupAttributes.push(attrWithFlags);}
           }
 
           if (this.needsFlattening.includes(attr)) {
             flags += `i`;
-            value = await this._asyncBeautify(attr, value, true);
+            const valueI = await this._asyncBeautify(attr, value, true, CollUtil.TransMode.ALL);
             const attrWithFlags = `${attrDashName}-${flags}`;
-            element.setAttribute(attrWithFlags, value);
+            element.setAttribute(attrWithFlags, valueI);
             if (!this.lookupAttributes.includes(attrWithFlags)) {this.lookupAttributes.push(attrWithFlags);}
           }
         }
