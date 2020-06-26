@@ -141,7 +141,6 @@ tbody tr.even td {
 
 .translation-error {
   color: inherit;
-  text-decoration: underline wavy rgba(var(--color-secondary), 1.0);
 }
 
 .text-box {

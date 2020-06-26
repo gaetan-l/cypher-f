@@ -38,7 +38,7 @@ export default class CollViewBuilder {
      * tags or from display.
      */
     this._excludedFromHtml    = [CollUtil.DATE, CollUtil.EXTENSION, `trlanslatedCurrentSortingAttribute`];
-    this._excludedFromDisplay = []; // + excludedFromHtml
+    this._excludedFromDisplay = [CollUtil.FILE_NAME]; // + excludedFromHtml
 
     /*
      * Indicate attributes that have multiple values,

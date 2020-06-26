@@ -24,7 +24,7 @@
     "description": "Description",
     "file-name": "File",
     "location": "Location",
-    "readable-date": "Date",
+    "readable-date": "Date added",
     "tags": "Tags"
   },
   "country": {

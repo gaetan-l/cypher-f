@@ -1,0 +1,3 @@
+.translation-error {
+  text-decoration: underline wavy rgba(var(--color-secondary), 1.0);
+}

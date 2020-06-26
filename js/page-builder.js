@@ -68,7 +68,15 @@ export default class PageBuilder {
     await this.translator.asyncTranslatePage();
 
     PageUtil.bindOnClick(`#btn-translate`, this.translator.asyncSwitchLanguage.bind(this.translator));
-    PageUtil.bindOnClick(`#btn-menu`, function() {document.getElementById(`side-panel`).classList.toggle(`collapsed`);})
+
+    PageUtil.bindOnClick(`#btn-menu`,      function() {
+      document.getElementById(`side-panel`).classList.toggle(`collapsed`);
+    })
+
+    PageUtil.bindOnClick(`#btn-errors`,    function() {
+      const errorsCss = document.querySelector("link[href='/css/errors.css']");
+      errorsCss.disabled = !errorsCss.disabled;
+    })
 
     /*
      * Override default behavior when leaving a page.
