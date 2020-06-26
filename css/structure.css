@@ -247,6 +247,10 @@ td, th {
   display: none;
 }
 
+.fill-flex {
+  flex-grow: 1;
+}
+
 
 
 /*
@@ -407,6 +411,10 @@ input {
   margin: 0;
 }
 
+.label {
+  white-space: nowrap;
+}
+
 .icon-notif-container {
   display: inline-block;
   position: relative;
@@ -432,7 +440,6 @@ input {
   flex-flow: column nowrap;
   height: 100%;
   width: 100%;
-  min-width: var(--size-150);
 }
 
 .collection-toolbar {

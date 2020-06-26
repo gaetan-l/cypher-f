@@ -325,7 +325,7 @@ export default class CollViewBuilder {
     toolbar.classList.add(`collection-toolbar`);
 
     const filterContainer = document.createElement(`div`);
-    filterContainer.classList.add(`toolbar-container`);
+    filterContainer.classList.add(`toolbar-container`, `fill-flex`);
 
     const filterLabel = document.createElement(`p`);
     filterLabel.classList.add(`label`);
@@ -334,6 +334,7 @@ export default class CollViewBuilder {
 
     const boundFilter = this._filterCollection.bind(this);
     const input = document.createElement(`input`);
+    input.classList.add(`fill-flex`);
     input.setAttribute(`id`, `inp-filter`);
     input.addEventListener(`input`, function (e) {boundFilter(this.value);});
     filterContainer.appendChild(input);
