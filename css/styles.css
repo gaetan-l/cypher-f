@@ -408,14 +408,14 @@ input:focus, textarea:focus, select:focus {
   -webkit-box-shadow: inset 0 0 8px black;
 }
 
-/*
- * ------------- 8.1 Polaroid gallery view ----------------
- */
-.polaroid-group h1 {
+.picture-group h1 {
   background-color: rgba(var(--color-primary), 0.5);
   color: rgba(var(--color-neutral), 1.0);
 }
 
+/*
+ * ------------- 8.1 Polaroid gallery view ----------------
+ */
 .polaroid-frame {
   background-color: rgba(var(--color-neutral), 1.0);
   border-style: solid;
@@ -431,14 +431,22 @@ input:focus, textarea:focus, select:focus {
 /*
  * ------------- 8.2 Stacked gallery view -----------------
  */
+.stacked-content {
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  mask-image:         linear-gradient(to bottom, black 80%, transparent 100%);
+}
+
+.stacked-image {
+  border-radius: 24px;
+}
 
 /*
  * ------------- 8.3 Details view -------------------------
  */
 .details-view-table .group-header-row th {
-  background-color: rgba(var(--color-neutral), 1);
-  color: rgba(var(--color-primary), 1);
-  font-weight: bold;
+  background-color: rgba(var(--color-primary), 0.5);
+  color: rgba(var(--color-neutral), 1.0);
+  font-family: var(--font-titles);
 }
 
 /*

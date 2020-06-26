@@ -626,14 +626,14 @@ export default class CollViewBuilder {
     let view = document.getElementById(`collection-content`);
     view = view ? view : document.createElement(`div`);
     view.setAttribute(`id`, `collection-content`);
-    view.classList.add(`fadable`);
+    view.classList.add(`fadable`, stacked ? `stacked-content` : `polaroid-content`);
     container.appendChild(view);
 
     const collection = await this._asyncGetCollection();
 
     let group = document.createElement(`div`);
     group.setAttribute(`id`, `collection-group-`)
-    group.classList.add(`collection-group`, stacked ? `stacked-group` : `polaroid-group`, `relevant`);
+    group.classList.add(`collection-group`, `picture-group`, stacked ? `stacked-group` : `polaroid-group`, `relevant`);
     let openGroup = ``;
 
     let groupContent = document.createElement(`div`);
@@ -669,7 +669,7 @@ export default class CollViewBuilder {
 
           group = document.createElement(`div`);
           group.setAttribute(`id`, `collection-group-${currGroup}`);
-          group.classList.add(`collection-group`, stacked ? `stacked-group` : `polaroid-group`, `relevant`);
+          group.classList.add(`collection-group`, `picture-group`, stacked ? `stacked-group` : `polaroid-group`, `relevant`);
 
           const title = document.createElement(`h1`);
           title.innerHTML = currGroup;
@@ -759,7 +759,7 @@ export default class CollViewBuilder {
     let wrapper = document.getElementById(`collection-content`);
     wrapper = wrapper ? wrapper : document.createElement(`div`);
     wrapper.setAttribute(`id`, `collection-content`);
-    wrapper.classList.add(`fadable`);
+    wrapper.classList.add(`fadable`, `details-content`);
     const view = document.createElement(`table`);
     view.classList.add(`details-view-table`, `selectable`);
     wrapper.appendChild(view);

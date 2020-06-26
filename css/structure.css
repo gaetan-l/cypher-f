@@ -406,6 +406,7 @@ input {
 .button {
   font-size: var(--button-size);
   margin: var(--button-margin);
+  line-height: 1;
 }
 
 .button:hover {
@@ -498,7 +499,7 @@ input {
 /*
  * ------------- 8.1 Polaroid gallery view ----------------
  */
-.polaroid-group h1 {
+.picture-group h1 {
   position: -webkit-sticky;
   position: sticky;
   top: 0;
@@ -560,11 +561,7 @@ input {
 }
 
 .stacked-image {
-  width: var(--gallery-image-size);
-}
-
-.stacked-group img {
-  width: 100%
+  width: 100%;
 }
 
 /*
