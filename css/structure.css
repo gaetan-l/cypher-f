@@ -40,6 +40,7 @@
 :root {
 /* ------------- Default values --------------------------- */
   --size-2:                          calc(2 * var(--size-1));     /* 12px */
+  --size-3:                          calc(3 * var(--size-1));     /* 18px */
   --size-4:                          calc(4 * var(--size-1));     /* 24px */
   --size-6:                          calc(6 * var(--size-1));     /* 36px */
   --size-10:                         calc(10 * var(--size-1));    /* 60px */
@@ -67,9 +68,13 @@
   --side-panel-width:                var(--size-50);
   --side-panel-right-border-width:   var(--border-thin-width);
   --site-footer-height:              var(--size-16);
+  --submenu-border-width:            var(--border-thin-width);
+  --submenu-padding:                 var(--size-3);
 
 /* ------------- Z-indexes -------------------------------- */
 /* Note: z-indexes are relative to an element's parent's -- */
+  --zi-submenu:                        4;
+  --zi-submenu-wrapper:                3;
   --zi-fullscreen:                     2;
   --zi-top:                            1;
   --zi-side-panel:                   /*1.*/2;
@@ -88,7 +93,7 @@
 
 /* ------------- Menu ------------------------------------- */
   --menu-item-height:                var(--size-10);
-  --menu-item-padding-left:          var(--size-4);
+  --menu-item-padding:               var(--size-4);
   --menu-item-border-left-width:     var(--size-2);
   --menu-itm-border-bottom-width:    var(--border-thin-width);
   --menu-link-margin-left:           var(--size-2);
@@ -145,6 +150,10 @@ td, th {
   text-align: left;
   line-height: var(--tr-height);
   padding: 0 var(--size-2) 0 var(--size-2);
+}
+
+.hidden {
+  display: none !important;
 }
 
 
@@ -317,14 +326,17 @@ td, th {
   border-bottom-width: var(--menu-itm-border-bottom-width);
 }
 
+.menu-level > .menu-item {
+  padding: 0 var(--menu-item-padding);
+}
+
 #menu > .menu-level > .menu-item {
-  width: calc(100% - var(--menu-item-border-left-width) - var(--menu-item-padding-left));
-  padding-left: var(--menu-item-padding-left);
+  width: calc(100% - var(--menu-item-border-left-width) - 2 * var(--menu-item-padding));
 }
 
 #menu > .menu-level > .menu-level > .menu-item {
-  width: calc(100% - var(--menu-item-border-left-width) - 2 * var(--menu-item-padding-left));
-  padding-left: calc(2 * var(--menu-item-padding-left));
+  width: calc(100% - var(--menu-item-border-left-width) - 3 * var(--menu-item-padding));
+  padding: 0 var(--menu-item-padding) 0 calc(2 * var(--menu-item-padding));
 }
 
 .menu-link {
@@ -336,6 +348,23 @@ td, th {
    */
   width: calc(100% - var(--font-size-default) - var(--menu-link-margin-left));
 }
+
+#submenu-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--zi-submenu-wrapper);
+ }
+
+ .submenu {
+  display: flex;
+  flex-flow: column nowrap;
+  position: absolute;
+  border-width: var(--submenu-border-width);
+  z-index: var(--zi-submenu);
+ }
 
 
 

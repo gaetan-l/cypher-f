@@ -33,6 +33,8 @@ export default class CollViewBuilder {
     this._sortableAttributes  = [];
     this._lookupAttributes    = [];
 
+    this._icons               = null;
+
     /*
      * Indicate attributes that are excluded from html
      * tags or from display.
@@ -122,6 +124,21 @@ export default class CollViewBuilder {
   }
 
   /**
+   * Returns the json file containing the icons.
+   *
+   * @access  private
+   * @return  JSON  the json icon file.
+   */
+  async _asyncGetIcons() {
+    if (this._icons === null) {
+      const response = await fetch(this.iconsJsonPath);
+      this._icons = await response.json();
+    }
+
+    return this._icons;
+  }
+
+  /**
    * Draws every component necessary to display a collec-
    * tion.
    *
@@ -200,6 +217,10 @@ export default class CollViewBuilder {
       container = PageUtil.getUniqueElement(container);
       sortingAttribute = this.sortableAttributes.includes(sortingAttribute) ? sortingAttribute : CollUtil.DATE;
       dateDirection = (sortingAttribute === CollUtil.DATE ? sortingDirection : dateDirection);
+      
+      document.querySelectorAll(`#submenu-display-mode .menu-item`).forEach(element => element.classList.remove(`active`));
+      document.getElementById(`display-${this.currDisplayMode.value}`).classList.add(`active`);
+      document.getElementById(`btn-display-mode`).innerHTML = TextUtil.getJsonValue(`display-${this.currDisplayMode.value}`, await this._asyncGetIcons());
 
       const content = document.getElementById(`collection-content`);
       if (content) {
@@ -263,26 +284,75 @@ export default class CollViewBuilder {
     toolbarButtonContainer.setAttribute(`id`, `collection-toolbar-toolbar-container`);
     toolbarButtonContainer.classList.add(`toolbar-container`, `right-side`);
 
-    const response = await fetch(this.iconsJsonPath);
-    const icons = await response.json();
+    const submenuWrapper = document.createElement(`div`);
+    submenuWrapper.setAttribute(`id`, `submenu-wrapper`);
+    submenuWrapper.classList.add(`hidden`);
+    document.body.appendChild(submenuWrapper);
 
-    async function changeDisplayMode() {
-      await this._asyncRedraw(container, this.currDisplayMode.next, this.currSortingAttribute, this.currSortingDirection, this.currGrouping, this.currDateDirection);
-      document.getElementById(`btn-display-mode`).innerHTML = TextUtil.getJsonValue(`display-${this.currDisplayMode.next.value}`, icons);
+    function displaySubmenu(subMenuId, top = 0, right = 0) {
+      [...document.getElementsByClassName(`submenu`)].forEach(element => element.classList.add(`hidden`));
+
+      if (subMenuId) {
+        document.getElementById(`submenu-wrapper`).classList.remove(`hidden`);
+        const subMenu = document.getElementById(subMenuId);
+        const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        subMenu.style.top   = `${top}px`;
+        subMenu.style.right = `${vw - right}px`;
+        subMenu.classList.remove(`hidden`);
+      }
+      else {
+        document.getElementById(`submenu-wrapper`).classList.add(`hidden`);
+      }
     }
 
-    const boundChangeDisplayMode = changeDisplayMode.bind(this);
-    const changeDisplayButton = document.createElement(`i`);
-    changeDisplayButton.setAttribute(`id`, `btn-display-mode`);
-    changeDisplayButton.classList.add(`material-icons`, `button`);
-    PageUtil.bindOnClick(changeDisplayButton, function() {boundChangeDisplayMode();});
-    changeDisplayButton.innerHTML = TextUtil.getJsonValue(`display-${this.currDisplayMode.next.value}`, icons);
+    async function changeDisplayMode(displayMode) {
+      await this._asyncRedraw(container, displayMode, this.currSortingAttribute, this.currSortingDirection, this.currGrouping, this.currDateDirection);
+    }
+
+    PageUtil.bindOnClick(submenuWrapper, function() {displaySubmenu();});
+
+    /*
+     * Building display mode submenu.
+     */
+    const displayModeSm = document.createElement(`ul`);
+    displayModeSm.setAttribute(`id`, `submenu-display-mode`);
+    displayModeSm.classList.add(`submenu`, `menu-level`, `hidden`);
+    const displayModes = CollUtil.DisplayMode.items;
+    for (let i = 0 ; i < displayModes.length ; i++) {
+      const displayModeEntry = document.createElement(`li`);
+      displayModeEntry.setAttribute(`id`, `display-${displayModes[i].value}`);
+      displayModeEntry.classList.add(`menu-item`);
+
+      const displayModeIcon = document.createElement(`i`);
+      displayModeIcon.classList.add(`material-icons`, `menu-icon`);
+      displayModeIcon.innerHTML = TextUtil.getJsonValue(`display-${displayModes[i].value}`, await this._asyncGetIcons());
+
+      const displayModeLabel = document.createElement(`p`);
+      displayModeLabel.classList.add(`menu-link`);
+      displayModeLabel.setAttribute(`data-i18n`, `labels.display-mode-${displayModes[i].value}`);
+
+      const boundChangeDisplayMode = changeDisplayMode.bind(this);
+      PageUtil.bindOnClick(displayModeEntry, function() {
+        boundChangeDisplayMode(displayModes[i]);
+        displaySubmenu();
+      });
+
+      displayModeEntry.appendChild(displayModeIcon);
+      displayModeEntry.appendChild(displayModeLabel);
+      displayModeSm.appendChild(displayModeEntry);
+    }
+    document.body.appendChild(displayModeSm);
+
+    const displayModeButton = document.createElement(`i`);
+    displayModeButton.setAttribute(`id`, `btn-display-mode`);
+    displayModeButton.classList.add(`material-icons`, `button`);
+    PageUtil.bindOnClick(displayModeButton, function() {displaySubmenu(`submenu-display-mode`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().right);});
 
     const displayModeLabel = document.createElement(`p`);
     displayModeLabel.classList.add(`label`);
     displayModeLabel.setAttribute(`data-i18n`, `labels.display-mode`);
     toolbarButtonContainer.appendChild(displayModeLabel);
-    toolbarButtonContainer.appendChild(changeDisplayButton);
+    toolbarButtonContainer.appendChild(displayModeButton);
 
     async function changeSorting(selectedSortingAttribute) {
       let selectedDirection;
@@ -337,8 +407,8 @@ export default class CollViewBuilder {
       PageUtil.bindOnClick(button, function() {boundChangeSorting(sorting);});
       PageUtil.bindOnRightClick(button, sorting === CollUtil.DATE ? function() {boundChangeDateDirection();} : function() {});
 
-      let iconName = TextUtil.getJsonValue(sorting, icons);
-      if (!iconName) {iconName = TextUtil.getJsonValue(`default-sorting`, icons);}
+      let iconName = TextUtil.getJsonValue(sorting, await this._asyncGetIcons());
+      if (!iconName) {iconName = TextUtil.getJsonValue(`default-sorting`, await this._asyncGetIcons());}
       button.innerHTML = iconName;
 
       const iconNotifContainer = document.createElement(`div`);
