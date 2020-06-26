@@ -217,10 +217,70 @@ export default class CollViewBuilder {
       container = PageUtil.getUniqueElement(container);
       sortingAttribute = this.sortableAttributes.includes(sortingAttribute) ? sortingAttribute : CollUtil.DATE;
       dateDirection = (sortingAttribute === CollUtil.DATE ? sortingDirection : dateDirection);
-      
+
+      /*
+       * Displaying submenus, icons and notifications
+       */
       document.querySelectorAll(`#submenu-display-mode .menu-item`).forEach(element => element.classList.remove(`active`));
-      document.getElementById(`display-${this.currDisplayMode.value}`).classList.add(`active`);
-      document.getElementById(`btn-display-mode`).innerHTML = TextUtil.getJsonValue(`display-${this.currDisplayMode.value}`, await this._asyncGetIcons());
+      document.getElementById(`display-${displayMode.value}`).classList.add(`active`);
+      document.getElementById(`btn-display-mode`).innerHTML = TextUtil.getJsonValue(`display-${displayMode.value}`, await this._asyncGetIcons());
+
+      document.querySelectorAll(`#submenu-sort .menu-item`).forEach(element => element.classList.remove(`active`));
+      document.getElementById(`sort-${sortingAttribute}`).classList.add(`active`);
+      document.getElementById(`btn-sort`).innerHTML = TextUtil.getJsonValue(`sort-${sortingAttribute}`, await this._asyncGetIcons());
+
+      const notifs = document.getElementsByClassName(`notification-sort`);
+      Array.from(notifs).forEach((element) => {
+        PageUtil.fadeOut(element);
+      });
+      /*
+       * Creating the primary sorting notification icon if
+       * it doesn't exist already.
+       */
+      let primaryNotif = document.getElementById(`notification-sort-primary`);
+      let primaryNotifToolbar = document.getElementById(`notification-sort-primary-toolbar`);
+      if (!primaryNotif) {
+        primaryNotif = document.createElement(`i`);
+        primaryNotif.setAttribute(`id`, `notification-sort-primary`);
+        primaryNotif.classList.add(`material-icons`, `fadable`, `notification`, `notification-sort`, `sort-${sortingAttribute}`);
+      }
+      if (!primaryNotifToolbar) {
+        primaryNotifToolbar = primaryNotif.cloneNode(true);
+        primaryNotifToolbar.setAttribute(`id`, `notification-sort-primary-toolbar`);
+      }
+  
+      primaryNotif.innerHTML = TextUtil.getJsonValue(`notif-${sortingDirection.value}-${grouping.value}`, await this._asyncGetIcons());
+      primaryNotifToolbar.innerHTML = primaryNotif.innerHTML;
+      document.getElementById(`btn-sorting-${sortingAttribute}`).parentNode.appendChild(primaryNotif);
+      document.getElementById(`btn-sort`).parentNode.appendChild(primaryNotifToolbar);
+  
+      /*
+       * Finally, when all the sorting treatment has been
+       * done and the icon created, we display it.
+       */
+      PageUtil.fadeIn(primaryNotif);
+      PageUtil.fadeIn(primaryNotifToolbar);
+  
+      /*
+       * Same treatment with the secondary notification. Only
+       * displayed if it is descending.
+       */
+      if((sortingAttribute !== CollUtil.DATE) && (dateDirection === CollUtil.Direction.DESC)) {
+        let secondaryNotif = document.getElementById(`notification-sort-secondary`);
+        if (!secondaryNotif) {
+          secondaryNotif = document.createElement(`i`);
+          secondaryNotif.setAttribute(`id`, `notification-sort-secondary`);
+          secondaryNotif.classList.add(`material-icons`, `fadable`, `notification`, `notification-sort`);
+          secondaryNotif.innerHTML = TextUtil.getJsonValue(`notif-${CollUtil.Direction.DESC.value}-${CollUtil.Grouping.NOT_GROUPED.value}`, await this._asyncGetIcons());
+          document.getElementById(`btn-sorting-date`).parentNode.appendChild(secondaryNotif);
+        }
+  
+        /*
+         * Finally, when all the sorting treatment has been
+         * done and the icon created, we display it.
+         */
+        PageUtil.fadeIn(secondaryNotif);
+      }
 
       const content = document.getElementById(`collection-content`);
       if (content) {
@@ -343,17 +403,21 @@ export default class CollViewBuilder {
     }
     document.body.appendChild(displayModeSm);
 
+    const displayModeLabel = document.createElement(`p`);
+    displayModeLabel.classList.add(`label`);
+    displayModeLabel.setAttribute(`data-i18n`, `labels.display-mode`);
+
     const displayModeButton = document.createElement(`i`);
     displayModeButton.setAttribute(`id`, `btn-display-mode`);
     displayModeButton.classList.add(`material-icons`, `button`);
     PageUtil.bindOnClick(displayModeButton, function() {displaySubmenu(`submenu-display-mode`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().right);});
 
-    const displayModeLabel = document.createElement(`p`);
-    displayModeLabel.classList.add(`label`);
-    displayModeLabel.setAttribute(`data-i18n`, `labels.display-mode`);
     toolbarButtonContainer.appendChild(displayModeLabel);
     toolbarButtonContainer.appendChild(displayModeButton);
 
+    /*
+     * Building sort submenu.
+     */
     async function changeSorting(selectedSortingAttribute) {
       let selectedDirection;
       let selectedGrouping;
@@ -392,30 +456,56 @@ export default class CollViewBuilder {
     const boundChangeSorting = changeSorting.bind(this);
     const boundChangeDateDirection = changeDateDirection.bind(this);
 
+    const sortSm = document.createElement(`ul`);
+    sortSm.setAttribute(`id`, `submenu-sort`);
+    sortSm.classList.add(`submenu`, `menu-level`, `hidden`);
+    const sorts = this.sortableAttributes;
+
+    for (let i = 0 ; i < sorts.length ; i++) {
+      const sortEntry = document.createElement(`li`);
+      sortEntry.setAttribute(`id`, `sort-${sorts[i]}`);
+      sortEntry.classList.add(`menu-item`);
+
+      const sortIcon = document.createElement(`i`);
+      sortIcon.setAttribute(`id`, `btn-sorting-${sorts[i]}`);
+      sortIcon.classList.add(`material-icons`, `menu-icon`);
+      let iconName = TextUtil.getJsonValue(`sort-${sorts[i]}`, await this._asyncGetIcons());
+      if (!iconName) {iconName = TextUtil.getJsonValue(`sort-default`, await this._asyncGetIcons());}
+      sortIcon.innerHTML = iconName;
+
+      const iconNotifContainer = document.createElement(`div`);
+      iconNotifContainer.classList.add(`icon-notif-container`)
+      iconNotifContainer.appendChild(sortIcon);
+
+      const sortLabel = document.createElement(`p`);
+      sortLabel.classList.add(`menu-link`);
+      sortLabel.setAttribute(`data-i18n`, `labels.sort-${sorts[i]}`);
+
+      PageUtil.bindOnClick(sortEntry, function() {boundChangeSorting(sorts[i]);});
+      PageUtil.bindOnRightClick(sortEntry, sorts[i] === CollUtil.DATE ? function() {boundChangeDateDirection();} : function() {});
+
+      sortEntry.appendChild(iconNotifContainer);
+      sortEntry.appendChild(sortLabel);
+      sortSm.appendChild(sortEntry);
+    }
+    document.body.appendChild(sortSm);
+
     const sortLabel = document.createElement(`p`);
     sortLabel.classList.add(`label`);
     sortLabel.setAttribute(`data-i18n`, `labels.sort`);
     toolbarButtonContainer.appendChild(sortLabel);
 
-    for (let i = 0 ; i < this.sortableAttributes.length ; i++) {
-      let sorting = this.sortableAttributes[i];
+    const sortButton = document.createElement(`i`);
+    sortButton.setAttribute(`id`, `btn-sort`);
+    sortButton.classList.add(`material-icons`, `button`);
+    PageUtil.bindOnClick(sortButton, function() {displaySubmenu(`submenu-sort`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().right);});
 
-      const button = document.createElement(`i`);
-      button.setAttribute(`id`, `btn-sorting-${sorting}`);
-      button.classList.add(`material-icons`, `button`);
+    const iconNotifContainer = document.createElement(`div`);
+    iconNotifContainer.classList.add(`icon-notif-container`)
+    iconNotifContainer.appendChild(sortButton);
 
-      PageUtil.bindOnClick(button, function() {boundChangeSorting(sorting);});
-      PageUtil.bindOnRightClick(button, sorting === CollUtil.DATE ? function() {boundChangeDateDirection();} : function() {});
-
-      let iconName = TextUtil.getJsonValue(sorting, await this._asyncGetIcons());
-      if (!iconName) {iconName = TextUtil.getJsonValue(`default-sorting`, await this._asyncGetIcons());}
-      button.innerHTML = iconName;
-
-      const iconNotifContainer = document.createElement(`div`);
-      iconNotifContainer.classList.add(`icon-notif-container`)
-      iconNotifContainer.appendChild(button);
-      toolbarButtonContainer.appendChild(iconNotifContainer);
-    }
+    toolbarButtonContainer.appendChild(sortLabel);
+    toolbarButtonContainer.appendChild(iconNotifContainer);
 
     toolbar.appendChild(toolbarButtonContainer);
     container.appendChild(toolbar);
@@ -479,19 +569,6 @@ export default class CollViewBuilder {
    *                                       cal sorting
    */
   async _asyncSort(sortingAttribute, sortingDirection, grouping, dateDirection) {
-    const notifs = document.getElementsByClassName(`notification-sort`);
-    Array.from(notifs).forEach((element) => {
-      PageUtil.fadeOut(element);
-    });
-
-    if (notifs.length > 0) {
-      /*
-       * TODO: find a better way to wait for the notifica-
-       * tion to display without blocking all the process.
-       */
-      await PageUtil.asyncWaitForIt(250);
-    }
-
     const boundTranslateSortAttribute = this._asyncTranslateSortAttribute.bind(this);
     await boundTranslateSortAttribute(sortingAttribute);
 
@@ -520,47 +597,6 @@ export default class CollViewBuilder {
       const dateY = Date.parse(jsonY.date);
       return dateDirection === CollUtil.Direction.DESC ? dateY - dateX : dateX - dateY;
     });
-
-    /*
-     * Creating the primary sorting notification icon if
-     * it doesn't exist already.
-     */
-    let primaryNotif = document.getElementById(`notification-sort-primary`);
-    if (!primaryNotif) {
-      primaryNotif = document.createElement(`i`);
-      primaryNotif.setAttribute(`id`, `notification-sort-primary`);
-      primaryNotif.classList.add(`material-icons`, `fadable`, `notification`, `notification-sort`, `sort-${sortingAttribute}`);
-    }
-
-    primaryNotif.innerHTML = sortingDirection === CollUtil.Direction.DESC ? `arrow_drop_up` : `arrow_drop_down`;
-    document.getElementById(`btn-sorting-${sortingAttribute}`).parentNode.appendChild(primaryNotif);
-
-    /*
-     * Finally, when all the sorting treatment has been
-     * done and the icon created, we display it.
-     */
-    PageUtil.fadeIn(primaryNotif);
-
-    /*
-     * Same treatment with the secondary notification. Only
-     * displayed if it is descending.
-     */
-    if((sortingAttribute !== CollUtil.DATE) && (dateDirection === CollUtil.Direction.DESC)) {
-      let secondaryNotif = document.getElementById(`notification-sort-secondary`);
-      if (!secondaryNotif) {
-        secondaryNotif = document.createElement(`i`);
-        secondaryNotif.setAttribute(`id`, `notification-sort-secondary`);
-        secondaryNotif.classList.add(`material-icons`, `fadable`, `notification`, `notification-sort`);
-        secondaryNotif.innerHTML = `arrow_drop_up`;
-        document.getElementById(`btn-sorting-date`).parentNode.appendChild(secondaryNotif);
-      }
-
-      /*
-       * Finally, when all the sorting treatment has been
-       * done and the icon created, we display it.
-       */
-      PageUtil.fadeIn(secondaryNotif);
-    }
 
     this.currSortingAttribute = sortingAttribute;
     this.currSortingDirection = sortingDirection

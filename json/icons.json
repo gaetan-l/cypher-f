@@ -3,10 +3,14 @@
   "display-details": "list",
   "display-polaroid-gallery": "view_module",
   "display-stacked-gallery": "dashboard",
-  "default-sorting": "clear_all",
-  "country": "flag",
-  "date": "event",
-  "name": "sort_by_alpha",
-  "type": "device_hub",
-  "year": "date_range"
+  "sort-default": "clear_all",
+  "sort-country": "flag",
+  "sort-date": "event",
+  "sort-name": "sort_by_alpha",
+  "sort-type": "device_hub",
+  "sort-year": "date_range",
+  "notif-ascending-not-grouped": "keyboard_arrow_down",
+  "notif-ascending-grouped": "arrow_drop_down",
+  "notif-descending-not-grouped": "keyboard_arrow_up",
+  "notif-descending-grouped": "arrow_drop_up"
 }

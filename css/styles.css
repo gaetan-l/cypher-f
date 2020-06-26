@@ -268,14 +268,14 @@ tbody tr.even td {
   background-color: rgba(var(--color-primary), 1.0);
 }
 
-.menu-item:not(.active) > .material-icons {
+.menu-item:not(.active) .material-icons {
   color: rgba(var(--color-primary), 1.0);
 }
 
-.menu-item.active > .menu-link,
-.menu-item.active > .menu-icon,
-.menu-item:not(.active):hover > .menu-link,
-.menu-item:not(.active):hover > .menu-icon {
+.menu-item.active .menu-link,
+.menu-item.active .menu-icon,
+.menu-item:not(.active):hover .menu-link,
+.menu-item:not(.active):hover .menu-icon {
   color: rgba(var(--color-neutral), 1.0);
 }
 
@@ -285,8 +285,8 @@ tbody tr.even td {
   transition: all 0.25s ease-in-out;
 }
 
-.menu-item:not(.active):hover > .menu-link,
-.menu-item:not(.active):hover > .menu-icon {
+.menu-item:not(.active):hover .menu-link,
+.menu-item:not(.active):hover .menu-icon {
   transition: color 0.25s ease-in-out;
 }
 
@@ -330,11 +330,11 @@ input:focus, textarea:focus, select:focus {
   color: rgba(var(--color-secondary), 1.0);
 }
 
-@supports (-webkit-text-stroke: 2px white) {
+/*@supports (-webkit-text-stroke: 2px white) {
   .notification {
     -webkit-text-stroke: 2px white;
   }
-}
+}*/
 
 #notification-sort-secondary {
   color: rgba(var(--color-tertiary), 1.0);

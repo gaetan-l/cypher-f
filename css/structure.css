@@ -408,6 +408,7 @@ input {
 }
 
 .icon-notif-container {
+  display: inline-block;
   position: relative;
 }
 
