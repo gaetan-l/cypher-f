@@ -58,8 +58,10 @@
   --border-thin-width:                 1px;
   --input-margin:                    var(--size-2);
   --input-height:                    var(--size-6);
+  --input-width:                     var(--size-16);
   --button-size:                     var(--size-6);
   --button-margin:                   var(--size-2);
+  --label-margin-left:               var(--size-2);
   --notification-size:               var(--size-6);
   --tr-height:                       var(--size-10);
 
@@ -143,6 +145,7 @@ h1 {
 
 input {
   height: var(--input-height);
+  width: var(--input-width);
 }
 
 td, th {
@@ -399,6 +402,7 @@ td, th {
 
 input {
   margin: var(--input-margin);
+  width: ;
 }
 
 .button {
@@ -413,10 +417,11 @@ input {
 
 .label {
   white-space: nowrap;
+  margin-left: var(--label-margin-left);
 }
 
 .icon-notif-container {
-  display: inline-block;
+  display: flex;
   position: relative;
 }
 
@@ -449,7 +454,6 @@ input {
   align-items: center;
 
   height: var(--collection-toolbar-height);
-  padding: var(--button-margin) var(--button-margin) var(--button-margin) calc(2 * var(--button-margin));
 
   border-bottom-width: var(--collection-toolbar-border-width);
 

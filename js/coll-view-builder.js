@@ -324,26 +324,9 @@ export default class CollViewBuilder {
     const toolbar = document.createElement(`div`);
     toolbar.classList.add(`collection-toolbar`);
 
-    const filterContainer = document.createElement(`div`);
-    filterContainer.classList.add(`toolbar-container`, `fill-flex`);
-
-    const filterLabel = document.createElement(`p`);
-    filterLabel.classList.add(`label`);
-    filterLabel.setAttribute(`data-i18n`, `labels.filter`);
-    filterContainer.appendChild(filterLabel);
-
-    const boundFilter = this._filterCollection.bind(this);
-    const input = document.createElement(`input`);
-    input.classList.add(`fill-flex`);
-    input.setAttribute(`id`, `inp-filter`);
-    input.addEventListener(`input`, function (e) {boundFilter(this.value);});
-    filterContainer.appendChild(input);
-
-    toolbar.appendChild(filterContainer);
-
     const toolbarButtonContainer = document.createElement(`div`);
     toolbarButtonContainer.setAttribute(`id`, `collection-toolbar-toolbar-container`);
-    toolbarButtonContainer.classList.add(`toolbar-container`, `right-side`);
+    toolbarButtonContainer.classList.add(`toolbar-container`, `left-side`);
 
     const submenuWrapper = document.createElement(`div`);
     submenuWrapper.setAttribute(`id`, `submenu-wrapper`);
@@ -509,6 +492,24 @@ export default class CollViewBuilder {
     toolbarButtonContainer.appendChild(iconNotifContainer);
 
     toolbar.appendChild(toolbarButtonContainer);
+
+    const filterContainer = document.createElement(`div`);
+    filterContainer.classList.add(`toolbar-container`, `fill-flex`);
+
+    const filterLabel = document.createElement(`p`);
+    filterLabel.classList.add(`label`);
+    filterLabel.setAttribute(`data-i18n`, `labels.filter`);
+    filterContainer.appendChild(filterLabel);
+
+    const boundFilter = this._filterCollection.bind(this);
+    const input = document.createElement(`input`);
+    input.classList.add(`fill-flex`);
+    input.setAttribute(`id`, `inp-filter`);
+    input.addEventListener(`input`, function (e) {boundFilter(this.value);});
+    filterContainer.appendChild(input);
+
+    toolbar.appendChild(filterContainer);
+
     container.appendChild(toolbar);
   }
 
