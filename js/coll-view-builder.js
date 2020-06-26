@@ -698,7 +698,7 @@ export default class CollViewBuilder {
        * Picture frame.
        */
       const frame = document.createElement(`div`);
-      frame.classList.add(`collection-item`, stacked ? `stacked-frame` : `polaroid-frame`, `relevant`);
+      frame.classList.add(`collection-item`, `picture-item`, stacked ? `stacked-frame` : `polaroid-frame`, `relevant`);
       frame.setAttribute(`coll-index`, i);
       await this._addItemLookup(frame, item);
 
@@ -761,7 +761,7 @@ export default class CollViewBuilder {
     wrapper.setAttribute(`id`, `collection-content`);
     wrapper.classList.add(`fadable`);
     const view = document.createElement(`table`);
-    view.classList.add(`details-view-table`);
+    view.classList.add(`details-view-table`, `selectable`);
     wrapper.appendChild(view);
     container.appendChild(wrapper);
 
@@ -807,8 +807,10 @@ export default class CollViewBuilder {
     });
 
     /*
-     * Creating html elements.
+     * First column = icon to view fullscreen picture.
      */
+    theadTr.appendChild(document.createElement(`th`));
+
     for (let i = 0 ; i < headers.length ; i++) {
       const header = headers[i];
       const th = document.createElement(`th`);
@@ -864,10 +866,17 @@ export default class CollViewBuilder {
       itemTr.setAttribute(`coll-index`, i);
       await this._addItemLookup(itemTr, item);
 
-      itemTr.onclick = function() {
-        _boundAsyncDisplayFullscreenPicture(this);
+      const viewTd = document.createElement(`td`);
+      viewTd.classList.add(`flex`);
+      const viewI  = document.createElement(`i`);
+      viewI.classList.add(`material-icons`, `inline-button`);
+      viewI.innerHTML = TextUtil.getJsonValue(`view-fullscreen`, await this._asyncGetIcons());
+      viewI.onclick = function() {
+        _boundAsyncDisplayFullscreenPicture(this.parentNode.parentNode);
         PageUtil.fadeIn(`#picture-fullscreen`);
       };
+      viewTd.appendChild(viewI);
+      itemTr.appendChild(viewTd);
 
       for (let i = 0 ; i < headers.length ; i++) {
         const td = document.createElement(`td`);
@@ -1016,25 +1025,26 @@ export default class CollViewBuilder {
     const allElements = Array.from(document.querySelectorAll(`.collection-item:not(.irrelevant)`));
     const htmlIndex = allElements.indexOf(element);
 
-    function prev(e) {
-      const prevHtmlIndex = (htmlIndex + allElements.length - 1) % allElements.length;
-      const prevElement = allElements[prevHtmlIndex];
-      this._asyncDisplayFullscreenPicture(prevElement);
-      e.stopPropagation();
+    function displayIndexedPicture(event, index) {
+      this._asyncDisplayFullscreenPicture(allElements[index]);
+      event.stopPropagation();
     }
 
-    function next(e) {
-      const nextHtmlIndex = (htmlIndex + 1) % allElements.length;
-      const nextElement = allElements[nextHtmlIndex];
-      this._asyncDisplayFullscreenPicture(nextElement);
-      e.stopPropagation();
+    const boundDisplayIndexedPicture = displayIndexedPicture.bind(this);
+
+    function prev(event) {
+      boundDisplayIndexedPicture(event, (htmlIndex + allElements.length - 1) % allElements.length);
+    }
+
+    function next(event) {
+      boundDisplayIndexedPicture(event, (htmlIndex + 1) % allElements.length);
     }
 
     const boundPrev = prev.bind(this);
     const boundNext = next.bind(this);
 
-    PageUtil.bindOnClick(`#btn-fs-prev`, function(e) {boundPrev(e)});
-    PageUtil.bindOnClick(`#btn-fs-next`, function(e) {boundNext(e)});
+    PageUtil.bindOnClick(`#btn-fs-prev`, function(event) {boundPrev(event)});
+    PageUtil.bindOnClick(`#btn-fs-next`, function(event) {boundNext(event)});
   }
 
   /**

@@ -12,5 +12,6 @@
   "notif-ascending-not-grouped": "keyboard_arrow_down",
   "notif-ascending-grouped": "arrow_drop_down",
   "notif-descending-not-grouped": "keyboard_arrow_up",
-  "notif-descending-grouped": "arrow_drop_up"
+  "notif-descending-grouped": "arrow_drop_up",
+  "view-fullscreen": "crop_original"
 }

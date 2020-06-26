@@ -158,6 +158,14 @@ td, th {
   display: none !important;
 }
 
+.flex {
+  display: flex;
+}
+
+.fill-flex {
+  flex-grow: 1;
+}
+
 
 
 /*
@@ -247,10 +255,6 @@ td, th {
 
 .text-box::-webkit-scrollbar { /* Chrome, Safari */
   display: none;
-}
-
-.fill-flex {
-  flex-grow: 1;
 }
 
 
@@ -383,11 +387,7 @@ td, th {
   display: flex;
   flex-flow: row nowrap;
 
-  /*
-   * TODO: change justify content because other buttons are
-   * gonna move when one is hovered.
-   */
-  justify-content: space-evenly;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -458,6 +458,10 @@ input {
   border-bottom-width: var(--collection-toolbar-border-width);
 
   z-index: var(--zi-collection-toolbar);
+}
+
+#inp-filter {
+  max-width: var(--size-50);
 }
 
 #collection-content {

@@ -80,6 +80,28 @@
   font-family: var(--font-body);
   font-weight: normal;
   color: rgba(var(--color-quaternary-dark), 1.0);
+
+  -webkit-touch-callout: inherit;
+  -webkit-user-select: inherit;
+  -khtml-user-select: inherit;
+  -moz-user-select: inherit;
+  -ms-user-select: inherit;
+  user-select: inherit;
+  -webkit-tap-highlight-color: inherit;
+}
+
+body {
+  /*
+   * Prevent selecting/blue highlight everywhere.
+   * @link https://stackoverflow.com/questions/21003535/anyway-to-prevent-the-blue-highlighting-of-elements-in-chrome-when-clicking-quic
+   */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 
@@ -151,6 +173,16 @@ tbody tr.even td {
   color: white;
 }
 
+.selectable {
+  -webkit-touch-callout: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  -webkit-tap-highlight-color: rgba(var(--color-primary), 1.0);
+}
+
 
 
 /*
@@ -158,13 +190,6 @@ tbody tr.even td {
  * ============= 4.  MAIN STRUCTURE =======================
  * ========================================================
  */
-#side-panel, #site-footer, .collection-toolbar, .submenu {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
 #side-panel {
   border-right-style: solid;
   border-right-color: rgba(var(--color-quaternary-light), 1.0);
@@ -306,15 +331,15 @@ tbody tr.even td {
  * ============= 7.  CONTROLS AND NOTIFICATIONS ===========
  * ========================================================
  */
-.button {
-  cursor: pointer;
+.inline-button:hover {
+  color: rgba(var(--color-primary), 1.0);
 }
 
-.button,
-.button:hover {
+.button, .inline-button {
   /*
    * Changes to size and margins are in structure.css.
    */
+  cursor: pointer;
   transition: all 0.1s ease-in-out;
 }
 
@@ -366,7 +391,7 @@ input:focus, textarea:focus, select:focus {
   color: rgba(var(--color-primary), 1.0);;
 }
 
-.collection-item {
+.picture-item {
   cursor: pointer;
 }
 
@@ -387,10 +412,6 @@ input:focus, textarea:focus, select:focus {
  * ------------- 8.1 Polaroid gallery view ----------------
  */
 .polaroid-group h1 {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   background-color: rgba(var(--color-primary), 0.5);
   color: rgba(var(--color-neutral), 1.0);
 }
