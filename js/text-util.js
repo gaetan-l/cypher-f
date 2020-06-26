@@ -72,4 +72,14 @@ export default class TextUtil {
   static toDashCase(string) {
     return string.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
   }
+
+  /**
+   * Returns a string reverted ("String" becomes "gnirtS").
+   *
+   * @param   String  normal  the normal string
+   * @return  String          the reversed string
+   */
+  static reverse(string) {
+    return string.split(``).reverse().join(``);
+  }
 }

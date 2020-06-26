@@ -524,6 +524,7 @@ export default class CollViewBuilder {
     document.body.appendChild(fsView);
     await PageUtil.replaceElementWithTemplate(`#picture-fullscreen`);
     PageUtil.bindOnClick(`#btn-fs-close`,  function() {PageUtil.fadeOut(`#picture-fullscreen`);});
+    PageUtil.bindOnClick(`#picture-fullscreen`,  function() {PageUtil.fadeOut(`#picture-fullscreen`);});
   }
 
   /**
@@ -716,7 +717,9 @@ export default class CollViewBuilder {
        * when clicked (see onclick above).
        */
       img.classList.add(stacked ? `stacked-image` : `polaroid-image`);
-      img.src = `${this.imgPath}${item.fileName}`;
+      const thumbSuffix = TextUtil.reverse(`_thumb.`);
+      const suffixedName = TextUtil.reverse(TextUtil.reverse(item.fileName).replace(/\./, thumbSuffix));
+      img.src = this.imgPath + suffixedName;
 
       /*
        * Adding picture to frame and frame to temporary container.
@@ -1013,23 +1016,25 @@ export default class CollViewBuilder {
     const allElements = Array.from(document.querySelectorAll(`.collection-item:not(.irrelevant)`));
     const htmlIndex = allElements.indexOf(element);
 
-    function prev() {
+    function prev(e) {
       const prevHtmlIndex = (htmlIndex + allElements.length - 1) % allElements.length;
       const prevElement = allElements[prevHtmlIndex];
       this._asyncDisplayFullscreenPicture(prevElement);
+      e.stopPropagation();
     }
 
-    function next() {
+    function next(e) {
       const nextHtmlIndex = (htmlIndex + 1) % allElements.length;
       const nextElement = allElements[nextHtmlIndex];
       this._asyncDisplayFullscreenPicture(nextElement);
+      e.stopPropagation();
     }
 
     const boundPrev = prev.bind(this);
     const boundNext = next.bind(this);
 
-    PageUtil.bindOnClick(`#btn-fs-prev`, function() {boundPrev()});
-    PageUtil.bindOnClick(`#btn-fs-next`, function() {boundNext()});
+    PageUtil.bindOnClick(`#btn-fs-prev`, function(e) {boundPrev(e)});
+    PageUtil.bindOnClick(`#btn-fs-next`, function(e) {boundNext(e)});
   }
 
   /**
