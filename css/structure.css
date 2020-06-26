@@ -101,7 +101,6 @@
   --menu-link-margin-left:           var(--size-2);
 
 /* ------------- Collections ------------------------------ */
-  --collection-toolbar-height:       calc(var(--button-size) + 2 * var(--button-margin));
   --collection-toolbar-border-width: var(--border-thin-width);
   --polaroid-group-title-height:     var(--size-16);
   --polaroid-frame-border-width:     var(--border-thin-width);
@@ -402,7 +401,6 @@ td, th {
 
 input {
   margin: var(--input-margin);
-  width: ;
 }
 
 .button {
@@ -449,11 +447,9 @@ input {
 
 .collection-toolbar {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
   justify-content: space-between;
   align-items: center;
-
-  height: var(--collection-toolbar-height);
 
   border-bottom-width: var(--collection-toolbar-border-width);
 
