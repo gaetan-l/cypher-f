@@ -333,15 +333,14 @@ export default class CollViewBuilder {
     submenuWrapper.classList.add(`hidden`);
     document.body.appendChild(submenuWrapper);
 
-    function displaySubmenu(subMenuId, top = 0, right = 0) {
+    function displaySubmenu(subMenuId, top = 0, left = 0) {
       [...document.getElementsByClassName(`submenu`)].forEach(element => element.classList.add(`hidden`));
 
       if (subMenuId) {
         document.getElementById(`submenu-wrapper`).classList.remove(`hidden`);
         const subMenu = document.getElementById(subMenuId);
-        const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-        subMenu.style.top   = `${top}px`;
-        subMenu.style.right = `${vw - right}px`;
+        subMenu.style.top  = `${top}px`;
+        subMenu.style.left = `${left}px`;
         subMenu.classList.remove(`hidden`);
       }
       else {
@@ -394,7 +393,7 @@ export default class CollViewBuilder {
     const displayModeButton = document.createElement(`i`);
     displayModeButton.setAttribute(`id`, `btn-display-mode`);
     displayModeButton.classList.add(`material-icons`, `button`);
-    PageUtil.bindOnClick(displayModeButton, function() {displaySubmenu(`submenu-display-mode`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().right);});
+    PageUtil.bindOnClick(displayModeButton, function() {displaySubmenu(`submenu-display-mode`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().left);});
 
     toolbarButtonContainer.appendChild(displayModeLabel);
     toolbarButtonContainer.appendChild(displayModeButton);
@@ -482,7 +481,7 @@ export default class CollViewBuilder {
     const sortButton = document.createElement(`i`);
     sortButton.setAttribute(`id`, `btn-sort`);
     sortButton.classList.add(`material-icons`, `button`);
-    PageUtil.bindOnClick(sortButton, function() {displaySubmenu(`submenu-sort`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().right);});
+    PageUtil.bindOnClick(sortButton, function() {displaySubmenu(`submenu-sort`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().left);});
 
     const iconNotifContainer = document.createElement(`div`);
     iconNotifContainer.classList.add(`icon-notif-container`)

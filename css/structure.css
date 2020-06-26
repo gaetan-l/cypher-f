@@ -423,6 +423,10 @@ input {
   position: relative;
 }
 
+.submenu .icon-notif-container {
+  display: inline-block;
+}
+
 .notification {
   position: absolute;
   right: 0;
