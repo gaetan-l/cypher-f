@@ -13,7 +13,7 @@ export default class CollViewBuilder {
   /**
    * CollViewBuilder constructor.
    *
-   * @param  string       name         name of the collec-
+   * @param  String       name         name of the collec-
    *                                   tion, used to fetch
    *                                   it via the API
    * @param  PageBuilder  pageBuilder  the pageBuilder used
@@ -101,14 +101,14 @@ export default class CollViewBuilder {
   set currGrouping        (currGrouping)         {this._currGrouping         = currGrouping;}
   set currDateDirection   (currDateDirection)    {this._currDateDirection    = currDateDirection;}
 
-  /*
+  /**
    * Returns the collection associated with this
    * CollViewBuilder.
    *
    * Fetches it via the api if not already loaded. 
    *
    * @access  private
-   * @return  JSONObject  the collection in json format
+   * @return  JSON     the collection in json format
    */
   async _asyncGetCollection() {
     if (this.collection === null) {
@@ -122,17 +122,17 @@ export default class CollViewBuilder {
   }
 
   /**
-   * Draws avery componenr necessary to display a collec-
+   * Draws every component necessary to display a collec-
    * tion.
    *
    * @param  HTMLElement  container         the HTMLElement
    *          or                            in which to
-   *         string                         draw the view,
+   *         String                         draw the view,
    *                                        or selector to
    *                                        access it
    * @param  DisplayMode  displayMode       the type of view
    *                                        to draw
-   * @param  string       sortingAttribute  the attribute
+   * @param  String       sortingAttribute  the attribute
    *                                        used to sort
    *                                        the collection
    * @param  Direction    sortingDirection  ascending or
@@ -164,13 +164,13 @@ export default class CollViewBuilder {
    * @access  private
    * @param   HTMLElement  container         the
    *           or                            HTMLElement in
-   *          string                         which to draw
+   *          String                         which to draw
    *                                         the view, or
    *                                         selector to
    *                                         access it
    * @param   DisplayMode  displayMode       the type of
    *                                         view to draw
-   * @param   string       sortingAttribute  the attribute
+   * @param   String       sortingAttribute  the attribute
    *                                         used to sort
    *                                         the collection
    * @param   Direction    sortingDirection  ascending or
@@ -234,10 +234,10 @@ export default class CollViewBuilder {
    * Draws the collection toolbar view.
    *
    * @access  private
-   * @param   HTMLElement  container    the HTMLElement in
-   *           or                       which to draw the
-   *          string                    view, or selector
-   *                                    to access it
+   * @param   HTMLElement  container  the HTMLElement in
+   *           or                     which to draw the
+   *          String                  view, or selector to
+   *                                  access it
    */
   async _asyncDrawToolbarView(container) {
     const toolbar = document.createElement(`div`);
@@ -365,14 +365,15 @@ export default class CollViewBuilder {
     PageUtil.bindOnClick(`#btn-fs-close`,  function() {PageUtil.fadeOut(`#picture-fullscreen`);});
   }
 
-  /*
+  /**
    * Translates the attributes so that they can be looked
    * up and sorted properly.
+   *
    * @access  private
-   * @param   string  sortingAttribute  the attribute cur-
-   *                                       rently used to
-   *                                       sort the collec-
-   *                                       tion
+   * @param   String   sortingAttribute  the attribute cur-
+   *                                     rently used to
+   *                                     sort the collec-
+   *                                     tion
    */
   async _asyncTranslateSortAttribute(sortingAttribute) {
     const length = (await this._asyncGetCollection()).length;
@@ -396,7 +397,7 @@ export default class CollViewBuilder {
    * Sorts and groups the collection.
    *
    * @access  private
-   * @param   string     sortingAttribute  the attribute
+   * @param   String     sortingAttribute  the attribute
    *                                       used to sort the
    *                                       collection
    * @param   Direction  sortingDirection  ascending or
@@ -470,9 +471,9 @@ export default class CollViewBuilder {
      */
     PageUtil.fadeIn(primaryNotif);
 
-    /**
+    /*
      * Same treatment with the secondary notification. Only
-     * displayed if it is DESC().
+     * displayed if it is descending.
      */
     if((sortingAttribute !== CollUtil.DATE) && (dateDirection === CollUtil.Direction.DESC)) {
       let secondaryNotif = document.getElementById(`notification-sort-secondary`);
@@ -497,20 +498,20 @@ export default class CollViewBuilder {
     this.currDateDirection    = dateDirection;
   }
 
-  /*
+  /**
    * Draws the gallery view containing the collection.
    *
    * @access  private
    * @param   HTMLElement  container  the HTMLElement in
    *           or                     which to draw the
-   *          string                  view, or selector
-   *                                  to access it
+   *          String                  view, or selector to
+   *                                  access it
    * @param   Grouping     grouping   if the items have to
    *                                  be grouped or not
    */
   async _asyncDrawGalleryView(container, grouping) {
     /*
-     * Can either be stacked or polaroid
+     * Can either be stacked or polaroid.
      */
     const stacked  = this.currDisplayMode === CollUtil.DisplayMode.STACKED_GALLERY;
 
@@ -598,11 +599,11 @@ export default class CollViewBuilder {
         PageUtil.fadeIn(`#picture-fullscreen`);
       };
 
-
       /*
        * Picture.
        */
       const img = document.createElement(`img`);
+
       /*
        * Index is used to retrieve info from collection
        * when clicked (see onclick above).
@@ -613,13 +614,13 @@ export default class CollViewBuilder {
       /*
        * Adding picture to frame and frame to temporary container.
        */
+      if (stacked) {
+        frame.appendChild(img);
+      }
       /*
        * Picture inset box-shadow wrapper.
        * @link https://stackoverflow.com/questions/61961334/css-img-inset-box-shadow-trick-center-vh-anchor-max-height
        */
-      if (stacked) {
-        frame.appendChild(img);
-      }
       else {
         const a = document.createElement(`a`);
         a.setAttribute(`href`, `#`);
@@ -633,14 +634,14 @@ export default class CollViewBuilder {
     view.appendChild(group);
   }
 
-  /*
+  /**
    * Draws the details view containing the collection.
    *
    * @access  private
    * @param   HTMLElement  container  the HTMLElement in
    *           or                     which to draw the
-   *          string                  view, or selector
-   *                                  to access it
+   *          String                  view, or selector to
+   *                                  access it
    * @param   Grouping     grouping   if the items have to
    *                                  be grouped or not
    */
@@ -657,7 +658,7 @@ export default class CollViewBuilder {
     const collection = await this._asyncGetCollection();
 
     /*
-     * Selecting which headers to display
+     * Selecting which headers to display.
      */
     const thead = document.createElement(`thead`);
     const theadTr = document.createElement(`tr`);
@@ -669,8 +670,9 @@ export default class CollViewBuilder {
         headers.push(header);
       }
     }
+
     /*
-     * Sorting headers with Column class in CollUtil
+     * Sorting headers with Column class in CollUtil.
      */
     const collName = this.name;
     headers.sort(function (x, y) {
@@ -693,6 +695,7 @@ export default class CollViewBuilder {
         return result;
       }
     });
+
     /*
      * Creating html elements.
      */
@@ -781,7 +784,7 @@ export default class CollViewBuilder {
    * @access  private
    * @param   HTMLElement  element  the html element repre-
    *                                senting the item
-   * @param   JSON object  item     the item
+   * @param   JSON         item     the item
    */
   async _addItemLookup(element, item) {
     const attributes = Object.keys(item);
@@ -829,8 +832,8 @@ export default class CollViewBuilder {
    * meter.
    *
    * @access  private
-   * @param  string  filter  with which to filter the collec-
-   *                         tion
+   * @param   String  filter  with which to filter the col-
+   *                          lection
    */
   _filterCollection(filter) {
     filter = TextUtil.flattenString(filter);
@@ -870,7 +873,7 @@ export default class CollViewBuilder {
     }
   }
 
-  /*
+  /**
    * Displays the full size picture once clicked on, with
    * navigation buttons and picture information labels.
    *
@@ -927,11 +930,11 @@ export default class CollViewBuilder {
    * fied attribute.
    *
    * @access  private
-   * @param   string     attributeName  the name of the at-
+   * @param   String     attributeName  the name of the at-
    *                                    tribute
-   * @param   string     value          the unformatted va-
+   * @param   String     value          the unformatted va-
    *                                    lue
-   * @param   boolean    flatten        if the value has to
+   * @param   Boolean    flatten        if the value has to
    *                                    be flattened (lower
    *                                    case and unaccent-
    *                                    uated)
@@ -945,7 +948,7 @@ export default class CollViewBuilder {
    *                                    sult is in html
    *                                    format and can
    *                                    contain html tags
-   * @return  string                    the formatted value
+   * @return  String                    the formatted value
    */
   async _asyncBeautify(attributeName, value, flatten = false, transMode = CollUtil.TransMode.NONE, html = false) {
     const split = this.needsJoining.includes(attributeName) || this.needsHashtag.includes(attributeName);
@@ -968,8 +971,8 @@ export default class CollViewBuilder {
             let translation = await this._pageBuilder.translator.asyncGetTranslatedWord(valueI18nCode, langs[j]);
 
             /*
-             * Only pushing if translation is correct in non-
-             * html mode.
+             * Only pushing if translation is correct in
+             * non-html mode.
              */
             if (!html && translation.includes(`translation-error`)) {
               allValues.push(valueI18nCode);
