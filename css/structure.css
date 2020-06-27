@@ -430,9 +430,17 @@ input {
 
 .notification {
   position: absolute;
-  right: 0;
   bottom: 0;
+  line-height: 1;
   font-size: var(--notification-size);
+}
+
+.button + .notification {
+  right: 0;
+}
+
+.menu-icon + .notification {
+  left: 0;
 }
 
 

@@ -162,6 +162,10 @@ tbody tr.even td {
 }
 
 .translation-error {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
   color: inherit;
 }
 
@@ -316,7 +320,7 @@ tbody tr.even td {
 }
 
 #submenu-wrapper {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: transparent;
 }
 
 .submenu {
