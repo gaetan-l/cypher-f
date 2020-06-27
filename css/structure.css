@@ -253,6 +253,10 @@ td, th {
   -ms-overflow-style: none;    /* IE 10+ */
 }
 
+.text-paragraph:not(:last-child) {
+  margin-bottom: var(--size-4);
+}
+
 .text-box::-webkit-scrollbar { /* Chrome, Safari */
   display: none;
 }
