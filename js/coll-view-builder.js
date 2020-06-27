@@ -698,7 +698,7 @@ export default class CollViewBuilder {
        * Picture frame.
        */
       const frame = document.createElement(`div`);
-      frame.classList.add(`collection-item`, `picture-item`, stacked ? `stacked-frame` : `polaroid-frame`, `relevant`);
+      frame.classList.add(`collection-item`, `picture-item`, stacked ? `stacked-frame` : `polaroid-frame`, `fadable`, `faded-out-onload`, `relevant`);
       frame.setAttribute(`coll-index`, i);
       await this._addItemLookup(frame, item);
 
@@ -717,9 +717,6 @@ export default class CollViewBuilder {
        * when clicked (see onclick above).
        */
       img.classList.add(stacked ? `stacked-image` : `polaroid-image`);
-      const thumbSuffix = TextUtil.reverse(`_thumb.`);
-      const suffixedName = TextUtil.reverse(TextUtil.reverse(item.fileName).replace(/\./, thumbSuffix));
-      img.src = this.imgPath + suffixedName;
 
       /*
        * Adding picture to frame and frame to temporary container.
@@ -738,7 +735,14 @@ export default class CollViewBuilder {
         a.appendChild(img);
         frame.appendChild(a);
       }
+
+      const thumbSuffix = TextUtil.reverse(`_thumb.`);
+      const suffixedName = TextUtil.reverse(TextUtil.reverse(item.fileName).replace(/\./, thumbSuffix));
+      img.onload = function() {PageUtil.fadeIn(frame)};
+      img.src = this.imgPath + suffixedName;
+
       groupContent.appendChild(frame);
+
     }
 
     view.appendChild(group);

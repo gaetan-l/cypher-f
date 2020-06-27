@@ -419,7 +419,7 @@ input:focus, textarea:focus, select:focus {
   border-style: solid;
   border-color: rgba(var(--color-neutral-light), 1.0);
   box-shadow: 6px 6px 6px;
-  transition: box-shadow 0.25s ease-in-out;
+  transition: all 0.25s ease-in-out;
 }
 
 .polaroid-frame:hover {
