@@ -1000,7 +1000,14 @@ export default class CollViewBuilder {
    * @param   HTMLElement  element  the clicked element
    */
   async _asyncDisplayFullscreenPicture(element) {
-    document.getElementById(`fullscreen-image`).src = this.imgPath + element.getAttribute(`item-file-name`);
+    const img = document.getElementById(`fullscreen-image`);
+    PageUtil.fadeOut(img);
+    await PageUtil.asyncWaitForIt(250);
+
+    img.src = ``;
+    img.onload = function() {PageUtil.fadeIn(img)};
+    img.src = this.imgPath + element.getAttribute(`item-file-name`);
+
     const item = JSON.parse(this.collection[element.getAttribute(`coll-index`)]);
     const infoRows = [
       [`readableDate`],
