@@ -849,7 +849,7 @@ export default class CollViewBuilder {
           const groupTr = document.createElement(`tr`);
           groupTr.classList.add(`group-header-row`);
           const groupTh = document.createElement(`th`);
-          groupTh.setAttribute(`colspan`, headers.length);
+          groupTh.setAttribute(`colspan`, headers.length + 1);
           groupTh.innerHTML = currGroup;
           if (this.needsTranslation.includes(this.currGrouping)) {
             groupTh.setAttribute(`data-i18n`, `${this.currGrouping}.${item[this.currGrouping]}`);

@@ -28,45 +28,37 @@
  * ============= 1.  VARIABLES ============================
  * ========================================================
  */
-:root {
-  --primary-r:               15;
-  --primary-g:              206;
-  --primary-b:              227;
+:root {  
+  --color-primary-lighter:   194, 232, 237;
+  --color-primary-light:     133, 210, 218;
+  --color-primary:            12, 165, 182;
+  --color-primary-dark:       40, 126, 138;
+  --color-primary-darker:     31,  98, 107;
 
-  --secondary-r:            244;
-  --secondary-g:             22;
-  --secondary-b:             67;
+  --color-secondary-lighter: 252, 194, 206;
+  --color-secondary-light:   247, 100, 130;
+  --color-secondary:         244,  22,  67;
+  --color-secondary-dark:    165,  18,  54;
+  --color-secondary-darker:  122,  11,  34;
 
-  --tertiary-r:              22;
-  --tertiary-g:             226;
-  --tertiary-b:               0;
+  --color-tertiary-lighter:  179, 240, 210;
+  --color-tertiary-light:     86, 222, 157;
+  --color-tertiary:           38, 196, 121;
+  --color-tertiary-dark:      30, 153,  95;
+  --color-tertiary-darker:    20 ,101,  63;
 
-  --quaternary-r:           221;
-  --quaternary-g:           221;
-  --quaternary-b:           221;
+  --color-neutral-lighter:   238, 238, 238;
+  --color-neutral-light:     221, 221, 221;
+  --color-neutral:           177, 177, 177;
+  --color-neutral-dark:      111, 111, 111;
+  --color-neutral-darker:     60,  60,  60;
 
-  --color-primary-light:    calc(1.0 * var(--primary-r)), calc(1.0 * var(--primary-g)), calc(1.0 * var(--primary-b));
-  --color-primary:          calc(0.8 * var(--primary-r)), calc(0.8 * var(--primary-g)), calc(0.8 * var(--primary-b));
-  --color-primary-dark:     calc(0.5 * var(--primary-r)), calc(0.5 * var(--primary-g)), calc(0.5 * var(--primary-b));
+  --color-clear:             255, 255, 255;
 
-  --color-secondary-light:  calc(1.0 * var(--secondary-r)), calc(1.0 * var(--secondary-g)), calc(1.0 * var(--secondary-b));
-  --color-secondary:        calc(0.8 * var(--secondary-r)), calc(0.8 * var(--secondary-g)), calc(0.8 * var(--secondary-b));
-  --color-secondary-dark:   calc(0.5 * var(--secondary-r)), calc(0.5 * var(--secondary-g)), calc(0.5 * var(--secondary-b));
+  --font-body:               'Yantra', Helvetica, sans-serif;
+  --font-titles:             'Alata',  Arial,     sans-serif;
 
-  --color-tertiary-light:   calc(1.0 * var(--tertiary-r)), calc(1.0 * var(--tertiary-g)), calc(1.0 * var(--tertiary-b));
-  --color-tertiary:         calc(0.8 * var(--tertiary-r)), calc(0.8 * var(--tertiary-g)), calc(0.8 * var(--tertiary-b));
-  --color-tertiary-dark:    calc(0.5 * var(--tertiary-r)), calc(0.5 * var(--tertiary-g)), calc(0.5 * var(--tertiary-b));
-
-  --color-quaternary-light: calc(1.0 * var(--quaternary-r)), calc(1.0 * var(--quaternary-g)), calc(1.0 * var(--quaternary-b));
-  --color-quaternary:       calc(0.8 * var(--quaternary-r)), calc(0.8 * var(--quaternary-g)), calc(0.8 * var(--quaternary-b));
-  --color-quaternary-dark:  calc(0.5 * var(--quaternary-r)), calc(0.5 * var(--quaternary-g)), calc(0.5 * var(--quaternary-b));
-
-  --color-neutral:          255, 255, 255;
-
-  --font-body:              'Yantra', Helvetica, sans-serif;
-  --font-titles:            'Alata',  Arial,     sans-serif;
-
-  --transition-opacity:     opacity 0.25s ease-in-out;
+  --transition-opacity:      opacity 0.25s ease-in-out;
 }
 
 
@@ -79,7 +71,7 @@
 * {
   font-family: var(--font-body);
   font-weight: normal;
-  color: rgba(var(--color-quaternary-dark), 1.0);
+  color: rgba(var(--color-neutral-dark), 1.0);
 
   -webkit-touch-callout: inherit;
   -webkit-user-select: inherit;
@@ -145,7 +137,7 @@ h1 {
 }
 
 input {
-  border: 1px solid rgba(var(--color-quaternary-light), 1.0);
+  border: 1px solid rgba(var(--color-neutral-light), 1.0);
 }
 
 table {
@@ -158,7 +150,7 @@ thead th {
 }
 
 tbody tr.even td {
-  background-color: rgba(var(--color-primary), 0.25);
+  background-color: rgba(var(--color-primary-lighter), 1.0);
 }
 
 .translation-error {
@@ -196,7 +188,7 @@ tbody tr.even td {
  */
 #side-panel {
   border-right-style: solid;
-  border-right-color: rgba(var(--color-quaternary-light), 1.0);
+  border-right-color: rgba(var(--color-neutral-light), 1.0);
   transition: flex-basis 0.25s ease-in-out;
 }
 
@@ -207,11 +199,11 @@ tbody tr.even td {
 #site-footer p {
   text-align: center;
   font-family: var(--font-titles);
-  color: rgba(var(--color-neutral), 1.0);
+  color: rgba(var(--color-clear), 1.0);
 }
 
 #site-footer .button {
-  color: rgba(var(--color-neutral), 1.0);
+  color: rgba(var(--color-clear), 1.0);
 }
 
 
@@ -231,7 +223,7 @@ tbody tr.even td {
 #site-title-height-setter {
   color: transparent;
   border-bottom-style: solid;
-  border-bottom-color: rgba(var(--color-quaternary-light), 1.0);
+  border-bottom-color: rgba(var(--color-neutral-light), 1.0);
 }
 
 #site-title-normal,
@@ -249,7 +241,7 @@ tbody tr.even td {
 }
 
 #site-title:hover > #site-title-shadow {
-  color: rgba(var(--color-quaternary-dark), 1.0);
+  color: rgba(var(--color-neutral-dark), 1.0);
 }
 
 #site-title:hover > #site-subtitle {
@@ -277,7 +269,7 @@ tbody tr.even td {
   border-left-style: solid;
   border-left-color: transparent;
   border-bottom-style: solid;
-  border-bottom-color: rgba(var(--color-quaternary-light), 1.0);
+  border-bottom-color: rgba(var(--color-neutral-light), 1.0);
   cursor: pointer;
 }
 
@@ -305,11 +297,11 @@ tbody tr.even td {
 .menu-item.active .menu-icon,
 .menu-item:not(.active):hover .menu-link,
 .menu-item:not(.active):hover .menu-icon {
-  color: rgba(var(--color-neutral), 1.0);
+  color: rgba(var(--color-clear), 1.0);
 }
 
 .menu-item:not(.active):hover {
-  background-color: rgba(var(--color-quaternary), 1.0);
+  background-color: rgba(var(--color-neutral), 1.0);
   border-left-color: rgba(var(--color-primary), 1.0);
   transition: all 0.25s ease-in-out;
 }
@@ -325,7 +317,7 @@ tbody tr.even td {
 
 .submenu {
   border-style: solid;
-  border-color: rgba(var(--color-quaternary-light), 1.0);
+  border-color: rgba(var(--color-neutral-light), 1.0);
 }
 
 
@@ -386,13 +378,18 @@ input:focus, textarea:focus, select:focus {
  *
  */
 .collection-toolbar {
-  background-color: rgba(var(--color-neutral), 1.0);
-  border-bottom-color: rgba(var(--color-quaternary-light), 1.0);
+  background-color: rgba(var(--color-clear), 1.0);
+  border-bottom-color: rgba(var(--color-neutral-light), 1.0);
   border-bottom-style: solid;
 }
 
 .collection-toolbar .button {
   color: rgba(var(--color-primary), 1.0);;
+}
+
+.picture-group h1 {
+  background-color: rgba(var(--color-primary), 0.5);
+  color: rgba(var(--color-clear), 1.0);
 }
 
 .picture-item {
@@ -412,18 +409,15 @@ input:focus, textarea:focus, select:focus {
   -webkit-box-shadow: inset 0 0 8px black;
 }
 
-.picture-group h1 {
-  background-color: rgba(var(--color-primary), 0.5);
-  color: rgba(var(--color-neutral), 1.0);
-}
+
 
 /*
  * ------------- 8.1 Polaroid gallery view ----------------
  */
 .polaroid-frame {
-  background-color: rgba(var(--color-neutral), 1.0);
+  background-color: rgba(var(--color-clear), 1.0);
   border-style: solid;
-  border-color: rgba(var(--color-quaternary-light), 1.0);
+  border-color: rgba(var(--color-neutral-light), 1.0);
   box-shadow: 6px 6px 6px;
   transition: box-shadow 0.25s ease-in-out;
 }
@@ -448,8 +442,8 @@ input:focus, textarea:focus, select:focus {
  * ------------- 8.3 Details view -------------------------
  */
 .details-view-table .group-header-row th {
-  background-color: rgba(var(--color-primary), 0.5);
-  color: rgba(var(--color-neutral), 1.0);
+  background-color: rgba(var(--color-primary-light), 1.0);
+  color: rgba(var(--color-clear), 1.0);
   font-family: var(--font-titles);
 }
 
@@ -472,7 +466,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 .fullscreen-info {
-  color: rgba(var(--color-neutral), 1.0);
+  color: rgba(var(--color-clear), 1.0);
 }
 
 
