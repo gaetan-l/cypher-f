@@ -462,7 +462,7 @@ input:focus, textarea:focus, select:focus {
 
 .fullscreen-container.faded-in {
   height: 100%;
-  transition: var(--transition-opacity);
+  transition: var(--transition-opacity), height 0s 0s;
 }
 
 .fullscreen-info {

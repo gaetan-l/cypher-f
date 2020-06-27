@@ -171,7 +171,6 @@ export default class CollViewBuilder {
 
     await this._asyncDrawToolbarView(container);
     await this._asyncRedraw(container, displayMode, sortingAttribute, sortingDirection, grouping, dateDirection);
-    await this._asyncDrawFullscreenView();
     PageUtil.fadeIn(`#main-panel`);
   }
 
@@ -513,21 +512,6 @@ export default class CollViewBuilder {
   }
 
   /**
-   * Draws the view containing the a fullscreen picture
-   * once clicked.
-   *
-   * @access  private
-   */
-  async _asyncDrawFullscreenView() {
-    const fsView = document.createElement(`div`);
-    fsView.setAttribute(`id`, `picture-fullscreen`);
-    document.body.appendChild(fsView);
-    await PageUtil.replaceElementWithTemplate(`#picture-fullscreen`);
-    PageUtil.bindOnClick(`#btn-fs-close`,  function() {PageUtil.fadeOut(`#picture-fullscreen`);});
-    PageUtil.bindOnClick(`#picture-fullscreen`,  function() {PageUtil.fadeOut(`#picture-fullscreen`);});
-  }
-
-  /**
    * Translates the attributes so that they can be looked
    * up and sorted properly.
    *
@@ -702,9 +686,8 @@ export default class CollViewBuilder {
       frame.setAttribute(`coll-index`, i);
       await this._addItemLookup(frame, item);
 
-      frame.onclick = function() {
-        _boundAsyncDisplayFullscreenPicture(this);
-        PageUtil.fadeIn(`#picture-fullscreen`);
+      frame.onclick = async function() {
+        await _boundAsyncDisplayFullscreenPicture(this);
       };
 
       /*
@@ -875,9 +858,8 @@ export default class CollViewBuilder {
       const viewI  = document.createElement(`i`);
       viewI.classList.add(`material-icons`, `inline-button`);
       viewI.innerHTML = TextUtil.getJsonValue(`view-fullscreen`, await this._asyncGetIcons());
-      viewI.onclick = function() {
-        _boundAsyncDisplayFullscreenPicture(this.parentNode.parentNode);
-        PageUtil.fadeIn(`#picture-fullscreen`);
+      viewI.onclick = async function() {
+        await _boundAsyncDisplayFullscreenPicture(this.parentNode.parentNode);
       };
       viewTd.appendChild(viewI);
       itemTr.appendChild(viewTd);
@@ -1004,6 +986,33 @@ export default class CollViewBuilder {
    * @param   HTMLElement  element  the clicked element
    */
   async _asyncDisplayFullscreenPicture(element) {
+    function close(event) {
+      PageUtil.fadeOut(`#fullscreen-infobox`)
+      PageUtil.fadeOut(`#picture-fullscreen`);
+    }
+
+    let fsView = document.getElementById(`picture-fullscreen`);
+    if (!fsView) {
+      fsView = document.createElement(`div`);
+      fsView.setAttribute(`id`, `picture-fullscreen`);
+      document.body.appendChild(fsView);
+      await PageUtil.replaceElementWithTemplate(`#picture-fullscreen`);
+      /*
+       * Need to "update" after template replacement
+       */
+      fsView = document.getElementById(`picture-fullscreen`);
+      PageUtil.bindOnClick(`#btn-fs-close`,  function(event) {close(event);});
+      PageUtil.bindOnClick(`#picture-fullscreen`, function(event) {close(event);});
+    }
+
+    /*
+     * TODO: I don't understand why this works. Without
+     * this, the smooth transition doesn't happen on the
+     * first fadeIn on fsView.
+     */
+    fsView.getBoundingClientRect();
+    PageUtil.fadeIn(fsView);
+
     const img = document.getElementById(`fullscreen-image`);
     PageUtil.fadeOut(img);
     await PageUtil.asyncWaitForIt(250);
@@ -1043,6 +1052,7 @@ export default class CollViewBuilder {
         p.innerHTML = innerHtml
         infoDiv.appendChild(p);
       }
+      PageUtil.fadeIn(`#fullscreen-infobox`);
     }
 
     /*
@@ -1054,6 +1064,7 @@ export default class CollViewBuilder {
     const htmlIndex = allElements.indexOf(element);
 
     function displayIndexedPicture(event, index) {
+      PageUtil.fadeOut(`#fullscreen-infobox`);
       this._asyncDisplayFullscreenPicture(allElements[index]);
       event.stopPropagation();
     }
@@ -1073,6 +1084,28 @@ export default class CollViewBuilder {
 
     PageUtil.bindOnClick(`#btn-fs-prev`, function(event) {boundPrev(event)});
     PageUtil.bindOnClick(`#btn-fs-next`, function(event) {boundNext(event)});
+
+    fsView.setAttribute(`tabindex`, `1`);
+    fsView.focus();
+    fsView.onkeydown = function(e) {
+      e = e || window.event;
+      switch (e.keyCode) {
+        // LEFT
+        case 37:
+          prev(e);
+          break;
+
+        // RIGHT
+        case 39:
+          next(e);
+          break;
+
+        // ESCAPE
+        case 27:
+          close(e);
+          break;
+      }
+    };
   }
 
   /**
