@@ -79,3 +79,11 @@ Column.PHOTOS_LOCATION      = new Column(PHOTOS, LOCATION);
 Column.PHOTOS_TAGS          = new Column(PHOTOS, TAGS);
 Column.PHOTOS_DESCRIPTION   = new Column(PHOTOS, DESCRIPTION);
 Column.lock();
+
+export class TagsMode extends Type.EnumPair {
+  get canHaveTags()    {return  this.member2;}
+  get cannotHaveTags() {return !this.member2;}
+}
+TagsMode.NONE        = new TagsMode(`none`,        false);
+TagsMode.I18N        = new TagsMode(`i18n`,        true);
+TagsMode.ERRORS_ONLY = new TagsMode(`errors-only`, true);

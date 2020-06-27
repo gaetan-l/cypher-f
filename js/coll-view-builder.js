@@ -882,7 +882,7 @@ export default class CollViewBuilder {
         const td = document.createElement(`td`);
         const attributeName = headers[i];
         const value = item[attributeName];
-        td.innerHTML = await this._asyncBeautify(attributeName, value, false, CollUtil.TransMode.CURRENT, true);
+        td.innerHTML = await this._asyncBeautify(attributeName, value, false, CollUtil.TransMode.CURRENT, CollUtil.TagsMode.I18N);
         if (this._needsTranslation.includes(attributeName) && !this._needsHashtag.includes(attributeName) && !this._needsJoining.includes(attributeName)) {
           td.setAttribute(`data-i18n`, `${attributeName}.${value}`);
         }
@@ -928,7 +928,7 @@ export default class CollViewBuilder {
           if (this.needsHashtag.includes(attr) || this.needsJoining.includes(attr)) {flags += `j`;}
           if (this.needsTranslation.includes(attr)) {flags += `t`;}
           if (flags !== ``) {
-            const valueJT = await this._asyncBeautify(attr, value, false, CollUtil.TransMode.ALL);
+            const valueJT = await this._asyncBeautify(attr, value, false, CollUtil.TransMode.ALL, CollUtil.TagsMode.NONE);
             const attrWithFlags = `${attrDashName}-${flags}`;
             element.setAttribute(attrWithFlags, valueJT);
             if (!this.lookupAttributes.includes(attrWithFlags)) {this.lookupAttributes.push(attrWithFlags);}
@@ -936,7 +936,7 @@ export default class CollViewBuilder {
 
           if (this.needsFlattening.includes(attr)) {
             flags += `i`;
-            const valueI = await this._asyncBeautify(attr, value, true, CollUtil.TransMode.ALL);
+            const valueI = await this._asyncBeautify(attr, value, true, CollUtil.TransMode.ALL, CollUtil.TagsMode.NONE);
             const attrWithFlags = `${attrDashName}-${flags}`;
             element.setAttribute(attrWithFlags, valueI);
             if (!this.lookupAttributes.includes(attrWithFlags)) {this.lookupAttributes.push(attrWithFlags);}
@@ -1001,18 +1001,35 @@ export default class CollViewBuilder {
    */
   async _asyncDisplayFullscreenPicture(element) {
     document.getElementById(`fullscreen-image`).src = this.imgPath + element.getAttribute(`item-file-name`);
+    const item = JSON.parse(this.collection[element.getAttribute(`coll-index`)]);
+    const infoRows = [
+      [`readableDate`],
+      [`name`, `location`, `year`, `country`],
+      [`description`],
+      [`tags`]
+    ];
 
     const infoDiv = document.getElementById(`fullscreen-infobox`);
     infoDiv.innerHTML = ``;
-    const picInfosIds = [`item-date`,       `item-location`,       `item-description`,       `item-tags`];
-    const  fsInfosIds = [`fullscreen-date`, `fullscreen-location`, `fullscreen-description`, `fullscreen-tags`];
-    for (let i = 0 ; i < picInfosIds.length ; i++) {
-      const value = element.getAttribute(picInfosIds[i]);
-      if (value != null) {
+    for (let i = 0 ; i < infoRows.length ; i++) {
+      const attributes = infoRows[i];
+      let rowText = [];
+
+      for (let j = 0 ; j < attributes.length ; j++) {
+        const attribute = attributes[j];
+        const value = item[attribute];
+
+        if (value) {
+          rowText.push(await this._asyncBeautify(attribute, value, false, CollUtil.TransMode.CURRENT, CollUtil.TagsMode.ERRORS_ONLY));
+        }
+      }
+
+      const innerHtml = rowText.join(`, `);
+      if (innerHtml) {
         const p = document.createElement(`p`);
-        p.setAttribute(`id`, fsInfosIds[i]);
+        p.setAttribute(`id`, `info-row-${i}`);
         p.classList.add(`fullscreen-info`);
-        p.innerHTML = value;
+        p.innerHTML = innerHtml
         infoDiv.appendChild(p);
       }
     }
@@ -1066,24 +1083,30 @@ export default class CollViewBuilder {
    *                                    language only, ALL
    *                                    for a concatenation
    *                                    of all translations
-   * @param   Boolean    html           indicates the re-
-   *                                    sult is in html
-   *                                    format and can
-   *                                    contain html tags
+   * @param   TagsMode   display        indicates if the
+   *                                    caller of the func-
+   *                                    tion is able to
+   *                                    display html tags:
+   *                                    - ERRORS_ONLY: only
+   *                                    the error tag can
+   *                                    be processed
+   *                                    - I18N: i18n tags
+   *                                    too
+   *                                    - NONE: no tags
+   *                                    processed
    * @return  String                    the formatted value
    */
-  async _asyncBeautify(attributeName, value, flatten = false, transMode = CollUtil.TransMode.NONE, html = false) {
+  async _asyncBeautify(attributeName, value, flatten = false, transMode = CollUtil.TransMode.NONE, display = CollUtil.TagsMode.NONE) {
     const split = this.needsJoining.includes(attributeName) || this.needsHashtag.includes(attributeName);
     const splitted = split ? value.split(`;`) : [value];
     let allValues = [];
 
     /*
-     * Only neet to translate if not in html mode or if all
-     * translations are asked cause data-i18n can then not
-     * be used.
+     * Only neet to translate if display cannot process
+     * i18n tags.
      */
-    if (this.needsTranslation.includes(attributeName)) {
-      if ((html && transMode === CollUtil.TransMode.ALL) || (!html && CollUtil !== CollUtil.TransMode.NONE)) {
+    if (this.needsTranslation.includes(attributeName) && (transMode !== CollUtil.TransMode.NONE)) {
+      if (display !== CollUtil.TagsMode.I18N) {
         const langs = (transMode === CollUtil.TransMode.ALL) ? Translator.AVAILABLE_LANG() : [this.pageBuilder.translator.lang];
 
         for (let i = 0 ; i < splitted.length ; i++) {
@@ -1096,7 +1119,7 @@ export default class CollViewBuilder {
              * Only pushing if translation is correct in
              * non-html mode.
              */
-            if (!html && translation.includes(`translation-error`)) {
+            if (display.cannotHaveTags && translation.includes(`translation-error`)) {
               allValues.push(valueI18nCode);
             }
             else {
@@ -1106,12 +1129,9 @@ export default class CollViewBuilder {
         }
       }
       /*
-       * Only adding i18n html attribute if result is html
-       * and translation in current language only. No need
-       * to translate because it will be done automatically
-       * by the PageBuilder when page is loaded.
+       * Adding i18n html attribute if display can process it.
        */
-      else if (html && transMode === CollUtil.TransMode.CURRENT) {
+      else if (display === CollUtil.TagsMode.I18N) {
         allValues = splitted.map(val => `<span data-i18n=${TextUtil.toDashCase(attributeName)}.${val}></span>`);
       }
     }
