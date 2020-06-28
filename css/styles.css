@@ -96,6 +96,10 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+*:focus {
+  outline: none;
+}
+
 
 
 /*
@@ -346,10 +350,6 @@ tbody tr.even td {
    */
   cursor: pointer;
   transition: all 0.1s ease-in-out;
-}
-
-input:focus, textarea:focus, select:focus {
-  outline: none;
 }
 
 .notification {
