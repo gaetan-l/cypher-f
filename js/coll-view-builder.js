@@ -1082,30 +1082,45 @@ export default class CollViewBuilder {
     const boundPrev = prev.bind(this);
     const boundNext = next.bind(this);
 
-    PageUtil.bindOnClick(`#btn-fs-prev`, function(event) {boundPrev(event)});
-    PageUtil.bindOnClick(`#btn-fs-next`, function(event) {boundNext(event)});
+    PageUtil.bindOnClick(`#btn-fs-prev`, function(event) {boundPrev(event);});
+    PageUtil.bindOnClick(`#btn-fs-next`, function(event) {boundNext(event);});
 
     fsView.setAttribute(`tabindex`, `1`);
     fsView.focus();
-    fsView.onkeydown = function(e) {
-      e = e || window.event;
-      switch (e.keyCode) {
+
+    function onkeydown(event) {
+      event = event || window.event;
+      switch (event.keyCode) {
+        // UP
+        case 38:
+          boundDisplayIndexedPicture(event, 0);
+          break;
+
         // LEFT
         case 37:
-          prev(e);
+          prev(event);
           break;
 
         // RIGHT
         case 39:
-          next(e);
+          next(event);
+          break;
+
+        // DOWN
+        case 40:
+          boundDisplayIndexedPicture(event, this.collection.length - 1);
           break;
 
         // ESCAPE
         case 27:
-          close(e);
+          close(event);
           break;
       }
-    };
+    }
+
+    const boundOnkeydown = onkeydown.bind(this);
+
+    fsView.onkeydown = function(event) {boundOnkeydown(event);};
   }
 
   /**
