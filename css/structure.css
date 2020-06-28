@@ -3,6 +3,12 @@
  * ================= TABLE OF CONTENTS ====================
  * ========================================================
  * 1.  VARIABLES
+ * 1.1 Media querries
+ * 1.2 General styles
+ * 1.3 Main structure
+ * 1.4 Site title div
+ * 1.5 Menu
+ * 1.6 Collections
  * 2.  DEFAULT VALUES/RESET
  * 3.  GENERAL STYLES
  * 4.  MAIN STRUCTURE
@@ -25,93 +31,59 @@
  * ============= 1.  VARIABLES ============================
  * ========================================================
  */
+ /*
+  * ------------ 1.1 Media querries -----------------------
+  */
 :root {
-  --size-1:                          4px;
-}
-
-@media (min-width: 481px) and (min-height: 481px) {
-  :root {
-    --size-1:                        5px;
-  }
+  --size-1:                             5px;
+  --side-panel-width:                 100%;
 }
 
 @media (min-width: 601px) and (min-height: 601px) {
   :root {
-    --size-1:                        6px;
+    --size-1: 6px;
+    --side-panel-width:            calc( 50 * var(--size-1));
   }
 }
 
+/*
+ * ------------- 1.2 General styles -----------------------
+ */
 :root {
-/* ------------- Default values --------------------------- */
-  --size-2:                          calc(2 * var(--size-1));     /* 12px */
-  --size-3:                          calc(3 * var(--size-1));     /* 18px */
-  --size-4:                          calc(4 * var(--size-1));     /* 24px */
-  --size-6:                          calc(6 * var(--size-1));     /* 36px */
-  --size-10:                         calc(10 * var(--size-1));    /* 60px */
-  --size-16:                         calc(16 * var(--size-1));    /* 96px */
-  --size-34:                         calc(34 * var(--size-1));   /* 204px */
-  --size-50:                         calc(50 * var(--size-1));   /* 300px */
-  --size-80:                         calc(80 * var(--size-1));   /* 480px */
-  --size-150:                        calc(150 * var(--size-1));  /* 900px */
+  --border-width:                       1px;
 
-/* ------------- General styles --------------------------- */
-  --font-size-default:               var(--size-4);
-  --font-size-small:                 calc(0.5 * var(--font-size-default));
-  --font-size-medium:                calc(1.5 * var(--font-size-default));
-  --font-size-big:                   calc(2.0 * var(--font-size-default));
-  --border-thin-width:                 1px;
-  --input-margin:                    var(--size-2);
-  --input-height:                    var(--size-6);
-  --input-width:                     var(--size-16);
-  --button-size:                     var(--size-6);
-  --button-margin:                   var(--size-2);
-  --label-margin-left:               var(--size-2);
-  --notification-size:               var(--size-6);
-  --tr-height:                       var(--size-10);
+  --font-size-default:           calc(  4   * var(--size-1));
+  --font-size-small:             calc(  0.5 * var(--font-size-default));
+  --font-size-medium:            calc(  1.5 * var(--font-size-default));
+  --font-size-big:               calc(  2.0 * var(--font-size-default));
 
-/* ------------- Main structure --------------------------- */
-  --top-height:                      calc(100% - var(--site-footer-height));
-  --side-panel-width:                var(--size-50);
-  --side-panel-right-border-width:   var(--border-thin-width);
-  --site-footer-height:              var(--size-16);
-  --submenu-border-width:            var(--border-thin-width);
-  --submenu-padding:                 var(--size-3);
+  --button-size:                 calc(  6 * var(--size-1));
+  --button-margin:               calc(  2 * var(--size-1));
 
-/* ------------- Z-indexes -------------------------------- */
-/* Note: z-indexes are relative to an element's parent's -- */
-  --zi-submenu:                        4;
-  --zi-submenu-wrapper:                3;
-  --zi-fullscreen:                     2;
-  --zi-top:                            1;
-  --zi-side-panel:                   /*1.*/2;
-  --zi-title-normal:                 /*1.2.*/3;
-  --zi-title-shadow:                 /*1.2.*/2;
-  --zi-title-hs:                     /*1.2.*/1;
-  --zi-main-panel:                   /*1.*/1;
-  --zi-collection-content:           /*1.1.*/1;
-  --zi-collection-toolbar:           /*1.1.*/2;
-  --zi-group-h1:                     /*1.1.1.*/2;
+  --tr-height:                   calc( 10 * var(--size-1));
 
-/* ------------- Site title div --------------------------- */
-  --site-title-height:               var(--size-16);
-  --site-title-padding:              var(--size-4);
-  --site-title-border-width:         var(--border-thin-width);
+/*
+ * ------------- 1.3 Main structure -----------------------
+ */
+  --site-footer-height:          calc( 16 * var(--size-1));
 
-/* ------------- Menu ------------------------------------- */
-  --menu-item-height:                var(--size-10);
-  --menu-item-padding:               var(--size-4);
-  --menu-item-border-left-width:     var(--size-2);
-  --menu-itm-border-bottom-width:    var(--border-thin-width);
-  --menu-link-margin-left:           var(--size-2);
+/*
+ * ------------- 1.4 Site title div -----------------------
+ */
+  --site-title-height:           calc( 24 * var(--size-1));
 
-/* ------------- Collections ------------------------------ */
-  --collection-toolbar-border-width: var(--border-thin-width);
-  --polaroid-group-title-height:     var(--size-16);
-  --polaroid-frame-border-width:     var(--border-thin-width);
-  --polaroid-frame-margin:           var(--size-6);
-  --polaroid-frame-padding:          var(--size-2);
-  --gallery-image-size:              var(--size-34);
-  --fullscreen-view-margin:          var(--size-2);
+/*
+ * ------------- 1.5 Menu ---------------------------------
+ */
+  --menu-item-padding:           calc(  4 * var(--size-1));
+  --menu-item-border-left-width: calc(  2 * var(--size-1));
+  --menu-link-margin-left:       calc(  2 * var(--size-1));
+
+/*
+ * ------------- 1.6 Collections --------------------------
+ */
+  --polaroid-frame-margin:       calc(  6 * var(--size-1));
+  --gallery-image-size:          calc( 34 * var(--size-1));
 }
 
 
@@ -146,16 +118,16 @@ h1 {
   font-size: var(--font-size-medium);
  }
 
-input {
-  height: var(--input-height);
-  width: var(--input-width);
-}
-
 td, th {
   white-space: nowrap;
   text-align: left;
   line-height: var(--tr-height);
-  padding: 0 var(--size-2) 0 var(--size-2);
+  padding: 0 calc(2 * var(--size-1));
+}
+
+input {
+  height: calc(6 * var(--size-1));
+  width: calc(16 * var(--size-1));
 }
 
 .hidden {
@@ -171,8 +143,8 @@ td, th {
 }
 
 .text-box {
-  width: var(--size-80);
-  height: var(--size-80);
+  max-width: calc(80 * var(--size-1));
+  max-height: calc(80 * var(--size-1));
   margin: auto;
   text-align: justify;
 
@@ -180,22 +152,20 @@ td, th {
    * Acts as a "padding" that stays visible when scrol-
    * ling.
    */
-  border: var(--size-4) solid transparent;
+  border: calc(4 * var(--size-1)) solid transparent;
 
   /*
    * Vertical scrolling without a scrollbar.
    */
   overflow-y:scroll;
   scrollbar-width: none;       /* Firefox */
-  -ms-overflow-style: none;    /* IE 10+ */
+  -ms-overflow-style: none;    /* IE 10+ */}
+.text-box::-webkit-scrollbar { /* Chrome, Safari */
+  display: none;
 }
 
 .text-paragraph:not(:last-child) {
-  margin-bottom: var(--size-4);
-}
-
-.text-box::-webkit-scrollbar { /* Chrome, Safari */
-  display: none;
+  margin-bottom: calc(4 * var(--size-1));
 }
 
 
@@ -208,38 +178,36 @@ td, th {
 #top {
   display: flex;
   flex-flow: row nowrap;
-  height: var(--top-height);
-  z-index: var(--zi-top);
+  height: calc(100% - var(--site-footer-height));
+}
+
+#side-panel {
+  flex: 0 0 var(--side-panel-width);
+  overflow: hidden;
+  border-right-width: var(--border-width);
+}
+
+#side-panel.clicked {
+  flex-basis: 0;
+}
+
+@media (max-width: 600px), (max-height: 600px) {
+  #side-panel {
+    flex-basis: 0;
+    border-right-width: 0;
+  }
+
+  #side-panel.clicked {
+    flex-basis: var(--side-panel-width);
+  }
 }
 
 #main-panel {
   display: flex;
   flex: 1 1 auto;
-
-  z-index: var(--zi-main-panel);
-
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-
-  /*
-   * Otherwise picture moves.
-   */
-  overflow: hidden;
-}
-
-#side-panel {
-  flex-grow: 0;
-  flex-shrink: 0;
-  flex-basis: var(--side-panel-width);
-  overflow: hidden;
-  border-right-width: var(--side-panel-right-border-width);
-
-  z-index: var(--zi-side-panel);
-}
-
-#side-panel.collapsed {
-  flex-basis: 0;
 }
 
 #site-footer {
@@ -251,18 +219,17 @@ td, th {
   padding: var(--button-margin);
 }
 
-#site-footer p {
+#site-footer-title {
   font-size: var(--font-size-medium);
 }
 
 #site-footer .toolbar-container {
   /*
-   * Has to take the max possible size so 1 * size of hove-
-   * red button + (total nb of buttons - 1) * size of un-
-   * hovered button + 2 * (total nb of buttons - 1) * mar-
-   * gin.
+   * Replace --nb-buttons with the maximum number of but-
+   * tons between left and right toolbar-container.
    */
-  width: calc(1.3 * var(--button-size) + 2 * var(--button-size) + 2 * 3 * var(--button-margin));
+  --nb-buttons: 2;
+  width: calc(var(--nb-buttons) * (var(--button-size) + 2 * var(--button-margin)));
 }
 
 
@@ -276,7 +243,6 @@ td, th {
 #site-title-normal,
 #site-title-shadow {
   line-height: var(--site-title-height);
-  padding: var(--site-title-padding);
   font-size: var(--font-size-big);
 }
 
@@ -285,38 +251,49 @@ td, th {
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(var(--side-panel-width) - 2 * var(--site-title-padding));
-  padding: var(--site-title-padding);
+  width: calc(var(--side-panel-width));
 }
 
 #site-title-height-setter {
-  z-index: var(--zi-title-hs);
-  border-bottom-width: var(--site-title-border-width);
+  border-bottom-width: var(--border-width);
 }
 
 #site-title-normal {
-  z-index: var(--zi-title-normal);
+  z-index: 1;
 }
 
-#site-title-shadow {
-  z-index: var(--zi-title-shadow);
+#site-subtitle, 
+#site-subtitle span {
+  font-size: var(--font-size-small);
 }
 
 #site-subtitle {
   position: absolute;
-  top: calc(var(--site-title-padding) + (var(--site-title-height) - var(--font-size-big)) / 2 + var(--font-size-big));
+  top: calc((var(--site-title-height) + var(--font-size-big)) / 2);
   left: calc(0.5 * var(--side-panel-width));
 }
 
-#side-panel.collapsed #site-title-normal,
-#side-panel.collapsed #site-title-shadow,
-#side-panel.collapsed #site-subtitle {
+#side-panel.clicked #site-title-normal,
+#side-panel.clicked #site-title-shadow,
+#side-panel.clicked #site-subtitle {
   left: calc(-1 * var(--side-panel-width));
 }
 
-#site-subtitle, 
-#site-subtitle > span {
-  font-size: var(--font-size-small);
+@media (max-width: 600px), (max-height: 600px) {
+  #site-title-normal,
+  #site-title-shadow,
+  #site-subtitle {
+    left: calc(-1 * var(--side-panel-width));
+  }
+
+  #side-panel.clicked #site-title-normal,
+  #side-panel.clicked #site-title-shadow {
+    left: 0;
+  }
+
+  #side-panel.clicked #site-subtitle {
+    left: calc(0.5 * var(--side-panel-width))
+  }
 }
 
 
@@ -339,9 +316,9 @@ td, th {
    */
   white-space: nowrap;
 
-  line-height: var(--menu-item-height);
+  line-height: calc(10 * var(--size-1));
   border-left-width: var(--menu-item-border-left-width);
-  border-bottom-width: var(--menu-itm-border-bottom-width);
+  border-bottom-width: var(--border-width);
 }
 
 .menu-level > .menu-item {
@@ -373,15 +350,15 @@ td, th {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: var(--zi-submenu-wrapper);
+  z-index: 1;
  }
 
  .submenu {
   display: flex;
   flex-flow: column nowrap;
   position: absolute;
-  border-width: var(--submenu-border-width);
-  z-index: var(--zi-submenu);
+  border-width: var(--border-width);
+  z-index: 1;
  }
 
 
@@ -408,7 +385,7 @@ td, th {
 }
 
 input {
-  margin: var(--input-margin);
+  margin: calc(2 * var(--size-1));
 }
 
 .button {
@@ -424,7 +401,7 @@ input {
 
 .label {
   white-space: nowrap;
-  margin-left: var(--label-margin-left);
+  margin-left: calc(2 * var(--size-1));
 }
 
 .icon-notif-container {
@@ -440,7 +417,7 @@ input {
   position: absolute;
   bottom: 0;
   line-height: 1;
-  font-size: var(--notification-size);
+  font-size: calc(6 * var(--size-1));
 }
 
 .button + .notification {
@@ -472,25 +449,17 @@ input {
   justify-content: space-between;
   align-items: center;
 
-  border-bottom-width: var(--collection-toolbar-border-width);
-
-  z-index: var(--zi-collection-toolbar);
+  border-bottom-width: var(--border-width);
 }
 
 #inp-filter {
-  max-width: var(--size-50);
+  max-width: calc(50 * var(--size-1));
 }
 
 #collection-content {
   display: block;
   height: 100%;
-
-  /*
-   * Always display vertical scrollbar.
-   */
   overflow-y: scroll;
-
-  z-index: var(--zi-collection-content);
 }
 
 .image-shadow {
@@ -521,9 +490,8 @@ input {
   top: 0;
   margin: 0;
   padding-left: var(--polaroid-frame-margin);
-  line-height: var(--polaroid-group-title-height);
-
-  z-index: var(--zi-group-h1);
+  line-height: calc(16 * var(--size-1));
+  z-index: 1;
 }
 
 .polaroid-group-content {
@@ -531,12 +499,6 @@ input {
   flex-flow: row wrap;
   justify-content: center;
   align-items: flex-start;
-
-  /* 
-   * Picture frames have margins on the right and the bot-
-   * tom, so gallery container has padding on the top and
-   * the left
-   */
   padding: var(--polaroid-frame-margin) 0 0 var(--polaroid-frame-margin);
 }
 
@@ -545,8 +507,8 @@ input {
   width: var(--gallery-image-size);
   height: var(--gallery-image-size);
   margin: 0 var(--polaroid-frame-margin) var(--polaroid-frame-margin) 0;
-  padding: var(--polaroid-frame-padding);
-  border-width: var(--polaroid-frame-border-width);
+  padding: calc(2 * var(--size-1));
+  border-width: var(--border-width);
 }
 
 .polaroid-image {
@@ -604,11 +566,11 @@ input {
  */
  .fullscreen-container {
   display: flex;
-  z-index: var(--zi-fullscreen);
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
+  z-index: 1;
 }
 
 .fullscreen-container:not(.faded-in) * {
@@ -631,7 +593,7 @@ input {
 }
 
 #fullscreen-infobox {
-  margin: var(--fullscreen-view-margin);
+  margin: calc(2 * var(--size-1));
   left: 0;
   bottom: 0;
 }

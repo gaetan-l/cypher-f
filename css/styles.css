@@ -209,7 +209,7 @@ tbody tr.even td {
   background-color: rgba(var(--color-primary), 1.0);
 }
 
-#site-footer p {
+#site-footer-title {
   text-align: center;
   font-family: var(--font-titles);
   color: rgba(var(--color-clear), 1.0);

@@ -70,7 +70,7 @@ export default class PageBuilder {
     PageUtil.bindOnClick(`#btn-translate`, this.translator.asyncSwitchLanguage.bind(this.translator));
 
     PageUtil.bindOnClick(`#btn-menu`,      function() {
-      document.getElementById(`side-panel`).classList.toggle(`collapsed`);
+      document.getElementById(`side-panel`).classList.toggle(`clicked`);
     })
 
     PageUtil.bindOnClick(`#btn-errors`,    function() {
