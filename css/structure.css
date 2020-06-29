@@ -35,13 +35,11 @@
   * ------------ 1.1 Media querries -----------------------
   */
 :root {
-  --size-1:                             5px;
   --side-panel-width:                 100%;
 }
 
 @media (min-width: 601px) and (min-height: 601px) {
   :root {
-    --size-1: 6px;
     --side-panel-width:            calc( 50 * var(--size-1));
   }
 }
@@ -50,6 +48,7 @@
  * ------------- 1.2 General styles -----------------------
  */
 :root {
+  --size-1:                             6px;
   --border-width:                       1px;
 
   --font-size-default:           calc(  4   * var(--size-1));
@@ -76,8 +75,12 @@
  * ------------- 1.5 Menu ---------------------------------
  */
   --menu-item-padding:           calc(  4 * var(--size-1));
-  --menu-item-border-left-width: calc(  2 * var(--size-1));
-  --menu-link-margin-left:       calc(  2 * var(--size-1));
+  --menu-label-margin-left:       calc(  2 * var(--size-1));
+
+  /*
+   * Defalut value, to be overriden in js if needed.
+   */
+  --level:                              0;
 
 /*
  * ------------- 1.6 Collections --------------------------
@@ -125,9 +128,17 @@ td, th {
   padding: 0 calc(2 * var(--size-1));
 }
 
+label {
+  white-space: nowrap;
+}
+
 input {
   height: calc(6 * var(--size-1));
   width: calc(16 * var(--size-1));
+}
+
+label + input {
+  margin: calc(2 * var(--size-1) - var(--border-width));
 }
 
 .hidden {
@@ -136,6 +147,7 @@ input {
 
 .flex {
   display: flex;
+  align-items: center;
 }
 
 .fill-flex {
@@ -179,6 +191,7 @@ input {
   display: flex;
   flex-flow: row nowrap;
   height: calc(100% - var(--site-footer-height));
+  min-height: var(--site-title-height);
 }
 
 #side-panel {
@@ -191,7 +204,7 @@ input {
   flex-basis: 0;
 }
 
-@media (max-width: 600px), (max-height: 600px) {
+@media (max-width: 600px) {
   #side-panel {
     flex-basis: 0;
     border-right-width: 0;
@@ -208,6 +221,7 @@ input {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+  overflow: auto;
 }
 
 #site-footer {
@@ -223,7 +237,7 @@ input {
   font-size: var(--font-size-medium);
 }
 
-#site-footer .toolbar-container {
+#site-footer .toolbar {
   /*
    * Replace --nb-buttons with the maximum number of but-
    * tons between left and right toolbar-container.
@@ -239,7 +253,7 @@ input {
  * ============= 5.  SITE TITLE DIV =======================
  * ========================================================
  */
-#site-title-height-setter,
+#site-title-frame,
 #site-title-normal,
 #site-title-shadow {
   line-height: var(--site-title-height);
@@ -254,7 +268,7 @@ input {
   width: calc(var(--side-panel-width));
 }
 
-#site-title-height-setter {
+#site-title-frame {
   border-bottom-width: var(--border-width);
 }
 
@@ -279,7 +293,7 @@ input {
   left: calc(-1 * var(--side-panel-width));
 }
 
-@media (max-width: 600px), (max-height: 600px) {
+@media (max-width: 600px) {
   #site-title-normal,
   #site-title-shadow,
   #site-subtitle {
@@ -303,61 +317,42 @@ input {
  * ============= 6.  MENU =================================
  * ========================================================
  */
-#menu {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: calc(100% - (var(--site-title-height) + 2 * var(--site-title-padding) + var(--site-title-border-width)));
+.menu {
+  display: flex;
+  flex-flow: column nowrap;
 }
 
-.menu-item {
-  display: inline-block;
-  /*
-   * Prevents wrapping when side menu collapses
-   */
-  white-space: nowrap;
+.contextual.menu {
+  position: absolute;
+  border-width: var(--border-width);
+  z-index: 1;
+ }
 
+.menu li {
+  display: flex;
+  white-space: nowrap;
   line-height: calc(10 * var(--size-1));
-  border-left-width: var(--menu-item-border-left-width);
+  padding: 0 var(--menu-item-padding) 0 0;
   border-bottom-width: var(--border-width);
 }
 
-.menu-level > .menu-item {
-  padding: 0 var(--menu-item-padding);
+.menu li::before {
+  content: "";
+  width: calc(0.5 * var(--menu-item-padding));
+  padding-right: calc((var(--level) + 0.5) * var(--menu-item-padding));
 }
 
-#menu > .menu-level > .menu-item {
-  width: calc(100% - var(--menu-item-border-left-width) - 2 * var(--menu-item-padding));
-}
-
-#menu > .menu-level > .menu-level > .menu-item {
-  width: calc(100% - var(--menu-item-border-left-width) - 3 * var(--menu-item-padding));
-  padding: 0 var(--menu-item-padding) 0 calc(2 * var(--menu-item-padding));
-}
-
-.menu-link {
+.menu label {
   display: inline-block;
-  margin-left: var(--menu-link-margin-left);
-  /*
-   * Font-size is here to compensate for the material-icon
-   * size.
-   */
-  width: calc(100% - var(--font-size-default) - var(--menu-link-margin-left));
+  margin-left: var(--menu-label-margin-left);
 }
 
-#submenu-wrapper {
+#contextual-wrapper {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
- }
-
- .submenu {
-  display: flex;
-  flex-flow: column nowrap;
-  position: absolute;
-  border-width: var(--border-width);
   z-index: 1;
  }
 
@@ -368,24 +363,15 @@ input {
  * ============= 7.  CONTROLS AND NOTIFICATIONS ===========
  * ========================================================
  */
- .toolbar-container {
+.toolbar {
   display: flex;
-  flex-flow: row nowrap;
-
+  flex-flow: row wrap;
   justify-content: flex-start;
   align-items: center;
 }
 
-.toolbar-container.left-side {
-  justify-content: flex-start;
-}
-
-.toolbar-container.right-side {
-  justify-content: flex-end;
-}
-
-input {
-  margin: calc(2 * var(--size-1));
+.toolbar label {
+  margin-left: calc(2 * var(--size-1));
 }
 
 .button {
@@ -399,17 +385,12 @@ input {
   margin: 0;
 }
 
-.label {
-  white-space: nowrap;
-  margin-left: calc(2 * var(--size-1));
-}
-
 .icon-notif-container {
   display: flex;
   position: relative;
 }
 
-.submenu .icon-notif-container {
+.contextual.menu .icon-notif-container {
   display: inline-block;
 }
 
@@ -420,11 +401,11 @@ input {
   font-size: calc(6 * var(--size-1));
 }
 
-.button + .notification {
+.button .notification {
   right: 0;
 }
 
-.menu-icon + .notification {
+.menu .notification {
   left: 0;
 }
 
@@ -443,12 +424,7 @@ input {
   width: 100%;
 }
 
-.collection-toolbar {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-  align-items: center;
-
+#collection-view .toolbar {
   border-bottom-width: var(--border-width);
 }
 

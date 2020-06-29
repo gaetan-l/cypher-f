@@ -202,12 +202,12 @@ export default class PageBuilder {
     const currParent = TextUtil.formatUrl(matches[2] === undefined ? `` : matches[2]);
 
     const nav = document.createElement(`nav`);
-    nav.setAttribute(`id`, `menu`);
     /*
      * ul1 is the base level ul
      */
     const ul1 = document.createElement(`ul`);
-    ul1.classList.add(`menu-level`);
+    ul1.setAttribute(`id`, `menu-nav`);
+    ul1.classList.add(`menu`, `menu-level`);
     nav.appendChild(ul1);
 
     /*
@@ -283,22 +283,25 @@ export default class PageBuilder {
         const itemI18n = item[`data-i18n`];
 
         const li = document.createElement(`li`);
+        li.setAttribute(`style`, `--level: ${currSubmenu ? 1 : 0}`);
         li.classList.add(`menu-item`);
         if (active) {
           li.classList.add(`active`);
         }
 
         const img = document.createElement(`i`);
-        img.classList.add(`material-icons`, `menu-icon`);
+        img.classList.add(`material-icons`, `icon`);
         img.innerHTML = itemIcon;
 
         const a = document.createElement(`a`);
-        a.classList.add(`menu-link`);
         a.setAttribute(`href`, itemHref)
         a.setAttribute(`data-i18n`, itemI18n);
 
+        const label = document.createElement(`label`);
+        label.appendChild(a);
+
         li.appendChild(img);
-        li.appendChild(a);
+        li.appendChild(label);
         (currUl === null) ? ul1.appendChild(li) : currUl.appendChild(li);
 
         /*

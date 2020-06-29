@@ -218,13 +218,14 @@ export default class CollViewBuilder {
       dateDirection = (sortingAttribute === CollUtil.DATE ? sortingDirection : dateDirection);
 
       /*
-       * Displaying submenus, icons and notifications
+       * Displaying contextual menus, icons and notifica
+       * tions
        */
-      document.querySelectorAll(`#submenu-display-mode .menu-item`).forEach(element => element.classList.remove(`active`));
+      document.querySelectorAll(`#contextual-menu-display-mode .menu-item`).forEach(element => element.classList.remove(`active`));
       document.getElementById(`display-${displayMode.value}`).classList.add(`active`);
       document.getElementById(`btn-display-mode`).innerHTML = TextUtil.getJsonValue(`display-${displayMode.value}`, await this._asyncGetIcons());
 
-      document.querySelectorAll(`#submenu-sort .menu-item`).forEach(element => element.classList.remove(`active`));
+      document.querySelectorAll(`#contextual-menu-sort .menu-item`).forEach(element => element.classList.remove(`active`));
       document.getElementById(`sort-${sortingAttribute}`).classList.add(`active`);
       document.getElementById(`btn-sort`).innerHTML = TextUtil.getJsonValue(`sort-${sortingAttribute}`, await this._asyncGetIcons());
 
@@ -321,29 +322,25 @@ export default class CollViewBuilder {
    */
   async _asyncDrawToolbarView(container) {
     const toolbar = document.createElement(`div`);
-    toolbar.classList.add(`collection-toolbar`);
+    toolbar.classList.add(`toolbar`);
 
-    const toolbarButtonContainer = document.createElement(`div`);
-    toolbarButtonContainer.setAttribute(`id`, `collection-toolbar-toolbar-container`);
-    toolbarButtonContainer.classList.add(`toolbar-container`, `left-side`);
+    const contextualWrapper = document.createElement(`div`);
+    contextualWrapper.setAttribute(`id`, `contextual-wrapper`);
+    contextualWrapper.classList.add(`hidden`);
+    document.body.appendChild(contextualWrapper);
 
-    const submenuWrapper = document.createElement(`div`);
-    submenuWrapper.setAttribute(`id`, `submenu-wrapper`);
-    submenuWrapper.classList.add(`hidden`);
-    document.body.appendChild(submenuWrapper);
+    function displayCtxMenu(ctxMenuId, top = 0, left = 0) {
+      [...document.getElementsByClassName(`contextual menu`)].forEach(element => element.classList.add(`hidden`));
 
-    function displaySubmenu(subMenuId, top = 0, left = 0) {
-      [...document.getElementsByClassName(`submenu`)].forEach(element => element.classList.add(`hidden`));
-
-      if (subMenuId) {
-        document.getElementById(`submenu-wrapper`).classList.remove(`hidden`);
-        const subMenu = document.getElementById(subMenuId);
-        subMenu.style.top  = `${top}px`;
-        subMenu.style.left = `${left}px`;
-        subMenu.classList.remove(`hidden`);
+      if (ctxMenuId) {
+        document.getElementById(`contextual-wrapper`).classList.remove(`hidden`);
+        const ctxMenu = document.getElementById(ctxMenuId);
+        ctxMenu.style.top  = `${top}px`;
+        ctxMenu.style.left = `${left}px`;
+        ctxMenu.classList.remove(`hidden`);
       }
       else {
-        document.getElementById(`submenu-wrapper`).classList.add(`hidden`);
+        document.getElementById(`contextual-wrapper`).classList.add(`hidden`);
       }
     }
 
@@ -351,14 +348,14 @@ export default class CollViewBuilder {
       await this._asyncRedraw(container, displayMode, this.currSortingAttribute, this.currSortingDirection, this.currGrouping, this.currDateDirection);
     }
 
-    PageUtil.bindOnClick(submenuWrapper, function() {displaySubmenu();});
+    PageUtil.bindOnClick(contextualWrapper, function() {displayCtxMenu();});
 
     /*
-     * Building display mode submenu.
+     * Building display mode contextual menu.
      */
     const displayModeSm = document.createElement(`ul`);
-    displayModeSm.setAttribute(`id`, `submenu-display-mode`);
-    displayModeSm.classList.add(`submenu`, `menu-level`, `hidden`);
+    displayModeSm.setAttribute(`id`, `contextual-menu-display-mode`);
+    displayModeSm.classList.add(`contextual`, `menu`, `menu-level`, `hidden`);
     const displayModes = CollUtil.DisplayMode.items;
     for (let i = 0 ; i < displayModes.length ; i++) {
       const displayModeEntry = document.createElement(`li`);
@@ -366,17 +363,17 @@ export default class CollViewBuilder {
       displayModeEntry.classList.add(`menu-item`);
 
       const displayModeIcon = document.createElement(`i`);
-      displayModeIcon.classList.add(`material-icons`, `menu-icon`);
+      displayModeIcon.classList.add(`material-icons`, `icon`);
       displayModeIcon.innerHTML = TextUtil.getJsonValue(`display-${displayModes[i].value}`, await this._asyncGetIcons());
 
-      const displayModeLabel = document.createElement(`p`);
-      displayModeLabel.classList.add(`menu-link`);
+      const displayModeLabel = document.createElement(`label`);
       displayModeLabel.setAttribute(`data-i18n`, `labels.display-mode-${displayModes[i].value}`);
+      displayModeLabel.setAttribute(`for`, `display-${displayModes[i].value}`);
 
       const boundChangeDisplayMode = changeDisplayMode.bind(this);
       PageUtil.bindOnClick(displayModeEntry, function() {
         boundChangeDisplayMode(displayModes[i]);
-        displaySubmenu();
+        displayCtxMenu();
       });
 
       displayModeEntry.appendChild(displayModeIcon);
@@ -385,20 +382,23 @@ export default class CollViewBuilder {
     }
     document.body.appendChild(displayModeSm);
 
-    const displayModeLabel = document.createElement(`p`);
-    displayModeLabel.classList.add(`label`);
+    const displayModeLabel = document.createElement(`label`);
     displayModeLabel.setAttribute(`data-i18n`, `labels.display-mode`);
+    displayModeLabel.setAttribute(`for`, `btn-display-mode`);
 
     const displayModeButton = document.createElement(`i`);
     displayModeButton.setAttribute(`id`, `btn-display-mode`);
     displayModeButton.classList.add(`material-icons`, `button`);
-    PageUtil.bindOnClick(displayModeButton, function() {displaySubmenu(`submenu-display-mode`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().left);});
+    PageUtil.bindOnClick(displayModeButton, function() {displayCtxMenu(`contextual-menu-display-mode`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().left);});
 
-    toolbarButtonContainer.appendChild(displayModeLabel);
-    toolbarButtonContainer.appendChild(displayModeButton);
+    const displayModeWrapper = document.createElement(`div`);
+    displayModeWrapper.classList.add(`flex`);
+    displayModeWrapper.appendChild(displayModeLabel);
+    displayModeWrapper.appendChild(displayModeButton);
+    toolbar.appendChild(displayModeWrapper);
 
     /*
-     * Building sort submenu.
+     * Building sort contextual menu.
      */
     async function changeSorting(selectedSortingAttribute) {
       let selectedDirection;
@@ -439,8 +439,8 @@ export default class CollViewBuilder {
     const boundChangeDateDirection = changeDateDirection.bind(this);
 
     const sortSm = document.createElement(`ul`);
-    sortSm.setAttribute(`id`, `submenu-sort`);
-    sortSm.classList.add(`submenu`, `menu-level`, `hidden`);
+    sortSm.setAttribute(`id`, `contextual-menu-sort`);
+    sortSm.classList.add(`contextual`, `menu`, `menu-level`, `hidden`);
     const sorts = this.sortableAttributes;
 
     for (let i = 0 ; i < sorts.length ; i++) {
@@ -450,7 +450,7 @@ export default class CollViewBuilder {
 
       const sortIcon = document.createElement(`i`);
       sortIcon.setAttribute(`id`, `btn-sorting-${sorts[i]}`);
-      sortIcon.classList.add(`material-icons`, `menu-icon`);
+      sortIcon.classList.add(`material-icons`, `icon`);
       let iconName = TextUtil.getJsonValue(`sort-${sorts[i]}`, await this._asyncGetIcons());
       if (!iconName) {iconName = TextUtil.getJsonValue(`sort-default`, await this._asyncGetIcons());}
       sortIcon.innerHTML = iconName;
@@ -459,9 +459,9 @@ export default class CollViewBuilder {
       iconNotifContainer.classList.add(`icon-notif-container`)
       iconNotifContainer.appendChild(sortIcon);
 
-      const sortLabel = document.createElement(`p`);
-      sortLabel.classList.add(`menu-link`);
+      const sortLabel = document.createElement(`label`);
       sortLabel.setAttribute(`data-i18n`, `labels.sort-${sorts[i]}`);
+      sortLabel.setAttribute(`for`, `btn-sorting-${sorts[i]}`);
 
       PageUtil.bindOnClick(sortEntry, function() {boundChangeSorting(sorts[i]);});
       PageUtil.bindOnRightClick(sortEntry, sorts[i] === CollUtil.DATE ? function() {boundChangeDateDirection();} : function() {});
@@ -472,41 +472,42 @@ export default class CollViewBuilder {
     }
     document.body.appendChild(sortSm);
 
-    const sortLabel = document.createElement(`p`);
-    sortLabel.classList.add(`label`);
+    const sortLabel = document.createElement(`label`);
     sortLabel.setAttribute(`data-i18n`, `labels.sort`);
-    toolbarButtonContainer.appendChild(sortLabel);
+    sortLabel.setAttribute(`for`, `btn-sort`);
+    toolbar.appendChild(sortLabel);
 
     const sortButton = document.createElement(`i`);
     sortButton.setAttribute(`id`, `btn-sort`);
     sortButton.classList.add(`material-icons`, `button`);
-    PageUtil.bindOnClick(sortButton, function() {displaySubmenu(`submenu-sort`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().left);});
+    PageUtil.bindOnClick(sortButton, function() {displayCtxMenu(`contextual-menu-sort`, this.getBoundingClientRect().bottom, this.getBoundingClientRect().left);});
 
     const iconNotifContainer = document.createElement(`div`);
     iconNotifContainer.classList.add(`icon-notif-container`)
     iconNotifContainer.appendChild(sortButton);
 
-    toolbarButtonContainer.appendChild(sortLabel);
-    toolbarButtonContainer.appendChild(iconNotifContainer);
+    const sortWrapper = document.createElement(`div`);
+    sortWrapper.classList.add(`flex`);
+    sortWrapper.appendChild(sortLabel);
+    sortWrapper.appendChild(iconNotifContainer);
+    toolbar.appendChild(sortWrapper);
 
-    toolbar.appendChild(toolbarButtonContainer);
-
-    const filterContainer = document.createElement(`div`);
-    filterContainer.classList.add(`toolbar-container`, `fill-flex`);
-
-    const filterLabel = document.createElement(`p`);
-    filterLabel.classList.add(`label`);
+    const filterLabel = document.createElement(`label`);
     filterLabel.setAttribute(`data-i18n`, `labels.filter`);
-    filterContainer.appendChild(filterLabel);
+    sortLabel.setAttribute(`for`, `inp-filter`);
+    toolbar.appendChild(filterLabel);
 
     const boundFilter = this._filterCollection.bind(this);
     const input = document.createElement(`input`);
     input.classList.add(`fill-flex`);
     input.setAttribute(`id`, `inp-filter`);
     input.addEventListener(`input`, function (e) {boundFilter(this.value);});
-    filterContainer.appendChild(input);
 
-    toolbar.appendChild(filterContainer);
+    const filterWrapper = document.createElement(`div`);
+    filterWrapper.classList.add(`flex`, `fill-flex`);
+    filterWrapper.appendChild(filterLabel);
+    filterWrapper.appendChild(input);
+    toolbar.appendChild(filterWrapper);
 
     container.appendChild(toolbar);
   }

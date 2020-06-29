@@ -140,6 +140,19 @@ h1 {
   font-family: var(--font-titles);
 }
 
+a {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  color: inherit;
+  text-decoration: none;
+}
+
+label {
+  cursor: inherit;
+}
+
 input {
   border: 1px solid rgba(var(--color-neutral-light), 1.0);
 }
@@ -174,7 +187,6 @@ tbody tr.even td {
 }
 
 .text-box a {
-  text-decoration: none;
   font-style: italic;
 }
 
@@ -226,14 +238,14 @@ tbody tr.even td {
  * ============= 5.  SITE TITLE DIV =======================
  * ========================================================
  */
-#site-title-height-setter,
+#site-title-frame,
 #site-title-normal,
 #site-title-shadow {
   text-align: center;
   font-family: 'Alata', Arial, sans-serif;
 }
 
-#site-title-height-setter {
+#site-title-frame {
   color: transparent;
   border-bottom-style: solid;
   border-bottom-color: rgba(var(--color-neutral-light), 1.0);
@@ -273,64 +285,68 @@ tbody tr.even td {
  * ============= 6.  MENU =================================
  * ========================================================
  */
-.menu-level {
+.contextual.menu {
+  border-style: solid;
+  border-color: rgba(var(--color-neutral-light), 1.0);
+}
+
+ul.menu {
   list-style: none;
 }
 
-.menu-item {
+.menu li {
   background-color: white;
-  border-left-style: solid;
-  border-left-color: transparent;
   border-bottom-style: solid;
   border-bottom-color: rgba(var(--color-neutral-light), 1.0);
   cursor: pointer;
 }
 
-.submenu .menu-item:last-child {
+.menu li::before {
+  background-color: transparent;
+  background-clip: content-box;
+}
+
+.menu li:hover::before {
+  background-color: var(--color-primary);
+}
+
+.contextual.menu li:last-child {
   border-bottom: none;
 }
 
-.menu-item * {
+.menu li * {
   vertical-align: middle;
 }
 
-.menu-link {
-  text-decoration: none;
-}
-
-.menu-item.active {
+.menu li.active,
+.menu li:not(.active):hover::before {
   background-color: rgba(var(--color-primary), 1.0);
 }
 
-.menu-item:not(.active) .material-icons {
+.menu li:not(.active) .icon {
   color: rgba(var(--color-primary), 1.0);
 }
 
-.menu-item.active .menu-link,
-.menu-item.active .menu-icon,
-.menu-item:not(.active):hover .menu-link,
-.menu-item:not(.active):hover .menu-icon {
+.menu li.active label,
+.menu li.active .icon,
+.menu li:not(.active):hover label,
+.menu li:not(.active):hover .icon {
   color: rgba(var(--color-clear), 1.0);
 }
 
-.menu-item:not(.active):hover {
+.menu li:not(.active):hover {
   background-color: rgba(var(--color-neutral), 1.0);
-  border-left-color: rgba(var(--color-primary), 1.0);
+}
+
+.menu li:not(.active):hover,
+.menu li:not(.active):hover label,
+.menu li:not(.active):hover .icon,
+.menu li:not(.active):hover::before {
   transition: all 0.25s ease-in-out;
 }
 
-.menu-item:not(.active):hover .menu-link,
-.menu-item:not(.active):hover .menu-icon {
-  transition: color 0.25s ease-in-out;
-}
-
-#submenu-wrapper {
+#contextual-wrapper {
   background-color: transparent;
-}
-
-.submenu {
-  border-style: solid;
-  border-color: rgba(var(--color-neutral-light), 1.0);
 }
 
 
@@ -370,11 +386,11 @@ tbody tr.even td {
   color: rgba(var(--color-tertiary), 1.0);
 }
 
-.label::after {
+.toolbar label::after {
   content: ":";
 }
 
-:lang(fr) .label::after {
+:lang(fr) .toolbar label::after {
   content: " :";
 }
 
@@ -386,13 +402,13 @@ tbody tr.even td {
  * ========================================================
  *
  */
-.collection-toolbar {
+#collection-view .toolbar {
   background-color: rgba(var(--color-clear), 1.0);
   border-bottom-color: rgba(var(--color-neutral-light), 1.0);
   border-bottom-style: solid;
 }
 
-.collection-toolbar .button {
+#collection-view .toolbar .button {
   color: rgba(var(--color-primary), 1.0);;
 }
 
