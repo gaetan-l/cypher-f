@@ -5,16 +5,17 @@
  * 1.  VARIABLES
  * 2.  DEFAULT VALUES/RESET
  * 3.  GENERAL STYLES
- * 3.1 Fade-in/fade-out
  * 4.  MAIN STRUCTURE
  * 5.  SITE TITLE DIV
  * 6.  MENU
  * 7.  CONTROLS AND NOTIFICATIONS
  * 8.  COLLECTIONS
- * 8.1 Polaroid gallery view
- * 8.2 Stacked gallery view
- * 8.3 Details view
- * 8.4 Fullscreen view
+ * 8.1 General
+ * 8.2 Pictures
+ * 8.3 Polaroid gallery view
+ * 8.4 Stacked gallery view
+ * 8.5 Details view
+ * 8.6 Fullscreen view
  * 9.  PAGE-SPECIFIC
  * 9.1 Homepage
  * 9.2 Media
@@ -106,18 +107,7 @@ body {
  * ========================================================
  * ============= 3.  GENERAL STYLES =======================
  * ========================================================
- *
- * ------------- 3.1 Fade-in/fade-out ---------------------
- * Fade in and fade out for whole body and main section:
- * both are invisible on page load, <body> fades in first
- * when PageBuilder finishes its work, then <main> fades in
- * later if specific work needs to be done that requires
- * more time. Body fades out on page unload.
  */
- /*
-  * Add this class to elements that need to be faded out
-  * when the page loads to avoid "blinking" effect.
-  */
 .faded-out-onload {
   opacity: 0;
   transition: opacity 0s;
@@ -356,7 +346,7 @@ body > footer .button {
  * ============= 7.  CONTROLS AND NOTIFICATIONS ===========
  * ========================================================
  */
-.button {
+.button, .icon {
   /*
    * Changes to size and margins are in structure.css.
    */
