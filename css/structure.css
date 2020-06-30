@@ -16,10 +16,12 @@
  * 6.  MENU
  * 7.  CONTROLS AND NOTIFICATIONS
  * 8.  COLLECTIONS
- * 8.1 Polaroid gallery view
- * 8.2 Stacked gallery view
- * 8.3 Details view
- * 8.4 Fullscreen view
+ * 8.1 General
+ * 8.2 Pictures
+ * 8.3 Polaroid gallery view
+ * 8.4 Stacked gallery view
+ * 8.5 Details view
+ * 8.6 Fullscreen view
  * 9.  PAGE-SPECIFIC
  * 9.1 Homepage
  */
@@ -35,12 +37,13 @@
   * ------------ 1.1 Media querries -----------------------
   */
 :root {
-  --side-panel-width:                 100%;
+  --side-panel-width: 100%;
+  --side-panel-max-width: calc( 50 * var(--size-1));
 }
 
 @media (min-width: 601px) and (min-height: 601px) {
   :root {
-    --side-panel-width:            calc( 50 * var(--size-1));
+    --side-panel-width: var(--side-panel-max-width);
   }
 }
 
@@ -75,7 +78,7 @@
  * ------------- 1.5 Menu ---------------------------------
  */
   --menu-item-padding:           calc(  4 * var(--size-1));
-  --menu-label-margin-left:       calc(  2 * var(--size-1));
+  --menu-label-margin-left:      calc(  2 * var(--size-1));
 
   /*
    * Defalut value, to be overriden in js if needed.
@@ -108,6 +111,7 @@ html, body {
 
 body {
   overflow: hidden;
+  min-width: calc(66 * var(--size-1));
 }
 
 
@@ -135,6 +139,7 @@ label {
 input {
   height: calc(6 * var(--size-1));
   width: calc(16 * var(--size-1));
+  max-width: calc(50 * var(--size-1));
 }
 
 label + input {
@@ -194,23 +199,23 @@ label + input {
   min-height: var(--site-title-height);
 }
 
-#side-panel {
+#top > aside {
   flex: 0 0 var(--side-panel-width);
   overflow: hidden;
   border-right-width: var(--border-width);
 }
 
-#side-panel.clicked {
+#top > aside.clicked {
   flex-basis: 0;
 }
 
 @media (max-width: 600px) {
-  #side-panel {
+  #top > aside {
     flex-basis: 0;
     border-right-width: 0;
   }
 
-  #side-panel.clicked {
+  #top > aside.clicked {
     flex-basis: var(--side-panel-width);
   }
 }
@@ -224,7 +229,7 @@ label + input {
   overflow: auto;
 }
 
-#site-footer {
+body > footer {
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
@@ -233,11 +238,11 @@ label + input {
   padding: var(--button-margin);
 }
 
-#site-footer-title {
+body > footer p {
   font-size: var(--font-size-medium);
 }
 
-#site-footer .toolbar {
+body > footer .toolbar {
   /*
    * Replace --nb-buttons with the maximum number of but-
    * tons between left and right toolbar-container.
@@ -285,27 +290,32 @@ label + input {
   position: absolute;
   top: calc((var(--site-title-height) + var(--font-size-big)) / 2);
   left: calc(0.5 * var(--side-panel-width));
+  white-space: nowrap;
 }
 
-#side-panel.clicked #site-title-normal,
-#side-panel.clicked #site-title-shadow,
-#side-panel.clicked #site-subtitle {
-  left: calc(-1 * var(--side-panel-width));
+@media (min-width: 601px) {
+  #top > aside.clicked #site-title-normal,
+  #top > aside.clicked #site-title-shadow,
+  #top > aside.clicked #site-subtitle {
+    width: var(--side-panel-max-width);
+    left: calc(-1 * var(--side-panel-max-width));
+  }
 }
 
 @media (max-width: 600px) {
-  #site-title-normal,
-  #site-title-shadow,
-  #site-subtitle {
-    left: calc(-1 * var(--side-panel-width));
+  #top > aside:not(.clicked) #site-title-normal,
+  #top > aside:not(.clicked) #site-title-shadow,
+  #top > aside:not(.clicked) #site-subtitle {
+    width: var(--side-panel-max-width);
+    left: calc(-1 * var(--side-panel-max-width));
   }
 
-  #side-panel.clicked #site-title-normal,
-  #side-panel.clicked #site-title-shadow {
+  #top > aside.clicked #site-title-normal,
+  #top > aside.clicked #site-title-shadow {
     left: 0;
   }
 
-  #side-panel.clicked #site-subtitle {
+  #top > aside.clicked #site-subtitle {
     left: calc(0.5 * var(--side-panel-width))
   }
 }
@@ -343,8 +353,13 @@ label + input {
 }
 
 .menu label {
-  display: inline-block;
   margin-left: var(--menu-label-margin-left);
+}
+
+.menu label,
+.menu label * {
+  display: flex;
+  flex-grow: 1;
 }
 
 #contextual-wrapper {
@@ -390,10 +405,6 @@ label + input {
   position: relative;
 }
 
-.contextual.menu .icon-notif-container {
-  display: inline-block;
-}
-
 .notification {
   position: absolute;
   bottom: 0;
@@ -415,27 +426,40 @@ label + input {
  * ========================================================
  * ============= 8.  COLLECTIONS ==========================
  * ========================================================
- *
+ * ------------- 8.1 General ------------------------------
  */
-#collection-view {
+#collection {
   display: flex;
   flex-flow: column nowrap;
   height: 100%;
   width: 100%;
 }
 
-#collection-view .toolbar {
+#collection .toolbar {
   border-bottom-width: var(--border-width);
 }
 
-#inp-filter {
-  max-width: calc(50 * var(--size-1));
-}
-
-#collection-content {
-  display: block;
+#collection #display {
   height: 100%;
   overflow-y: scroll;
+}
+
+.irrelevant {
+  display: none !important;
+}
+
+/*
+ * ------------- 8.2 Pictures -----------------------------
+ */
+ .polaroid h1,
+ .stacked  h1 {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  margin: 0;
+  padding-left: calc(  6 * var(--size-1));
+  line-height: calc(16 * var(--size-1));
+  z-index: 1;
 }
 
 .image-shadow {
@@ -453,24 +477,10 @@ label + input {
     right: 0;
 }
 
-.irrelevant {
-  display: none !important;
-}
-
 /*
- * ------------- 8.1 Polaroid gallery view ----------------
+ * ------------- 8.3 Polaroid gallery view ----------------
  */
-.picture-group h1 {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  margin: 0;
-  padding-left: var(--polaroid-frame-margin);
-  line-height: calc(16 * var(--size-1));
-  z-index: 1;
-}
-
-.polaroid-group-content {
+.polaroid .group .content {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
@@ -478,7 +488,7 @@ label + input {
   padding: var(--polaroid-frame-margin) 0 0 var(--polaroid-frame-margin);
 }
 
-.polaroid-frame {
+.polaroid .item {
   display: flex;
   width: var(--gallery-image-size);
   height: var(--gallery-image-size);
@@ -487,15 +497,15 @@ label + input {
   border-width: var(--border-width);
 }
 
-.polaroid-image {
+.polaroid img {
   max-width: var(--gallery-image-size);
   max-height: var(--gallery-image-size);
 }
 
 /*
- * ------------- 8.2 Stacked gallery view -----------------
+ * ------------- 8.4 Stacked gallery view -----------------
  */
-.stacked-group-wrapper {
+.stacked .wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, var(--gallery-image-size));
   padding: var(--polaroid-frame-margin);
@@ -503,44 +513,44 @@ label + input {
   overflow: hidden;
 }
 
-.stacked-group-content {
+.stacked .group .content {
   column-width: var(--gallery-image-size);
   column-gap: 0;
   grid-column: 1/-1;
 }
 
-.stacked-frame {
+.stacked .item {
   display: block;
   margin: 0 0.15em 0 0.15em;
 }
 
-.stacked-image {
+.stacked img {
   width: 100%;
 }
 
 /*
- * ------------- 8.3 Details view -------------------------
+ * ------------- 8.5 Details view -------------------------
  */
-.details-view-table {
+.details table {
   min-width: 100%;
 }
 
-.details-view-table th {
+.details th {
   position: sticky;
 }
 
-.details-view-table thead th {
+.details thead th {
   top: 0;
 }
 
-.details-view-table .group-header-row th {
+.details .group th {
   top: var(--tr-height);
 }
 
 /*
- * ------------- 8.4 Fullscreen view ----------------------
+ * ------------- 8.6 Fullscreen view ----------------------
  */
- .fullscreen-container {
+ #fullscreen {
   display: flex;
   position: absolute;
   top: 0;
@@ -549,32 +559,34 @@ label + input {
   z-index: 1;
 }
 
-.fullscreen-container:not(.faded-in) * {
+#fullscreen:not(.faded-in) * {
   display: none;
 }
 
-#fullscreen-image {
+#fullscreen img {
   max-width: calc(100% - 2 * var(--button-size) - 4 * var(--button-margin));
   max-height: 100%;
   margin: auto;
 }
 
-#fullscreen-infobox, #btn-fs-close {
+#fullscreen #info,
+#fullscreen #btn-close {
   position: absolute;
 }
 
-#btn-fs-prev, #btn-fs-next {
+#fullscreen #btn-prev,
+#fullscreen #btn-next {
   margin-top: auto;
   margin-bottom: auto;
 }
 
-#fullscreen-infobox {
+#fullscreen #info {
   margin: calc(2 * var(--size-1));
   left: 0;
   bottom: 0;
 }
 
-#btn-fs-close {
+#fullscreen #btn-close {
   right: 0;
   top: 0;
 }

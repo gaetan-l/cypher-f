@@ -163,7 +163,7 @@ table {
 
 thead th {
   background-color: rgba(var(--color-primary), 1.0);
-  color: white;
+  color: rgba(var(--color-clear), 1.0);
 }
 
 tbody tr.even td {
@@ -183,7 +183,7 @@ tbody tr.even td {
 }
 
 .text-box * {
-  color: white;
+  color: rgba(var(--color-clear), 1.0);
 }
 
 .text-box a {
@@ -211,23 +211,23 @@ tbody tr.even td {
  * ============= 4.  MAIN STRUCTURE =======================
  * ========================================================
  */
-#side-panel {
+#top > aside {
   border-right-style: solid;
   border-right-color: rgba(var(--color-neutral-light), 1.0);
   transition: flex-basis 0.25s ease-in-out;
 }
 
-#site-footer {
+body > footer {
   background-color: rgba(var(--color-primary), 1.0);
 }
 
-#site-footer-title {
+body > footer p {
   text-align: center;
   font-family: var(--font-titles);
   color: rgba(var(--color-clear), 1.0);
 }
 
-#site-footer .button {
+body > footer .button {
   color: rgba(var(--color-clear), 1.0);
 }
 
@@ -290,7 +290,7 @@ tbody tr.even td {
   border-color: rgba(var(--color-neutral-light), 1.0);
 }
 
-ul.menu {
+.menu {
   list-style: none;
 }
 
@@ -356,11 +356,7 @@ ul.menu {
  * ============= 7.  CONTROLS AND NOTIFICATIONS ===========
  * ========================================================
  */
-.inline-button:hover {
-  color: rgba(var(--color-primary), 1.0);
-}
-
-.button, .inline-button {
+.button {
   /*
    * Changes to size and margins are in structure.css.
    */
@@ -376,13 +372,7 @@ ul.menu {
   color: rgba(var(--color-secondary), 1.0);
 }
 
-/*@supports (-webkit-text-stroke: 2px white) {
-  .notification {
-    -webkit-text-stroke: 2px white;
-  }
-}*/
-
-#notification-sort-secondary {
+.notification.secondary {
   color: rgba(var(--color-tertiary), 1.0);
 }
 
@@ -400,24 +390,30 @@ ul.menu {
  * ========================================================
  * ============= 8.  COLLECTIONS ==========================
  * ========================================================
+ * ------------- 8.1 General ------------------------------
  *
  */
-#collection-view .toolbar {
+#collection .toolbar {
   background-color: rgba(var(--color-clear), 1.0);
   border-bottom-color: rgba(var(--color-neutral-light), 1.0);
   border-bottom-style: solid;
 }
 
-#collection-view .toolbar .button {
+#collection .toolbar .button {
   color: rgba(var(--color-primary), 1.0);;
 }
 
-.picture-group h1 {
+/*
+ * ------------- 8.2 Pictures -----------------------------
+ */
+.polaroid h1,
+.stacked  h1 {
   background-color: rgba(var(--color-primary), 0.5);
   color: rgba(var(--color-clear), 1.0);
 }
 
-.picture-item {
+.polaroid .item,
+.stacked  .item {
   cursor: pointer;
 }
 
@@ -434,12 +430,10 @@ ul.menu {
   -webkit-box-shadow: inset 0 0 8px black;
 }
 
-
-
 /*
- * ------------- 8.1 Polaroid gallery view ----------------
+ * ------------- 8.3 Polaroid gallery view ----------------
  */
-.polaroid-frame {
+.polaroid .item {
   background-color: rgba(var(--color-clear), 1.0);
   border-style: solid;
   border-color: rgba(var(--color-neutral-light), 1.0);
@@ -447,50 +441,54 @@ ul.menu {
   transition: all 0.25s ease-in-out;
 }
 
-.polaroid-frame:hover {
+.polaroid .item:hover {
   box-shadow: 2px 2px 2px;
 }
 
 /*
- * ------------- 8.2 Stacked gallery view -----------------
+ * ------------- 8.4 Stacked gallery view -----------------
  */
-.stacked-content {
+.stacked .content {
   -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
   mask-image:         linear-gradient(to bottom, black 80%, transparent 100%);
 }
 
-.stacked-image {
+.stacked img {
   border-radius: 24px;
 }
 
 /*
- * ------------- 8.3 Details view -------------------------
+ * ------------- 8.5 Details view -------------------------
  */
-.details-view-table .group-header-row th {
+.details .group th {
   background-color: rgba(var(--color-primary-light), 1.0);
   color: rgba(var(--color-clear), 1.0);
   font-family: var(--font-titles);
 }
 
+.details .icon:hover {
+  color: rgba(var(--color-primary), 1.0);
+}
+
 /*
- * ------------- 8.4 Fullscreen view ----------------------
+ * ------------- 8.6 Fullscreen view ----------------------
  */
  /*
   * Height trick (height must be applied after fade-out
   * finishes)
   */
-.fullscreen-container {
+#fullscreen {
   background-color: black;
   height: 0;
   transition: var(--transition-opacity), height 0s 0.25s;
 }
 
-.fullscreen-container.faded-in {
+#fullscreen.faded-in {
   height: 100%;
   transition: var(--transition-opacity), height 0s 0s;
 }
 
-.fullscreen-info {
+#fullscreen p {
   color: rgba(var(--color-clear), 1.0);
 }
 
