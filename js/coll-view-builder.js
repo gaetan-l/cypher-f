@@ -1,9 +1,12 @@
-import * as CollUtil from "/js/coll-util.js";
-import      PageUtil from "/js/page-util.js";
-import      TextUtil from "/js/text-util.js";
-import    Translator from "/js/translator.js";
+import * as CollUtil         from "/js/coll-util.js";
+import      PageUtil, {Menu} from "/js/page-util.js";
+import      TextUtil         from "/js/text-util.js";
+import    Translator         from "/js/translator.js";
 
 `use strict`
+
+class DisplayModeMenu extends Menu {}
+class SortingMenu     extends Menu {}
 
 /**
  * Helper class to build views able to display collections
@@ -218,14 +221,14 @@ export default class CollViewBuilder {
       dateDirection = (sortingAttribute === CollUtil.DATE ? sortingDirection : dateDirection);
 
       /*
-       * Displaying contextual menus, icons and notifica
+       * Displaying contextual menus, icons and notifica-
        * tions
        */
-      document.querySelectorAll(`#contextual-menu-display-mode .menu-item`).forEach(element => element.classList.remove(`active`));
+      document.querySelectorAll(`#contextual-menu-display-mode li`).forEach(element => element.classList.remove(`active`));
       document.getElementById(`display-${displayMode.value}`).classList.add(`active`);
       document.getElementById(`btn-display-mode`).innerHTML = TextUtil.getJsonValue(`display-${displayMode.value}`, await this._asyncGetIcons());
 
-      document.querySelectorAll(`#contextual-menu-sort .menu-item`).forEach(element => element.classList.remove(`active`));
+      document.querySelectorAll(`#contextual-menu-sort li`).forEach(element => element.classList.remove(`active`));
       document.getElementById(`sort-${sortingAttribute}`).classList.add(`active`);
       document.getElementById(`btn-sort`).innerHTML = TextUtil.getJsonValue(`sort-${sortingAttribute}`, await this._asyncGetIcons());
 
@@ -233,6 +236,7 @@ export default class CollViewBuilder {
       Array.from(notifs).forEach((element) => {
         PageUtil.fadeOut(element);
       });
+
       /*
        * Creating the primary sorting notification icon if
        * it doesn't exist already.
@@ -251,7 +255,7 @@ export default class CollViewBuilder {
   
       primaryNotif.innerHTML = TextUtil.getJsonValue(`notif-${sortingDirection.value}-${grouping.value}`, await this._asyncGetIcons());
       primaryNotifToolbar.innerHTML = primaryNotif.innerHTML;
-      document.getElementById(`btn-sorting-${sortingAttribute}`).parentNode.appendChild(primaryNotif);
+      document.querySelector(`#sort-${sortingAttribute} i`).parentNode.appendChild(primaryNotif);
       document.getElementById(`btn-sort`).parentNode.appendChild(primaryNotifToolbar);
   
       /*
@@ -272,7 +276,7 @@ export default class CollViewBuilder {
           secondaryNotif.setAttribute(`id`, `notification-sort-secondary`);
           secondaryNotif.classList.add(`material-icons`, `fadable`, `notification`, `secondary`, `notification-sort`);
           secondaryNotif.innerHTML = TextUtil.getJsonValue(`notif-${CollUtil.Direction.DESC.value}-${CollUtil.Grouping.NOT_GROUPED.value}`, await this._asyncGetIcons());
-          document.getElementById(`btn-sorting-date`).parentNode.appendChild(secondaryNotif);
+          document.querySelector(`#sort-date i`).parentNode.appendChild(secondaryNotif);
         }
   
         /*
@@ -344,43 +348,30 @@ export default class CollViewBuilder {
       }
     }
 
+    PageUtil.bindOnClick(contextualWrapper, function() {displayCtxMenu();});
+
     async function changeDisplayMode(displayMode) {
       await this._asyncRedraw(container, displayMode, this.currSortingAttribute, this.currSortingDirection, this.currGrouping, this.currDateDirection);
     }
-
-    PageUtil.bindOnClick(contextualWrapper, function() {displayCtxMenu();});
+    const boundChangeDisplayMode = changeDisplayMode.bind(this);
 
     /*
      * Building display mode contextual menu.
      */
-    const displayModeSm = document.createElement(`ul`);
-    displayModeSm.setAttribute(`id`, `contextual-menu-display-mode`);
-    displayModeSm.classList.add(`contextual`, `menu`, `menu-level`, `hidden`);
     const displayModes = CollUtil.DisplayMode.items;
     for (let i = 0 ; i < displayModes.length ; i++) {
-      const displayModeEntry = document.createElement(`li`);
-      displayModeEntry.setAttribute(`id`, `display-${displayModes[i].value}`);
-      displayModeEntry.classList.add(`menu-item`);
-
-      const displayModeIcon = document.createElement(`i`);
-      displayModeIcon.classList.add(`material-icons`, `icon`);
-      displayModeIcon.innerHTML = TextUtil.getJsonValue(`display-${displayModes[i].value}`, await this._asyncGetIcons());
-
-      const displayModeLabel = document.createElement(`label`);
-      displayModeLabel.setAttribute(`data-i18n`, `labels.display-mode-${displayModes[i].value}`);
-      displayModeLabel.setAttribute(`for`, `display-${displayModes[i].value}`);
-
-      const boundChangeDisplayMode = changeDisplayMode.bind(this);
-      PageUtil.bindOnClick(displayModeEntry, function() {
-        boundChangeDisplayMode(displayModes[i]);
-        displayCtxMenu();
-      });
-
-      displayModeEntry.appendChild(displayModeIcon);
-      displayModeEntry.appendChild(displayModeLabel);
-      displayModeSm.appendChild(displayModeEntry);
+      new DisplayModeMenu(
+        `display-${displayModes[i].value}`,
+        `display-${displayModes[i].value}`,
+        `labels.display-mode-${displayModes[i].value}`,
+        function() {
+          boundChangeDisplayMode(displayModes[i]);
+          displayCtxMenu();
+        }.bind(this),
+        null);
     }
-    document.body.appendChild(displayModeSm);
+    DisplayModeMenu.lock();
+    document.body.appendChild(await DisplayModeMenu.asyncBuild(`contextual-menu-display-mode`));
 
     const displayModeLabel = document.createElement(`label`);
     displayModeLabel.setAttribute(`data-i18n`, `labels.display-mode`);
@@ -437,40 +428,17 @@ export default class CollViewBuilder {
 
     const boundChangeSorting = changeSorting.bind(this);
     const boundChangeDateDirection = changeDateDirection.bind(this);
-
-    const sortSm = document.createElement(`ul`);
-    sortSm.setAttribute(`id`, `contextual-menu-sort`);
-    sortSm.classList.add(`contextual`, `menu`, `menu-level`, `hidden`);
-    const sorts = this.sortableAttributes;
-
-    for (let i = 0 ; i < sorts.length ; i++) {
-      const sortEntry = document.createElement(`li`);
-      sortEntry.setAttribute(`id`, `sort-${sorts[i]}`);
-      sortEntry.classList.add(`menu-item`);
-
-      const sortIcon = document.createElement(`i`);
-      sortIcon.setAttribute(`id`, `btn-sorting-${sorts[i]}`);
-      sortIcon.classList.add(`material-icons`, `icon`);
-      let iconName = TextUtil.getJsonValue(`sort-${sorts[i]}`, await this._asyncGetIcons());
-      if (!iconName) {iconName = TextUtil.getJsonValue(`sort-default`, await this._asyncGetIcons());}
-      sortIcon.innerHTML = iconName;
-
-      const iconNotifContainer = document.createElement(`div`);
-      iconNotifContainer.classList.add(`icon-notif-container`)
-      iconNotifContainer.appendChild(sortIcon);
-
-      const sortLabel = document.createElement(`label`);
-      sortLabel.setAttribute(`data-i18n`, `labels.sort-${sorts[i]}`);
-      sortLabel.setAttribute(`for`, `btn-sorting-${sorts[i]}`);
-
-      PageUtil.bindOnClick(sortEntry, function() {boundChangeSorting(sorts[i]);});
-      PageUtil.bindOnRightClick(sortEntry, sorts[i] === CollUtil.DATE ? function() {boundChangeDateDirection();} : function() {});
-
-      sortEntry.appendChild(iconNotifContainer);
-      sortEntry.appendChild(sortLabel);
-      sortSm.appendChild(sortEntry);
+;
+    for (let i = 0 ; i < this.sortableAttributes.length ; i++) {
+      new SortingMenu(
+        `sort-${this.sortableAttributes[i]}`,
+        `sort-${this.sortableAttributes[i]}`,
+        `labels.sort-${this.sortableAttributes[i]}`,
+        function() {boundChangeSorting(this.sortableAttributes[i]);}.bind(this),
+        this.sortableAttributes[i] === CollUtil.DATE ? function() {boundChangeDateDirection();}.bind(this) : null);
     }
-    document.body.appendChild(sortSm);
+    SortingMenu.lock();
+    document.body.appendChild(await SortingMenu.asyncBuild(`contextual-menu-sort`));
 
     const sortLabel = document.createElement(`label`);
     sortLabel.setAttribute(`data-i18n`, `labels.sort`);

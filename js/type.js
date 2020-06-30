@@ -29,7 +29,6 @@ export class Enum {
   static get items() {
     if (this._items === undefined) {
       this._items = [];
-      var thisEnum = this;
     }
     return this._items;
   }
@@ -127,11 +126,11 @@ export class EnumPair extends Enum {
   constructor(member1, member2) {
     super([member1, member2]);
     this._member1 = member1;
-    this._member2  = member2;
+    this._member2 = member2;
   }
 
   get member1() {return this._member1;}
-  get member2()  {return this._member2;}
+  get member2() {return this._member2;}
 
   /**
    * Returns the EnumPair corresponding to the specified mem-

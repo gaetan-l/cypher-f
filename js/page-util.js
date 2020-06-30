@@ -1,4 +1,5 @@
-import TextUtil from "/js/text-util.js";
+import      TextUtil from "/js/text-util.js";
+import * as Type     from "/js/type.js";
 
 `use strict`
 
@@ -229,5 +230,56 @@ export default class PageUtil {
   static async asyncWaitForIt(timeInMs) {
     const delay = ms => new Promise(res => setTimeout(res, ms));
     await delay(timeInMs);
+  }
+}
+
+export class Menu extends Type.Enum {
+  constructor(id, iconJsonName, i18nLabel, leftClick, rightClick) {
+    super([id, iconJsonName, i18nLabel, leftClick, rightClick]);
+    this._id           = id;
+    this._iconJsonName = iconJsonName;
+    this._i18nLabel    = i18nLabel;
+    this._leftClick    = leftClick;
+    this._rightClick   = rightClick;
+  }
+
+  get id()           {return this._id;}
+  get iconJsonName() {return this._iconJsonName;}
+  get i18nLabel()    {return this._i18nLabel;}
+  get leftClick()    {return this._leftClick;}
+  get rightClick()   {return this._rightClick;}
+
+  static async asyncBuild(id) {
+    const icons = await (await fetch(`/json/icons.json`)).json();
+    const ul = document.createElement(`ul`);
+    ul.setAttribute(`id`, id);
+    ul.classList.add(`contextual`, `menu`, `menu-level`, `hidden`);
+
+    for (let i = 0 ; i < this.items.length ; i++) {
+      const li = document.createElement(`li`);
+      li.setAttribute(`id`, this.items[i].id);
+      PageUtil.bindOnClick(li, this.items[i].leftClick);
+      if (this.items[i].rightClick) {
+        PageUtil.bindOnRightClick(li, this.items[i].rightClick);
+      }
+
+      const iconNotifContainer = document.createElement(`div`);
+      iconNotifContainer.classList.add(`icon-notif-container`)
+
+      const icon = document.createElement(`i`);
+      icon.classList.add(`material-icons`, `icon`);
+      icon.innerHTML = TextUtil.getJsonValue(this.items[i]._iconJsonName, icons);
+
+      const label = document.createElement(`label`);
+      label.setAttribute(`data-i18n`, this.items[i].i18nLabel);
+      label.setAttribute(`for`, this.items[i].id);
+
+      iconNotifContainer.appendChild(icon);
+      li.appendChild(iconNotifContainer);
+      li.appendChild(label);
+      ul.appendChild(li);
+    }
+
+    return ul;
   }
 }
