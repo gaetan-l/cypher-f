@@ -1,4 +1,6 @@
 {
+  "change-language": "translate",
+  "show-errors": "format_clear",
   "display-mode": "visibility",
   "display-details": "list",
   "display-polaroid-gallery": "view_module",

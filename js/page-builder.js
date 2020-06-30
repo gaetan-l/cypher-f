@@ -1,9 +1,11 @@
-import PageUtil     from "/js/page-util.js";
-import TextUtil     from "/js/text-util.js";
-import TitleElement from "/js/title-element.js"
-import Translator   from "/js/translator.js";
+import PageUtil, {Menu} from "/js/page-util.js";
+import TextUtil         from "/js/text-util.js";
+import TitleElement     from "/js/title-element.js"
+import Translator       from "/js/translator.js";
 
 `use strict`
+
+class SystemMenu extends Menu {}
 
 /**
  * Helper class used to build a page.
@@ -65,18 +67,17 @@ export default class PageBuilder {
       PageUtil.replaceElementWithHtml(`nav`, htmlMenu);
     }
 
+    await this._asyncDrawSystemMenu();
+
     await this.translator.asyncTranslatePage();
 
-    PageUtil.bindOnClick(`#btn-translate`, this.translator.asyncSwitchLanguage.bind(this.translator));
-
-    PageUtil.bindOnClick(`#btn-menu`,      function() {
-      document.getElementById(`side-panel`).classList.toggle(`clicked`);
+    PageUtil.bindOnClick(`#btn-menu`, function() {
+      document.querySelector(`aside`).classList.toggle(`clicked`);
     })
 
-    PageUtil.bindOnClick(`#btn-errors`,    function() {
-      const errorsCss = document.querySelector("link[href='/css/errors.css']");
-      errorsCss.disabled = !errorsCss.disabled;
-    })
+    PageUtil.bindOnClick(`#btn-system`, function(e) {
+      this.displayCtxMenu(e, `#ctx-system`);
+    }.bind(this));
 
     /*
      * Override default behavior when leaving a page.
@@ -159,6 +160,88 @@ export default class PageBuilder {
     document.head.innerHTML = ``;
     for (let i = 0 ; i < elements.length ; i++) {
       document.head.appendChild(elements[i]);
+    }
+  }
+
+  /**
+   * Draws the system menu and the elements necessary for
+   * the various contextual menus.
+   */
+  async _asyncDrawSystemMenu() {
+    const contextualWrapper = document.createElement(`div`);
+    contextualWrapper.setAttribute(`id`, `contextual-wrapper`);
+    contextualWrapper.classList.add(`hidden`);
+    document.body.appendChild(contextualWrapper);
+  
+    PageUtil.bindOnClick(contextualWrapper, function() {
+      this.displayCtxMenu();
+    }.bind(this));
+
+    new SystemMenu(`system-change-language`, `change-language`, `label.change-language`, function() {
+      const boundAsyncSwitchLanguage = this.translator.asyncSwitchLanguage.bind(this.translator);
+      boundAsyncSwitchLanguage();
+      this.displayCtxMenu();
+    }.bind(this), null);
+
+    new SystemMenu(`system-show-errors`, `show-errors`, `label.show-errors`, function() {
+      const errorsCss = document.querySelector("link[href='/css/errors.css']");
+      errorsCss.disabled = !errorsCss.disabled;
+      if (errorsCss.disabled) {
+        document.getElementById(`system-show-errors`).classList.remove(`active`);
+      }
+      else {
+        document.getElementById(`system-show-errors`).classList.add(`active`);
+      }
+      this.displayCtxMenu();
+    }.bind(this), null);
+    SystemMenu.lock();
+    document.body.appendChild(await SystemMenu.asyncBuild(`ctx-system`));
+  }
+
+  displayCtxMenu(e, elemOrSel) {
+    [...document.getElementsByClassName(`contextual menu`)].forEach(element => element.classList.add(`hidden`));
+
+    if (elemOrSel) {
+      e = e || window.event;
+      const element = e.target || e.srcElement;
+
+      const wWidth  = window.innerWidth;
+      const wHeight = window.innerHeight;
+
+      const bcr = element.getBoundingClientRect();
+      const leftSpace   = bcr.left;
+      const rightSpace  = wWidth - bcr.right;
+      const topSpace    = bcr.top;
+      const bottomSpace = wHeight - bcr.top;
+
+      let [left, right, top, bottom] = [null, null, null, null];
+
+      if (leftSpace > rightSpace) {
+        right = rightSpace;
+      }
+      else {
+        left = bcr.left;
+      }
+
+      if (topSpace > bottomSpace) {
+        bottom = wHeight - bcr.top;
+      }
+      else {
+        top = bcr.bottom;
+      }
+
+      document.getElementById(`contextual-wrapper`).classList.remove(`hidden`);
+      const ctxMenu = PageUtil.getUniqueElement(elemOrSel);
+      const positions = [{left}, {right}, {top}, {bottom}];
+      for (let i = 0 ; i < positions.length ; i++) {
+        const positionName = Object.keys(positions[i])[0];
+        const positionValue = positions[i][positionName];
+        ctxMenu.style.setProperty(positionName, `${positionValue}px` || `auto`);
+      }
+      ctxMenu.classList.remove(`hidden`);
+    }
+    else {
+      document.getElementById(`contextual-wrapper`).classList.add(`hidden`);
     }
   }
 

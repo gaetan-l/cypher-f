@@ -242,15 +242,6 @@ body > footer p {
   font-size: var(--font-size-medium);
 }
 
-body > footer .toolbar {
-  /*
-   * Replace --nb-buttons with the maximum number of but-
-   * tons between left and right toolbar-container.
-   */
-  --nb-buttons: 2;
-  width: calc(var(--nb-buttons) * (var(--button-size) + 2 * var(--button-margin)));
-}
-
 
 
 /*
