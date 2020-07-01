@@ -82,7 +82,7 @@ export default class PageBuilder {
       this.displayCtxMenu(e, `#ctx-system`);
     }.bind(this));
 
-    this.onResizeFuncs.push(this._repositionCtxMenus);
+    this.onResizeFuncs.push(this.displayCtxMenu);
     function onResizeAll() {
       this.onResizeFuncs.forEach(func => {
         const boundFunc = func.bind(this);
@@ -226,7 +226,7 @@ export default class PageBuilder {
    * @param  HTMLElement  elemOrSel  the contextual menu
    */
   displayCtxMenu(e, elemOrSel) {
-    [...document.getElementsByClassName(`contextual menu`)].forEach(element => element.classList.add(`hidden`));
+    [...document.getElementsByClassName(`contextual menu`)].forEach(element => PageUtil.fadeOut(element));
 
     if (elemOrSel) {
       e = e || window.event;
@@ -235,7 +235,7 @@ export default class PageBuilder {
       const ctxMenu = PageUtil.getUniqueElement(elemOrSel);
       ctxMenu.setAttribute(`clicked`, clicked.getAttribute(`id`));
       this._positionCtxMenu(elemOrSel);
-      ctxMenu.classList.remove(`hidden`);
+      PageUtil.fadeIn(ctxMenu);
     }
     else {
       document.getElementById(`contextual-wrapper`).classList.add(`hidden`);
@@ -260,19 +260,29 @@ export default class PageBuilder {
       const marginTop    = parseInt(cs.marginTop.replace(`px`, ``));
       const marginBottom = parseInt(cs.marginBottom.replace(`px`, ``));
 
+      const menuWidth = ctxMenu.getBoundingClientRect().width;
+
       const bcr = clicked.getBoundingClientRect();
-      const leftSpace   = bcr.left;
-      const rightSpace  = wWidth - bcr.right;
+      const leftSpace   = bcr.right;
+      const rightSpace  = wWidth - bcr.left;
       const topSpace    = bcr.top;
-      const bottomSpace = wHeight - bcr.top;
+      const bottomSpace = wHeight - bcr.bottom;
 
       let [left, right, top, bottom] = [null, null, null, null];
 
-      if (leftSpace > rightSpace) {
-        right = rightSpace;
+      /**
+       * If there is enough space to put the menu on the
+       * right, we do it.
+       * Otherwise, if there is enough space to put it on
+       * the left, we do it.
+       * Otherwise, we put it on the right anyway.
+       */
+      console.log(`menuWidth: ${menuWidth}, leftSpace: ${leftSpace}, rightSpace: ${rightSpace}`);
+      if (rightSpace > menuWidth || leftSpace <= menuWidth) {
+        left = bcr.left;
       }
       else {
-        left = bcr.left;
+        right = wWidth - bcr.right;
       }
 
       if (topSpace > bottomSpace) {

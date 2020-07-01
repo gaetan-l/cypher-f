@@ -29,6 +29,17 @@ export default class PageUtil {
     if (uniqueElement) {
       uniqueElement.classList.remove(`faded-out-onload`);
       uniqueElement.classList.add(`faded-in`);
+
+      const excludedIds = [`fullscreen`];
+      const id = uniqueElement.getAttribute(`id`);
+      if (uniqueElement.classList.contains(`height-trick`) && id && !excludedIds.includes(id)) {
+        PageUtil.asyncWaitForIt(250);
+        const height = uniqueElement.getBoundingClientRect().height;
+        const cs = window.getComputedStyle(uniqueElement);
+        const borderTop = parseInt(cs.borderTopWidth.replace(`px`, ``));
+        const borderBottom = parseInt(cs.borderBottomWidth.replace(`px`, ``));
+        uniqueElement.style.setProperty(`height`, `${height - borderTop - borderBottom}px`);
+      }
     }
   }
 
@@ -51,6 +62,10 @@ export default class PageUtil {
     const uniqueElement = PageUtil.getUniqueElement(elemOrSel, ignoreWarning);
     if (uniqueElement) {
       uniqueElement.classList.remove(`faded-in`);
+
+      if (uniqueElement.classList.contains(`height-trick`)) {
+        uniqueElement.style.removeProperty(`height`);
+      }
     }
   }
 
@@ -253,7 +268,7 @@ export class Menu extends Type.Enum {
     const icons = await (await fetch(`/json/icons.json`)).json();
     const ul = document.createElement(`ul`);
     ul.setAttribute(`id`, id);
-    ul.classList.add(`contextual`, `menu`, `menu-level`, `hidden`);
+    ul.classList.add(`contextual`, `menu`, `menu-level`, `fadable`, `faded-out-onload`, `height-trick`);
 
     for (let i = 0 ; i < this.items.length ; i++) {
       const li = document.createElement(`li`);

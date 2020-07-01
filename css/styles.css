@@ -108,11 +108,6 @@ body {
  * ============= 3.  GENERAL STYLES =======================
  * ========================================================
  */
-.faded-out-onload {
-  opacity: 0;
-  transition: opacity 0s;
-}
-
 /*
  * Declare all the "fadable elements" here. Will be faded-
  * out by default.
@@ -122,8 +117,29 @@ body, main, .fadable {
   transition: var(--transition-opacity);
 }
 
+.faded-out-onload {
+  opacity: 0;
+  transition: opacity 0s;
+}
+
 .faded-in {
   opacity: 1;
+}
+
+/*
+ * Height trick (height must be applied after fade-out
+ * finishes)
+ */
+.height-trick {
+ height: 0;
+ overflow: hidden;
+ border: none;
+ transition: var(--transition-opacity), height 0s 0.25s;
+}
+
+.height-trick.faded-in {
+ height: auto;
+ transition: var(--transition-opacity), height 0s 0s;
 }
 
 h1 {
@@ -463,19 +479,12 @@ body > footer .button {
 /*
  * ------------- 8.6 Fullscreen view ----------------------
  */
- /*
-  * Height trick (height must be applied after fade-out
-  * finishes)
-  */
 #fullscreen {
   background-color: black;
-  height: 0;
-  transition: var(--transition-opacity), height 0s 0.25s;
 }
 
 #fullscreen.faded-in {
   height: 100%;
-  transition: var(--transition-opacity), height 0s 0s;
 }
 
 #fullscreen p {
