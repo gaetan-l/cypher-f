@@ -259,7 +259,7 @@ body > footer .button {
 
 #site-title-normal,
 #site-title-shadow {
-  transition: color 0.25s ease-in-out, left 0.25s ease-in-out;
+  transition: all 0.25s ease-in-out;
 }
 
 #site-title-shadow {
@@ -281,7 +281,7 @@ body > footer .button {
 
 #site-subtitle {
   letter-spacing: 3px;
-  transition: letter-spacing 0.25s ease-in-out, left 0.25s ease-in-out;
+  transition: all 0.25s ease-in-out;
 }
 
 
