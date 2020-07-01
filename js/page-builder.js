@@ -83,11 +83,20 @@ export default class PageBuilder {
     }.bind(this));
 
     this.onResizeFuncs.push(this._repositionCtxMenus);
-    window.onresize = function() {
+    function onResizeAll() {
       this.onResizeFuncs.forEach(func => {
         const boundFunc = func.bind(this);
         boundFunc();
       });
+    };
+    window.onresize = function() {
+      const boundOnResizeAll = onResizeAll.bind(this);
+
+      const width   = window.innerWidth;
+      const wHeight = window.innerHeight;
+      boundOnResizeAll();
+      setTimeout(function() {boundOnResizeAll();}, 250);
+
     }.bind(this);
 
     /*
@@ -273,16 +282,13 @@ export default class PageBuilder {
         top = bcr.bottom + marginBottom;
       }
 
-      const log = [];
       const positions = [{left}, {right}, {top}, {bottom}];
       for (let i = 0 ; i < positions.length ; i++) {
         const positionName = Object.keys(positions[i])[0];
         let positionValue = positions[i][positionName];
         positionValue = positionValue ? `${positionValue}px` : `auto`;
         ctxMenu.style.setProperty(positionName, positionValue);
-        log.push(`${positionName}: ${positionValue}`);
       }
-      console.log(log.join(`, `));
     }
   }
 
