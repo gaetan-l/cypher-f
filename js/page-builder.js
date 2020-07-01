@@ -34,7 +34,7 @@ export default class PageBuilder {
     this._templatesPath = templatesPath;
     this._menuPath      = menuPath;
     this._translator    = new Translator();
-    this._onResizeFuncs = [];
+    this._onResizeFuncs = new Set();
   }
 
   get url()           {return this._url;}
@@ -82,9 +82,9 @@ export default class PageBuilder {
       this.displayCtxMenu(e, `#ctx-system`);
     }.bind(this));
 
-    this.onResizeFuncs.push(this.displayCtxMenu);
+    this.onResizeFuncs.add(this.displayCtxMenu);
     function onResizeAll() {
-      this.onResizeFuncs.forEach(func => {
+      [...this.onResizeFuncs].forEach(func => {
         const boundFunc = func.bind(this);
         boundFunc();
       });
@@ -277,7 +277,6 @@ export default class PageBuilder {
        * the left, we do it.
        * Otherwise, we put it on the right anyway.
        */
-      console.log(`menuWidth: ${menuWidth}, leftSpace: ${leftSpace}, rightSpace: ${rightSpace}`);
       if (rightSpace > menuWidth || leftSpace <= menuWidth) {
         left = bcr.left;
       }

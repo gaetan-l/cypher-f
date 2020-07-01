@@ -310,15 +310,6 @@ export default class CollViewBuilder {
       await this._pageBuilder.translator.asyncTranslatePage();
       this._filterCollection(document.getElementById(`inp-filter`).value);
 
-      /*
-       * Counting the columns for details view grid dis-
-       * play.
-       */
-      if (this.currDisplayMode === CollUtil.DisplayMode.STACKED_GALLERY) {
-        this.pageBuilder.onResizeFuncs.push(this._onWindowResize);
-        this._onWindowResize();
-      }
-
       PageUtil.fadeIn(`#display`);
 
       this._redrawUnlock();
@@ -948,6 +939,15 @@ export default class CollViewBuilder {
         allGroups[i].classList.remove(`relevant`);
         allGroups[i].classList.add(`irrelevant`);
       }
+    }
+
+    /*
+     * Counting the columns for details view grid dis-
+     * play.
+     */
+    if (this.currDisplayMode === CollUtil.DisplayMode.STACKED_GALLERY) {
+      this.pageBuilder.onResizeFuncs.add(this._onWindowResize);
+      this._onWindowResize();
     }
   }
 
