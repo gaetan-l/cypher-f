@@ -309,6 +309,16 @@ export default class CollViewBuilder {
 
       await this._pageBuilder.translator.asyncTranslatePage();
       this._filterCollection(document.getElementById(`inp-filter`).value);
+
+      /*
+       * Counting the columns for details view grid dis-
+       * play.
+       */
+      if (this.currDisplayMode === CollUtil.DisplayMode.STACKED_GALLERY) {
+        this.pageBuilder.onResizeFuncs.push(this._onWindowResize);
+        this._onWindowResize();
+      }
+
       PageUtil.fadeIn(`#display`);
 
       this._redrawUnlock();
@@ -828,6 +838,23 @@ export default class CollViewBuilder {
   }
 
   /**
+   * Adds the number of columns displayable in stacked view.
+   */
+  _onWindowResize() {
+    const wrappers = document.querySelectorAll(`.stacked .group.relevant .wrapper`);
+    if (wrappers.length > 0) {
+      let displayWidth = wrappers[0].getBoundingClientRect().width;
+      displayWidth = displayWidth - 2 * parseInt((wrappers[0].currentStyle || window.getComputedStyle(wrappers[0])).padding.replace(`px`, ``));
+      const pictureWidth = document.querySelector(`#display img`).getBoundingClientRect().width;
+      const maxColumns   = Math.floor(displayWidth / pictureWidth);
+      wrappers.forEach(element => {
+        const nbItems = element.parentNode.getAttribute(`nb-items`);
+        element.setAttribute(`style`, `--nb-columns:${Math.min(nbItems, maxColumns)}`);
+      });
+    }
+  }
+
+  /**
    * Adds item information into the HTMLElement in the form
    * of custom attributes and updates the lookup array.
    *
@@ -912,6 +939,7 @@ export default class CollViewBuilder {
     const allGroups = document.querySelectorAll(`.group`);
     for (let i = 0 ; i < allGroups.length ; i++) {
       const relevantContent = allGroups[i].querySelectorAll(`.item:not(.irrelevant)`);
+      allGroups[i].setAttribute(`nb-items`, relevantContent.length);
       if (relevantContent.length > 0) {
         allGroups[i].classList.remove(`irrelevant`);
         allGroups[i].classList.add(`relevant`);

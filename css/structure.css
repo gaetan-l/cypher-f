@@ -498,7 +498,8 @@ body > footer p {
  */
 .stacked .wrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fit, var(--gallery-image-size));
+  /*grid-template-columns: repeat(auto-fit, var(--gallery-image-size));*/
+  grid-template-columns: repeat(var(--nb-columns), var(--gallery-image-size));
   padding: var(--polaroid-frame-margin);
   justify-content: center;
   overflow: hidden;

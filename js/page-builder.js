@@ -34,6 +34,7 @@ export default class PageBuilder {
     this._templatesPath = templatesPath;
     this._menuPath      = menuPath;
     this._translator    = new Translator();
+    this._onResizeFuncs = [];
   }
 
   get url()           {return this._url;}
@@ -42,6 +43,7 @@ export default class PageBuilder {
   get templatesPath() {return this._templatesPath;}
   get menuPath()      {return this._menuPath;}
   get translator()    {return this._translator;}
+  get onResizeFuncs() {return this._onResizeFuncs;}
 
   /**
    * Builds the page.
@@ -73,11 +75,20 @@ export default class PageBuilder {
 
     PageUtil.bindOnClick(`#btn-menu`, function() {
       document.querySelector(`aside`).classList.toggle(`clicked`);
-    })
+      window.dispatchEvent(new Event('resize'));
+    });
 
     PageUtil.bindOnClick(`#btn-system`, function(e) {
       this.displayCtxMenu(e, `#ctx-system`);
     }.bind(this));
+
+    this.onResizeFuncs.push(this._repositionCtxMenus);
+    window.onresize = function() {
+      this.onResizeFuncs.forEach(func => {
+        const boundFunc = func.bind(this);
+        boundFunc();
+      });
+    }.bind(this);
 
     /*
      * Override default behavior when leaving a page.
@@ -198,17 +209,49 @@ export default class PageBuilder {
     document.body.appendChild(await SystemMenu.asyncBuild(`ctx-system`));
   }
 
+  /**
+   * Displays a contextual menu.
+   *
+   * @param  Event        e          the event leading to
+   *                                 the function call
+   * @param  HTMLElement  elemOrSel  the contextual menu
+   */
   displayCtxMenu(e, elemOrSel) {
     [...document.getElementsByClassName(`contextual menu`)].forEach(element => element.classList.add(`hidden`));
 
     if (elemOrSel) {
       e = e || window.event;
-      const element = e.target || e.srcElement;
+      const clicked = e.target || e.srcElement;
+      document.getElementById(`contextual-wrapper`).classList.remove(`hidden`);
+      const ctxMenu = PageUtil.getUniqueElement(elemOrSel);
+      ctxMenu.setAttribute(`clicked`, clicked.getAttribute(`id`));
+      this._positionCtxMenu(elemOrSel);
+      ctxMenu.classList.remove(`hidden`);
+    }
+    else {
+      document.getElementById(`contextual-wrapper`).classList.add(`hidden`);
+    }
+  }
+
+  /**
+   * Positions the contextual menu.
+   *
+   * @access  private
+   * @param   HTMLElement  elemOrSel  the contextual menu
+   */
+  _positionCtxMenu(elemOrSel) {
+    const ctxMenu = PageUtil.getUniqueElement(elemOrSel);
+    if (ctxMenu.hasAttribute(`clicked`)) {
+      const clicked = document.getElementById(ctxMenu.getAttribute(`clicked`));
 
       const wWidth  = window.innerWidth;
       const wHeight = window.innerHeight;
 
-      const bcr = element.getBoundingClientRect();
+      const cs = window.getComputedStyle(clicked);
+      const marginTop    = parseInt(cs.marginTop.replace(`px`, ``));
+      const marginBottom = parseInt(cs.marginBottom.replace(`px`, ``));
+
+      const bcr = clicked.getBoundingClientRect();
       const leftSpace   = bcr.left;
       const rightSpace  = wWidth - bcr.right;
       const topSpace    = bcr.top;
@@ -224,37 +267,44 @@ export default class PageBuilder {
       }
 
       if (topSpace > bottomSpace) {
-        bottom = wHeight - bcr.top;
+        bottom = wHeight - bcr.top + marginTop;
       }
       else {
-        top = bcr.bottom;
+        top = bcr.bottom + marginBottom;
       }
 
-      document.getElementById(`contextual-wrapper`).classList.remove(`hidden`);
-      const ctxMenu = PageUtil.getUniqueElement(elemOrSel);
+      const log = [];
       const positions = [{left}, {right}, {top}, {bottom}];
       for (let i = 0 ; i < positions.length ; i++) {
         const positionName = Object.keys(positions[i])[0];
-        const positionValue = positions[i][positionName];
-        ctxMenu.style.setProperty(positionName, `${positionValue}px` || `auto`);
+        let positionValue = positions[i][positionName];
+        positionValue = positionValue ? `${positionValue}px` : `auto`;
+        ctxMenu.style.setProperty(positionName, positionValue);
+        log.push(`${positionName}: ${positionValue}`);
       }
-      ctxMenu.classList.remove(`hidden`);
-    }
-    else {
-      document.getElementById(`contextual-wrapper`).classList.add(`hidden`);
+      console.log(log.join(`, `));
     }
   }
 
-   /**
-    * Builds a menu with the specified json file.
-    *
-    * Builds an unordered nested list representing the web-
-    * site menu by browsing the specified json file.
-    *
-    * TODO: Currently limited to a list of depth 2, update
-    * code.
-    * @access  private
-    */
+  /**
+   * Repositions all contextual menus.
+   */
+  _repositionCtxMenus() {
+    [...document.getElementsByClassName(`contextual menu`)].forEach(element => this._positionCtxMenu(element));
+  }
+
+
+
+  /**
+   * Builds a menu with the specified json file.
+   *
+   * Builds an unordered nested list representing the web-
+   * site menu by browsing the specified json file.
+   *
+   * TODO: Currently limited to a list of depth 2, update
+   * code.
+   * @access  private
+   */
   async _buildHtmlMenu() {
     const response = await fetch(this.menuPath);
     const json = await response.json();
