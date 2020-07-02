@@ -652,26 +652,30 @@ export default class CollViewBuilder {
        */
       if (stacked) {
         frame.appendChild(img);
+        groupContent.appendChild(frame);
       }
       /*
        * Picture inset box-shadow wrapper.
        * @link https://stackoverflow.com/questions/61961334/css-img-inset-box-shadow-trick-center-vh-anchor-max-height
        */
       else {
+        const wrapper = document.createElement(`div`);
+        wrapper.classList.add(`wrapper`);
+
         const a = document.createElement(`a`);
         a.setAttribute(`href`, `#`);
         a.classList.add(`dummy-link`, `image-shadow`);
+
         a.appendChild(img);
         frame.appendChild(a);
+        wrapper.appendChild(frame);
+        groupContent.appendChild(wrapper);
       }
 
       const thumbSuffix = TextUtil.reverse(`_thumb.`);
       const suffixedName = TextUtil.reverse(TextUtil.reverse(item.fileName).replace(/\./, thumbSuffix));
       img.onload = function() {PageUtil.fadeIn(frame)};
       img.src = this.imgPath + suffixedName;
-
-      groupContent.appendChild(frame);
-
     }
 
     view.appendChild(group);

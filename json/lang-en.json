@@ -9,8 +9,6 @@
   "nav": {
     "main": "Home",
     "favorites": "Favorites",
-    "favorites-media": "Media",
-    "favorites-misc": "Misc",
     "photos": "Photos",
     "interests": "Interests"
   },
@@ -54,7 +52,7 @@
   },
   "content": {
     "index-1": "I created this website as a technical demo of py programming skills. I worked previously as an analyst/developer for 6 years before switching careers, so I hadn't programmed in three years when I started this project. I wanted to see if I was still able to do it and test my expertise. I also took the chance to experiment with languages I had never worked with, namely Javascript and PHP. Last but not least, I wanted to address some issues that had been bothering me for a while: my strong inclination to procrastinate, and my inability to finish a task I started. Let this project be the proof that I can change for the better.",
-    "index-2": "Regarding content, you can find here the <a href='/photos'>pictures I took during my travels and various activities and hobbies</a>, the <a href='/favorites'>various things I like</a>, be it <a href='/favorites/media'>movies, books or music</a> or <a href='/favorites/misc'>anything else</a>, and section a bit more extensive concerning <a href='/interests'>my interests</a>.",
+    "index-2": "Regarding content, you can find here the <a href='/photos'>pictures I took during my travels and various activities and hobbies</a>, the <a href='/favorites'>various things I like</a>, and a section a bit more extensive concerning <a href='/interests'>my interests</a>.",
     "index-3": "Best regards. C."
   }
 }

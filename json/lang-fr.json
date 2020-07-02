@@ -9,8 +9,6 @@
   "nav": {
     "main": "Accueil",
     "favorites": "Favoris",
-    "favorites-media": "Media",
-    "favorites-misc": "Divers",
     "photos": "Photos",
     "interests": "Interêts"
   },
@@ -54,7 +52,7 @@
   },
   "content": {
     "index-1": "J'ai créé ce site comme une sorte de démo technique de mes compétences. J'ai' travaillé précédemment comme analyste/développeur pendant 6 ans avant de changer de voie, je n'avais donc pas programmé depuis trois ans au moment où j'ai réalisé ce projet. J'avais envie de voir si j'en étais toujours capable et de tester mes capacités. J'en ai également profité pour travailler avec des langages que je n'avais jamais réellement manipulés, à savoir Javascript et PHP. Enfin, j'ai également voulu adresser certains problèmes qui m'habitent depuis toujours, à savoir ma forte propention à procrastiner, ainsi que mon incapacité à terminer une tâche lorsque je la commence. Que ce projet soit la preuve que je suis capable de changer et de faire mieux.",
-    "index-2": "En terme de contenu, vous pouver trouver ici les <a href='/photos'>photos que j'ai prises de mes voyages et de mes loisirs</a>, les <a href='/favorites'>diverses choses que j'aimes</a>, qu'il s'agisse de <a href='/favorites/media'>films, livres, musique</a> ou <a href='/favorites/misc'>autres</a>, ainsi qu'une section un peu plus développée concernant <a href='/interests'>mes intérêts</a>.",
+    "index-2": "En terme de contenu, vous pouver trouver ici les <a href='/photos'>photos que j'ai prises de mes voyages et de mes loisirs</a>, les <a href='/favorites'>diverses choses que j'aimes</a>, ainsi qu'une section un peu plus développée concernant <a href='/interests'>mes intérêts</a>.",
     "index-3": "Bonne visite ! C."
   }
 }

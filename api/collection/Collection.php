@@ -11,8 +11,8 @@
   class Collection {
     // Collection names
     const PHOTOS        = "photos";
-    const MEDIA         = "media";
-    const COLLECTIONS   = array(self::PHOTOS, self::MEDIA);
+    const FAVORITES     = "favorites";
+    const COLLECTIONS   = array(self::PHOTOS, self::FAVORITES);
 
     // Attributes
     const COUNTRY       = "country";
@@ -44,7 +44,7 @@
     const REPETITION_PATTERN  = "(?:\(\d+\))?";
     const EXTENSION_PATTERN   = "\.(jpg|png)";
 
-    // MEDIA_FULL_PATTERN     = \[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]\[([a-z]+(?:-[a-z]+)*)\]\[([^\[\]]*)\]\[([a-z]{2})\]\[((?:[a-z]+(?:-[a-z]+)*)?(?:;(?:[a-z]+(?:-[a-z]+)*))*)\]\[((\d{4})(?:\-(\d{4}))?)\]\[([^\[\]]*)\](?:\(\d+\))?\.(jpg|png)
+    // FAVORITES_FULL_PATTERN = \[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]\[([a-z]+(?:-[a-z]+)*)\]\[([^\[\]]*)\]\[([a-z]{2})\]\[((?:[a-z]+(?:-[a-z]+)*)?(?:;(?:[a-z]+(?:-[a-z]+)*))*)\]\[((\d{4})(?:\-(\d{4}))?)\]\[([^\[\]]*)\](?:\(\d+\))?\.(jpg|png)
     // PHOTO_FULL_PATTERN     = \[((19|20)\d\d)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])\]\[((?:[a-z]+(?:-[a-z]+)*)?(?:;(?:[a-z]+(?:-[a-z]+)*))*)\]\[([a-z]{2})\]\[([^\[\]]*)\]\[([^\[\]]*)\](?:\(\d+\))?\.(jpg|png)
 
     /*
@@ -133,7 +133,7 @@
     private function buildParsePattern() {
       $pattern = "";
       switch ($this->name) {
-        case self::MEDIA:
+        case self::FAVORITES:
           $pattern = "/^" . self::DATE_PATTERN . self::SINGLE_TAG_PATTERN . self::FREE_PATTERN . self::COUNTRY_PATTERN . self::TAGLIST_PATTERN . self::YEAR_PATTERN . self::FREE_PATTERN . self::REPETITION_PATTERN . self::EXTENSION_PATTERN . "$/";
           break;
 
@@ -157,7 +157,7 @@
     private function buildExclusionPattern() {
       $pattern = "";
       switch ($this->name) {
-        case self::MEDIA:
+        case self::FAVORITES:
           $pattern = "/\bexcluded\b/";
           break;
 
@@ -193,7 +193,7 @@
       $arrayItem = [];
 
       switch ($this->name) {
-        case self::MEDIA:
+        case self::FAVORITES:
           $arrayItem = array(
             self::FILE_NAME     => $fileName,
             self::DATE          => "$matches[1]-$matches[3]-$matches[4]",
@@ -237,7 +237,7 @@
       $sortableAttributes = [];
 
       switch ($this->name) {
-        case self::MEDIA:
+        case self::FAVORITES:
           $sortableAttributes = array(self::DATE, self::TYPE, self::NAME, self::COUNTRY, self::YEAR);
           break;
 

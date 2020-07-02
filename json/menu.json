@@ -18,18 +18,6 @@
     "material-icon": "bookmark"
   },
   {
-    "parent": "/favorites",
-    "href": "/favorites/media",
-    "data-i18n": "nav.favorites-media",
-    "material-icon": "movie"
-  },
-  {
-    "parent": "/favorites",
-    "href": "/favorites/misc",
-    "data-i18n": "nav.favorites-misc",
-    "material-icon": "casino"
-  },
-  {
     "parent": "",
     "href": "/interests",
     "data-i18n": "nav.interests",

@@ -89,6 +89,7 @@
  * ------------- 1.6 Collections --------------------------
  */
   --polaroid-frame-margin:       calc(  6 * var(--size-1));
+  --polaroid-item-padding:       calc(  2 * var(--size-1));
   --gallery-image-size:          calc( 34 * var(--size-1));
 }
 
@@ -453,21 +454,6 @@ body > footer p {
   z-index: 1;
 }
 
-.image-shadow {
-  display: flex;
-  position: relative;
-  margin: auto;
-}
-
-.image-shadow::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
 /*
  * ------------- 8.3 Polaroid gallery view ----------------
  */
@@ -479,18 +465,42 @@ body > footer p {
   padding: var(--polaroid-frame-margin) 0 0 var(--polaroid-frame-margin);
 }
 
+.polaroid .wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--gallery-image-size) + 2 * var(--polaroid-item-padding) + 2 * var(--border-width));
+  width:  calc(var(--gallery-image-size) + 2 * var(--polaroid-item-padding) + 2 * var(--border-width));
+  margin: 0 var(--polaroid-frame-margin) var(--polaroid-frame-margin) 0;
+}
+
 .polaroid .item {
   display: flex;
-  width: var(--gallery-image-size);
+  /*width: var(--gallery-image-size);
   height: var(--gallery-image-size);
-  margin: 0 var(--polaroid-frame-margin) var(--polaroid-frame-margin) 0;
-  padding: calc(2 * var(--size-1));
+  margin: 0 var(--polaroid-frame-margin) var(--polaroid-frame-margin) 0;*/
+  padding: var(--polaroid-item-padding);
   border-width: var(--border-width);
 }
 
 .polaroid img {
   max-width: var(--gallery-image-size);
   max-height: var(--gallery-image-size);
+}
+
+.image-shadow {
+  display: flex;
+  /*position: relative;*/
+  margin: auto;
+}
+
+.image-shadow::before {
+    content: "";
+    position: absolute;
+    top:    0;
+    bottom: 0;
+    left:   0;
+    right:  0;
 }
 
 /*

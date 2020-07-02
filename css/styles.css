@@ -18,8 +18,7 @@
  * 8.6 Fullscreen view
  * 9.  PAGE-SPECIFIC
  * 9.1 Homepage
- * 9.2 Media
- * 9.3 Interests
+ * 9.2 Interests
  */
 
 
@@ -505,14 +504,7 @@ body > footer .button {
 }
 
 /*
- * ------------- 9.2 Media --------------------------------
- */
-#pge-favs #main-panel {
-  background-image: url('../images/background/media.jpg');
-}
-
-/*
- * ------------- 9.3 Interests ----------------------------
+ * ------------- 9.2 Interests ----------------------------
  */
 #pge-interests #main-panel {
   background-image: url('../images/background/interests.jpg');

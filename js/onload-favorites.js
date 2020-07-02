@@ -6,7 +6,7 @@ import {DisplayMode}   from "/js/coll-util.js";
 `use strict`
 
 const pageBuilder = new PageBuilder(`Cypher`, `https://cypher-f.com`);
-const cvBuilder = new CollViewBuilder(`media`, pageBuilder);
+const cvBuilder = new CollViewBuilder(`favorites`, pageBuilder);
 
 load();
 
