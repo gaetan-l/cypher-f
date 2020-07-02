@@ -4,8 +4,8 @@
  * ========================================================
  * 1.  VARIABLES
  * 2.  DEFAULT VALUES/RESET
- * 3.  GENERAL STYLES
- * 4.  MAIN STRUCTURE
+ * 3.  MAIN STRUCTURE
+ * 4.  GENERAL STYLES
  * 5.  SITE TITLE DIV
  * 6.  MENU
  * 7.  CONTROLS AND NOTIFICATIONS
@@ -104,7 +104,44 @@ body {
 
 /*
  * ========================================================
- * ============= 3.  GENERAL STYLES =======================
+ * ============= 3.  MAIN STRUCTURE =======================
+ * ========================================================
+ */
+#top > aside {
+  border-right-style: solid;
+  border-right-color: rgba(var(--color-neutral-light), 1.0);
+  transition: flex-basis 0.25s ease-in-out;
+}
+
+body > footer {
+  background-color: rgba(var(--color-primary), 1.0);
+}
+
+body > footer p {
+  text-align: center;
+  font-family: var(--font-titles);
+  color: rgba(var(--color-clear), 1.0);
+}
+
+body > footer .button {
+  color: rgba(var(--color-clear), 1.0);
+  transition: all 0.25s ease-in-out;
+}
+
+@media (max-height: 600px) {
+  body > footer .button {
+    color: rgba(var(--color-primary), 1.0);
+    background-color: rgba(var(--color-clear), 1.0);
+    border-color: rgba(var(--color-neutral-light), 1.0);
+    border-style: solid;
+  }
+}
+
+
+
+/*
+ * ========================================================
+ * ============= 4.  GENERAL STYLES =======================
  * ========================================================
  */
 /*
@@ -213,33 +250,6 @@ tbody tr.even td {
 
 /*
  * ========================================================
- * ============= 4.  MAIN STRUCTURE =======================
- * ========================================================
- */
-#top > aside {
-  border-right-style: solid;
-  border-right-color: rgba(var(--color-neutral-light), 1.0);
-  transition: flex-basis 0.25s ease-in-out;
-}
-
-body > footer {
-  background-color: rgba(var(--color-primary), 1.0);
-}
-
-body > footer p {
-  text-align: center;
-  font-family: var(--font-titles);
-  color: rgba(var(--color-clear), 1.0);
-}
-
-body > footer .button {
-  color: rgba(var(--color-clear), 1.0);
-}
-
-
-
-/*
- * ========================================================
  * ============= 5.  SITE TITLE DIV =======================
  * ========================================================
  */
@@ -309,6 +319,7 @@ body > footer .button {
 .menu li::before {
   background-color: transparent;
   background-clip: content-box;
+  transition: all 0.25s ease-in-out;
 }
 
 .menu li:hover::before {

@@ -10,8 +10,8 @@
  * 1.5 Menu
  * 1.6 Collections
  * 2.  DEFAULT VALUES/RESET
- * 3.  GENERAL STYLES
- * 4.  MAIN STRUCTURE
+ * 3.  MAIN STRUCTURE
+ * 4.  GENERAL STYLES
  * 5.  SITE TITLE DIV
  * 6.  MENU
  * 7.  CONTROLS AND NOTIFICATIONS
@@ -39,11 +39,22 @@
 :root {
   --side-panel-width: 100%;
   --side-panel-max-width: calc( 50 * var(--size-1));
+  --site-footer-height: calc(var(--button-size) + 4 * var(--button-margin));
+  --site-footer-padding: var(--button-margin);
+  --menu-item-offset: 0px;
 }
 
-@media (min-width: 601px) and (min-height: 601px) {
+@media (min-width: 601px) {
   :root {
     --side-panel-width: var(--side-panel-max-width);
+  }
+}
+
+@media (max-height: 600px) {
+  :root {
+    --site-footer-height: 0px;
+    --site-footer-padding: 0px;
+    --menu-item-offset:calc(var(--button-size) + 4 * var(--button-margin));
   }
 }
 
@@ -65,11 +76,6 @@
   --tr-height:                   calc( 10 * var(--size-1));
 
 /*
- * ------------- 1.3 Main structure -----------------------
- */
-  --site-footer-height:          calc( 16 * var(--size-1));
-
-/*
  * ------------- 1.4 Site title div -----------------------
  */
   --site-title-height:           calc( 24 * var(--size-1));
@@ -77,8 +83,8 @@
 /*
  * ------------- 1.5 Menu ---------------------------------
  */
-  --menu-item-padding:           calc(  4 * var(--size-1));
   --menu-label-margin-left:      calc(  2 * var(--size-1));
+  --menu-item-highlight:         calc(  4 * var(--size-1));
 
   /*
    * Defalut value, to be overriden in js if needed.
@@ -106,20 +112,116 @@
   font-size: var(--font-size-default);
 }
 
-html, body {
+html {
   height: 100%;
-}
-
-body {
-  overflow: hidden;
-  min-width: calc(66 * var(--size-1));
 }
 
 
 
 /*
  * ========================================================
- * ============= 3.  GENERAL STYLES =======================
+ * ============= 3.  MAIN STRUCTURE =======================
+ * ========================================================
+ */
+body {
+  display: flex;
+  flex-flow: column nowrap;
+
+  height: 100%;
+
+  /*
+   * Prevents "scrollbar flicker" when reducing menu.
+   * Do not hide overflow-y or scroll will be disabled on
+   * mobile.
+   */
+  overflow-x: hidden;
+}
+
+
+
+#top {
+  height: calc(100% - var(--site-footer-height) - 2 * var(--site-footer-padding));
+
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+body > footer {
+  flex: 0 0 var(--site-footer-height);
+
+  padding: var(--site-footer-padding);
+
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+#top > aside {
+  flex: 0 0 calc(var(--side-panel-width));
+  border-right-width: var(--border-width);
+
+  overflow-x: hidden;
+}
+
+#top > aside.clicked {
+  flex-basis: 0;
+  border-right-width: 0;
+}
+
+@media (max-width: 600px) {
+  #top > aside {
+    flex-basis: 0;
+    border-right-width: 0;
+  }
+
+  #top > aside.clicked {
+    flex-basis: calc(var(--side-panel-width));
+  }
+
+  #top > aside.clicked + #main-panel {
+    flex-basis: 0;
+    overflow: hidden;
+  }
+}
+
+#main-panel {
+  flex: 1 0 auto;
+  width: calc(100% - var(--side-panel-width) - var(--border-width));
+
+  display: flex;
+  flex-flow: column nowrap;
+
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  /*overflow: auto;*/
+}
+
+
+
+#collection {
+  height: 100%;
+
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+#collection .toolbar {
+  border-bottom-width: var(--border-width);
+}
+
+#collection #display {
+  overflow: auto;
+}
+
+
+
+/*
+ * ========================================================
+ * ============= 4.  GENERAL STYLES =======================
  * ========================================================
  */
 h1 {
@@ -145,6 +247,10 @@ input {
 
 label + input {
   margin: calc(2 * var(--size-1) - var(--border-width));
+}
+
+body > footer p {
+  font-size: var(--font-size-medium);
 }
 
 .hidden {
@@ -184,63 +290,6 @@ label + input {
 
 .text-paragraph:not(:last-child) {
   margin-bottom: calc(4 * var(--size-1));
-}
-
-
-
-/*
- * ========================================================
- * ============= 4.  MAIN STRUCTURE =======================
- * ========================================================
- */
-#top {
-  display: flex;
-  flex-flow: row nowrap;
-  height: calc(100% - var(--site-footer-height));
-  min-height: var(--site-title-height);
-}
-
-#top > aside {
-  flex: 0 0 var(--side-panel-width);
-  overflow: hidden;
-  border-right-width: var(--border-width);
-}
-
-#top > aside.clicked {
-  flex-basis: 0;
-}
-
-@media (max-width: 600px) {
-  #top > aside {
-    flex-basis: 0;
-    border-right-width: 0;
-  }
-
-  #top > aside.clicked {
-    flex-basis: var(--side-panel-width);
-  }
-}
-
-#main-panel {
-  display: flex;
-  flex: 1 1 auto;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  overflow: auto;
-}
-
-body > footer {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  align-items: center;
-  height: calc(var(--site-footer-height) - 2 * var(--button-margin));
-  padding: var(--button-margin);
-}
-
-body > footer p {
-  font-size: var(--font-size-medium);
 }
 
 
@@ -334,14 +383,18 @@ body > footer p {
   display: flex;
   white-space: nowrap;
   line-height: calc(10 * var(--size-1));
-  padding: 0 var(--menu-item-padding) 0 0;
+  padding: 0 var(--menu-item-highlight) 0 0;
   border-bottom-width: var(--border-width);
 }
 
 .menu li::before {
   content: "";
-  width: calc(0.5 * var(--menu-item-padding));
-  padding-right: calc((var(--level) + 0.5) * var(--menu-item-padding));
+  width: calc(0.5 * var(--menu-item-highlight));
+  padding-right: calc((var(--level) + 1) * var(--menu-item-highlight));
+}
+
+nav .menu li::before {
+  padding-right: calc((var(--level) + 1) * var(--menu-item-highlight) + var(--menu-item-offset));
 }
 
 .menu label {
@@ -412,6 +465,31 @@ body > footer p {
   left: 0;
 }
 
+body > footer .toolbar {
+  position: fixed;
+  bottom: calc(2 * var(--button-margin));
+}
+
+body > footer .toolbar:first-child {
+  left: calc(2 * var(--button-margin));
+}
+
+body > footer .toolbar:last-child {
+  right: calc(2 * var(--button-margin));
+}
+
+@media (max-height: 600px) {
+  body > footer {
+    overflow: hidden;
+  }
+
+  body > footer .button {
+    padding: calc(0.5 * var(--button-margin));
+    border-width: calc(0.5 * var(--button-margin));
+    border-radius: calc(var(--button-size) + 2 * var(--button-margin));
+  }
+}
+
 
 
 /*
@@ -420,22 +498,6 @@ body > footer p {
  * ========================================================
  * ------------- 8.1 General ------------------------------
  */
-#collection {
-  display: flex;
-  flex-flow: column nowrap;
-  height: 100%;
-  width: 100%;
-}
-
-#collection .toolbar {
-  border-bottom-width: var(--border-width);
-}
-
-#collection #display {
-  height: 100%;
-  overflow-y: scroll;
-}
-
 .irrelevant {
   display: none !important;
 }
@@ -462,7 +524,7 @@ body > footer p {
   flex-flow: row wrap;
   justify-content: center;
   align-items: flex-start;
-  padding: var(--polaroid-frame-margin) 0 0 var(--polaroid-frame-margin);
+  padding: var(--polaroid-frame-margin);
 }
 
 .polaroid .wrapper {
@@ -471,7 +533,7 @@ body > footer p {
   justify-content: center;
   height: calc(var(--gallery-image-size) + 2 * var(--polaroid-item-padding) + 2 * var(--border-width));
   width:  calc(var(--gallery-image-size) + 2 * var(--polaroid-item-padding) + 2 * var(--border-width));
-  margin: 0 var(--polaroid-frame-margin) var(--polaroid-frame-margin) 0;
+  margin: calc(0.5 * var(--polaroid-frame-margin));
 }
 
 .polaroid .item {
@@ -512,7 +574,7 @@ body > footer p {
   grid-template-columns: repeat(var(--nb-columns), var(--gallery-image-size));
   padding: var(--polaroid-frame-margin);
   justify-content: center;
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 
 .stacked .group .content {
@@ -533,10 +595,6 @@ body > footer p {
 /*
  * ------------- 8.5 Details view -------------------------
  */
-.details table {
-  min-width: 100%;
-}
-
 .details th {
   position: sticky;
 }
