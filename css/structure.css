@@ -50,7 +50,7 @@
   }
 }
 
-@media (max-height: 600px) {
+@media (max-height: 500px) {
   :root {
     --site-footer-height: 0px;
     --site-footer-padding: 0px;
@@ -139,6 +139,9 @@ body {
 
 
 
+/*
+ * 3.1 body
+ */
 #top {
   height: calc(100% - var(--site-footer-height) - 2 * var(--site-footer-padding));
 
@@ -148,7 +151,6 @@ body {
 
 body > footer {
   flex: 0 0 var(--site-footer-height);
-
   padding: var(--site-footer-padding);
 
   display: flex;
@@ -159,29 +161,34 @@ body > footer {
 
 
 
-#top > aside {
+/*
+ * 3.1.1 body #top
+ */
+#top aside {
   flex: 0 0 calc(var(--side-panel-width));
   border-right-width: var(--border-width);
+  overflow: hidden;
 
-  overflow-x: hidden;
+  display: flex;
+  flex-flow: column nowrap;
 }
 
-#top > aside.clicked {
+#top aside.clicked {
   flex-basis: 0;
   border-right-width: 0;
 }
 
 @media (max-width: 600px) {
-  #top > aside {
+  #top aside {
     flex-basis: 0;
     border-right-width: 0;
   }
 
-  #top > aside.clicked {
+  #top aside.clicked {
     flex-basis: calc(var(--side-panel-width));
   }
 
-  #top > aside.clicked + #main-panel {
+  #top aside.clicked + #main-panel {
     flex-basis: 0;
     overflow: hidden;
   }
@@ -197,11 +204,33 @@ body > footer {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  /*overflow: auto;*/
 }
 
 
 
+/*
+ * 3.1.1.1 body #top aside
+ */
+@media (max-height: 400px) {
+  #site-title {
+    display: none;
+  }
+}
+
+#site-title-frame {
+  flex: 0 0 auto;
+  height: var(--site-title-height);
+}
+
+#top aside nav {
+  overflow-y: auto;
+}
+
+
+
+/*
+ * 3.1.1.2 body #top #main-panel
+ */
 #collection {
   height: 100%;
 
@@ -211,6 +240,12 @@ body > footer {
 
 #collection .toolbar {
   border-bottom-width: var(--border-width);
+}
+
+@media (max-height: 500px) {
+  #collection .toolbar {
+    flex-flow: row nowrap;      
+  }
 }
 
 #collection #display {
@@ -335,28 +370,28 @@ body > footer p {
 }
 
 @media (min-width: 601px) {
-  #top > aside.clicked #site-title-normal,
-  #top > aside.clicked #site-title-shadow,
-  #top > aside.clicked #site-subtitle {
+  #top aside.clicked #site-title-normal,
+  #top aside.clicked #site-title-shadow,
+  #top aside.clicked #site-subtitle {
     width: var(--side-panel-max-width);
     left: calc(-1 * var(--side-panel-max-width));
   }
 }
 
 @media (max-width: 600px) {
-  #top > aside:not(.clicked) #site-title-normal,
-  #top > aside:not(.clicked) #site-title-shadow,
-  #top > aside:not(.clicked) #site-subtitle {
+  #top aside:not(.clicked) #site-title-normal,
+  #top aside:not(.clicked) #site-title-shadow,
+  #top aside:not(.clicked) #site-subtitle {
     width: var(--side-panel-max-width);
     left: calc(-1 * var(--side-panel-max-width));
   }
 
-  #top > aside.clicked #site-title-normal,
-  #top > aside.clicked #site-title-shadow {
+  #top aside.clicked #site-title-normal,
+  #top aside.clicked #site-title-shadow {
     left: 0;
   }
 
-  #top > aside.clicked #site-subtitle {
+  #top aside.clicked #site-subtitle {
     left: calc(0.5 * var(--side-panel-width))
   }
 }
@@ -468,6 +503,7 @@ nav .menu li::before {
 body > footer .toolbar {
   position: fixed;
   bottom: calc(2 * var(--button-margin));
+  z-index: 1;
 }
 
 body > footer .toolbar:first-child {
@@ -478,7 +514,7 @@ body > footer .toolbar:last-child {
   right: calc(2 * var(--button-margin));
 }
 
-@media (max-height: 600px) {
+@media (max-height: 500px) {
   body > footer {
     overflow: hidden;
   }
@@ -516,6 +552,13 @@ body > footer .toolbar:last-child {
   z-index: 1;
 }
 
+@media (max-height: 500px) {
+  .polaroid h1,
+  .stacked  h1 {
+    line-height: calc(10 * var(--size-1));
+  }
+}
+
 /*
  * ------------- 8.3 Polaroid gallery view ----------------
  */
@@ -538,9 +581,6 @@ body > footer .toolbar:last-child {
 
 .polaroid .item {
   display: flex;
-  /*width: var(--gallery-image-size);
-  height: var(--gallery-image-size);
-  margin: 0 var(--polaroid-frame-margin) var(--polaroid-frame-margin) 0;*/
   padding: var(--polaroid-item-padding);
   border-width: var(--border-width);
 }
@@ -552,7 +592,6 @@ body > footer .toolbar:last-child {
 
 .image-shadow {
   display: flex;
-  /*position: relative;*/
   margin: auto;
 }
 
@@ -570,11 +609,9 @@ body > footer .toolbar:last-child {
  */
 .stacked .wrapper {
   display: grid;
-  /*grid-template-columns: repeat(auto-fit, var(--gallery-image-size));*/
   grid-template-columns: repeat(var(--nb-columns), var(--gallery-image-size));
   padding: var(--polaroid-frame-margin);
   justify-content: center;
-  /*overflow: hidden;*/
 }
 
 .stacked .group .content {

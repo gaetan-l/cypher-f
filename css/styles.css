@@ -128,7 +128,7 @@ body > footer .button {
   transition: all 0.25s ease-in-out;
 }
 
-@media (max-height: 600px) {
+@media (max-height: 500px) {
   body > footer .button {
     color: rgba(var(--color-primary), 1.0);
     background-color: rgba(var(--color-clear), 1.0);
