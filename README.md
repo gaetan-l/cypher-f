@@ -5,17 +5,18 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 ## ToDo list
 
 ### Content
-- *js/page-builder.js*: Add **parameters interpretation** in galleries
-- *js/collection-view-builder.js*: Add **icon for cancelled and watchlist**
-- ~~*js/collection-view-builder.js*: Display bug in stacked gallery mode **when entering a date filter**, ie.: 2020-08-30 (the number of column is wrong)~~
-- ~~*js/collection-view-builder.js*: **column order**~~
 - Add **windows-install section** with programs to install on a fresh Windows install, grouped by type, and an interface to select which ones to **download in one click**
 - Add a **links section** with my favorite web links and an inteface to **select and export links** in Chrome and Firefox format
 - ~~*json/menu.json*: Rename Travels to **photos** or something similar~~
 - ~~*json/menu.json*: Add **favorite** item with dedicated gallery~~
 - *json/menu.json*: Add ***Tears in Rain* Universe** item with a link to future dedicated subdomain
 
-### Ergonomy
+### Ergonomy & User Experience
+- ~~*js/page-builder.js*: Add **parameters interpretation** in galleries~~
+- *js/collection-view-builder.js*: Add **icon for cancelled and watchlist**
+- ~~*js/collection-view-builder.js*: Display bug in stacked gallery mode: **number of column is wrong when entering a date filter**~~
+- ~~*js/collection-view-builder.js*: Display bug in polaroid gallery mode: **wrapper not hidden when entering a filter**~~
+- ~~*js/collection-view-builder.js*: **column order**~~
 - ~~*js/page-builder.js*: **Collapsable side menu**~~
 - ~~*css/structure.css, css/styles.css*: Improved **responsive design**~~
 

@@ -1,7 +1,7 @@
 import * as Type from "/js/type.js";
 
 `use strict`
-export const FAVORITES          = `favorites`;
+export const FAVORITES      = `favorites`;
 export const PHOTOS         = `photos`;
 
 export const COUNTRY        = `country`;
@@ -15,6 +15,24 @@ export const READABLE_DATE  = `readableDate`;
 export const TAGS           = `tags`;
 export const TYPE           = `type`;
 export const YEAR           = `year`;
+
+/**
+ * Specifies the different attributes of a collection
+ * item.
+ */
+export class Attribute extends Type.Enum {}
+Attribute.COUNTRY       = new Attribute(COUNTRY);
+Attribute.DATE          = new Attribute(DATE);
+Attribute.DESCRIPTION   = new Attribute(DESCRIPTION);
+Attribute.EXTENSION     = new Attribute(EXTENSION);
+Attribute.FILE_NAME     = new Attribute(FILE_NAME);
+Attribute.LOCATION      = new Attribute(LOCATION);
+Attribute.NAME          = new Attribute(NAME);
+Attribute.READABLE_DATE = new Attribute(READABLE_DATE);
+Attribute.TAGS          = new Attribute(TAGS);
+Attribute.TYPE          = new Attribute(TYPE);
+Attribute.YEAR          = new Attribute(YEAR);
+Attribute.lock();
 
 /**
  * Specifies the different display modes of a collection.

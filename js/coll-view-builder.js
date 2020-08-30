@@ -66,7 +66,48 @@ export default class CollViewBuilder {
      */
     this._needsTranslation    = [CollUtil.COUNTRY, CollUtil.TAGS, CollUtil.TYPE];
 
-    this._currDateDirection   = CollUtil.Direction.ASC;
+
+
+    
+    let getParametersRaw = location.search.substr(1).split("&");
+    let getParameters = [];
+    /*
+     * Using `itemFilter` instead of `filter` cause the
+     * former is a function in the array prototype.
+     */
+    let validKeys = [`displayMode`, `sortingAttribute`, `sortingDirection`, `grouping`, `dateDirection`, `itemFilter`];
+    for (let i = 0 ; i < getParametersRaw.length ; i++) {
+      let keyValue = getParametersRaw[i].split("=");
+      if (keyValue.length = 2) {
+        let key   = keyValue[0];
+        let value = keyValue[1];
+
+        if (validKeys.includes(key)) {
+          getParameters[key] = value;
+        }
+      }
+    }
+
+    /*
+     * Initializing display mode, sorting and filtering
+     * with default values.
+     */
+    this._currDisplayMode      = CollUtil.DisplayMode.POLAROID_GALLERY;
+    this._currSortingAttribute = CollUtil.DATE;
+    this._currSortingDirection = CollUtil.Direction.DESC;
+    this._currGrouping         = CollUtil.Grouping.NOT_GROUPED;
+    this._currDateDirection    = CollUtil.Direction.ASC;
+
+    /*
+     * Updating display mode, sorting and filtering with
+     * GET parameters if possible.
+     */
+    try {this._currDisplayMode      = CollUtil.DisplayMode.from(getParameters[`displayMode`     ]);} catch {}
+    try {this._currSortingAttribute = CollUtil.Attribute  .from(getParameters[`sortingAttribute`]);} catch {}
+    try {this._currSortingDirection = CollUtil.Direction  .from(getParameters[`sortingDirection`]);} catch {}
+    try {this._currGrouping         = CollUtil.Grouping   .from(getParameters[`grouping`        ]);} catch {}
+    try {this._currDateDirection    = CollUtil.Direction  .from(getParameters[`dateDirection`   ]);} catch {}
+    this._currFilter = getParameters[`itemFilter`] ?? "";
   }
 
   get name()                  {return this._name;}
@@ -93,6 +134,7 @@ export default class CollViewBuilder {
   get currSortingDirection()  {return this._currSortingDirection;}
   get currGrouping()          {return this._currGrouping;}
   get currDateDirection()     {return this._currDateDirection;}
+  get currFilter()            {return this._currFilter;}
 
   _redrawLock()   {this._redrawLocked = true;}
   _redrawUnlock() {this._redrawLocked = false;}
@@ -105,6 +147,7 @@ export default class CollViewBuilder {
   set currSortingDirection(currSortingDirection) {this._currSortingDirection = currSortingDirection;}
   set currGrouping        (currGrouping)         {this._currGrouping         = currGrouping;}
   set currDateDirection   (currDateDirection)    {this._currDateDirection    = currDateDirection;}
+  set currFilter          (currFilter)           {this._currFilter           = currFilter;}
 
   /**
    * Returns the collection associated with this
@@ -163,17 +206,17 @@ export default class CollViewBuilder {
    * @param  Direction    dateDirection     the chronologi-
    *                                        cal sorting
    */
-  async asyncDrawAll(container, displayMode = CollUtil.DisplayMode.POLAROID_GALLERY, sortingAttribute, sortingDirection, grouping, dateDirection) {
-    const dm = displayMode;
+  async asyncDrawAll(container, displayMode, sortingAttribute, sortingDirection, grouping, dateDirection) {
     /*
      * Initializes the collection before anything is done.
      */
     await this._asyncGetCollection();
 
-    this.currDisplayMode      = displayMode;
-
     await this._asyncDrawToolbarView(container);
+    document.getElementById(`inp-filter`).value = this.currFilter;
+
     await this._asyncRedraw(container, displayMode, sortingAttribute, sortingDirection, grouping, dateDirection);
+
     PageUtil.fadeIn(`#main-panel`);
   }
 
@@ -200,37 +243,47 @@ export default class CollViewBuilder {
    * @param   Direction    dateDirection     the chronologi-
    *                                         cal sorting
    */
-  async _asyncRedraw(container,
-                     displayMode =      CollUtil.DisplayMode.POLAROID_GALLERY,
-                     sortingAttribute = CollUtil.DATE,
-                     sortingDirection = CollUtil.Direction.ASC,
-                     grouping =         CollUtil.Grouping.NOT_GROUPED,
-                     dateDirection =    CollUtil.Direction.ASC) {
+  async _asyncRedraw(container, displayMode, sortingAttribute, sortingDirection, grouping, dateDirection) {
 
     if (!this.redrawLocked) {
       this._redrawLock();
 
-      this.currDisplayMode      = displayMode;
-      this.currSortingAttribute = sortingAttribute;
-      this.currSortingDirection = sortingDirection;
-      this.currGrouping         = grouping;
-      this.currDateDirection    = dateDirection;
-
       container = PageUtil.getUniqueElement(container);
-      sortingAttribute = this.sortableAttributes.includes(sortingAttribute) ? sortingAttribute : CollUtil.DATE;
-      dateDirection = (sortingAttribute === CollUtil.DATE ? sortingDirection : dateDirection);
+
+      if (displayMode) {
+        this.currDisplayMode = displayMode;
+      }
+
+      if (sortingAttribute && this.sortableAttributes.includes(sortingAttribute)) {
+        this.currSortingAttribute = sortingAttribute;
+      }
+
+      if (sortingDirection) {
+        this.currSortingDirection = sortingDirection;
+      }
+
+      if (grouping) {
+        this.currGrouping = grouping;
+      }
+
+      if (this.currSortingAttribute === CollUtil.DATE) {
+        this.currDateDirection = this.currSortingDirection;
+      }
+      else if (dateDirection) {
+        this.currDateDirection = dateDirection;
+      }
 
       /*
        * Displaying contextual menus, icons and notifica-
        * tions
        */
       document.querySelectorAll(`#ctx-display li`).forEach(element => element.classList.remove(`active`));
-      document.getElementById(`display-${displayMode.value}`).classList.add(`active`);
-      document.getElementById(`btn-display-mode`).innerHTML = TextUtil.getJsonValue(`display-${displayMode.value}`, await this._asyncGetIcons());
+      document.getElementById(`display-${this.currDisplayMode.value}`).classList.add(`active`);
+      document.getElementById(`btn-display-mode`).innerHTML = TextUtil.getJsonValue(`display-${this.currDisplayMode.value}`, await this._asyncGetIcons());
 
       document.querySelectorAll(`#ctx-sort li`).forEach(element => element.classList.remove(`active`));
-      document.getElementById(`sort-${sortingAttribute}`).classList.add(`active`);
-      document.getElementById(`btn-sort`).innerHTML = TextUtil.getJsonValue(`sort-${sortingAttribute}`, await this._asyncGetIcons());
+      document.getElementById(`sort-${this.currSortingAttribute}`).classList.add(`active`);
+      document.getElementById(`btn-sort`).innerHTML = TextUtil.getJsonValue(`sort-${this.currSortingAttribute}`, await this._asyncGetIcons());
 
       const notifs = document.getElementsByClassName(`notification-sort`);
       Array.from(notifs).forEach((element) => {
@@ -246,16 +299,16 @@ export default class CollViewBuilder {
       if (!primaryNotif) {
         primaryNotif = document.createElement(`i`);
         primaryNotif.setAttribute(`id`, `notification-sort-primary`);
-        primaryNotif.classList.add(`material-icons`, `fadable`, `notification`, `notification-sort`, `sort-${sortingAttribute}`);
+        primaryNotif.classList.add(`material-icons`, `fadable`, `notification`, `notification-sort`, `sort-${this.currSortingAttribute}`);
       }
       if (!primaryNotifToolbar) {
         primaryNotifToolbar = primaryNotif.cloneNode(true);
         primaryNotifToolbar.setAttribute(`id`, `notification-sort-primary-toolbar`);
       }
   
-      primaryNotif.innerHTML = TextUtil.getJsonValue(`notif-${sortingDirection.value}-${grouping.value}`, await this._asyncGetIcons());
+      primaryNotif.innerHTML = TextUtil.getJsonValue(`notif-${this.currSortingDirection.value}-${this.currGrouping.value}`, await this._asyncGetIcons());
       primaryNotifToolbar.innerHTML = primaryNotif.innerHTML;
-      document.querySelector(`#sort-${sortingAttribute} i`).parentNode.appendChild(primaryNotif);
+      document.querySelector(`#sort-${this.currSortingAttribute} i`).parentNode.appendChild(primaryNotif);
       document.getElementById(`btn-sort`).parentNode.appendChild(primaryNotifToolbar);
   
       /*
@@ -269,7 +322,7 @@ export default class CollViewBuilder {
        * Same treatment with the secondary notification. Only
        * displayed if it is descending.
        */
-      if((sortingAttribute !== CollUtil.DATE) && (dateDirection === CollUtil.Direction.DESC)) {
+      if((this.currSortingAttribute !== CollUtil.DATE) && (this.currDateDirection === CollUtil.Direction.DESC)) {
         let secondaryNotif = document.getElementById(`notification-sort-secondary`);
         if (!secondaryNotif) {
           secondaryNotif = document.createElement(`i`);
@@ -294,16 +347,16 @@ export default class CollViewBuilder {
       }
 
       await this._asyncGetCollection();
-      await this._asyncSort(sortingAttribute, sortingDirection, grouping, dateDirection);
+      await this._asyncSort(this.currSortingAttribute, this.currSortingDirection, this.currGrouping, this.currDateDirection);
 
-      switch (displayMode) {
+      switch (this.currDisplayMode) {
         case CollUtil.DisplayMode.POLAROID_GALLERY:
         case CollUtil.DisplayMode.STACKED_GALLERY:
-          await this._asyncDrawGalleryView(container, grouping);
+          await this._asyncDrawGalleryView(container, this.currGrouping);
           break;
 
         case CollUtil.DisplayMode.DETAILS:
-          await this._asyncDrawDetailsView(container, grouping);
+          await this._asyncDrawDetailsView(container, this.currGrouping);
           break;
       }
 
@@ -652,25 +705,30 @@ export default class CollViewBuilder {
        */
       if (stacked) {
         frame.appendChild(img);
-        groupContent.appendChild(frame);
+        // groupContent.appendChild(frame);
       }
       /*
        * Picture inset box-shadow wrapper.
        * @link https://stackoverflow.com/questions/61961334/css-img-inset-box-shadow-trick-center-vh-anchor-max-height
        */
       else {
-        const wrapper = document.createElement(`div`);
-        wrapper.classList.add(`wrapper`);
+        // const wrapper = document.createElement(`div`);
+        // wrapper.classList.add(`wrapper`);
+        const wrapped = document.createElement(`div`);
+        wrapped.classList.add(`wrapped`);
 
         const a = document.createElement(`a`);
         a.setAttribute(`href`, `#`);
         a.classList.add(`dummy-link`, `image-shadow`);
 
         a.appendChild(img);
-        frame.appendChild(a);
-        wrapper.appendChild(frame);
-        groupContent.appendChild(wrapper);
+        // frame.appendChild(a);
+        wrapped.appendChild(a);
+        // wrapper.appendChild(frame);
+        frame.appendChild(wrapped);
+        // groupContent.appendChild(wrapper);
       }
+      groupContent.appendChild(frame);
 
       const thumbSuffix = TextUtil.reverse(`_thumb.`);
       const suffixedName = TextUtil.reverse(TextUtil.reverse(item.fileName).replace(/\./, thumbSuffix));
@@ -909,8 +967,11 @@ export default class CollViewBuilder {
    */
   _filterCollection(filter) {
     filter = TextUtil.flattenString(filter);
-    const allElements = document.querySelectorAll(`.item`);
-    const selector = this.lookupAttributes.map(attribute => `.item[${attribute}*="${filter}"]`).join(`, `);
+    let selector = `.item`;
+    const allElements = document.querySelectorAll(selector);
+    if ((filter != "") && (this.lookupAttributes.length > 0)) {
+      selector = this.lookupAttributes.map(attribute => `.item[${attribute}*="${filter}"]`).join(`, `);
+    }
     const relevantElements = Array.from(document.querySelectorAll(selector));
 
     let actualIndex = 0;

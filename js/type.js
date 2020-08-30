@@ -116,6 +116,22 @@ export class Enum {
   toString() {
     return this.value;
   }
+
+  /**
+   * Returns the Enum corresponding to the specified string.
+   *
+   * @param   Object  value  of the enum
+   * @return  Enum           the corresponding Enum
+   */  
+  static from(value) {
+    const index = this.items.map(item => item.value.toString()).indexOf(value.toString());
+    if (index > -1) {
+      return this.items[index];
+    }
+    else {
+      throw `Tried to find ${this.name} with value=${value} but doesn't exist, existing values are ${this.items.map(item => item.value.toString())}.`;
+    }
+  }
 }
 
 /**
@@ -136,10 +152,10 @@ export class EnumPair extends Enum {
    * Returns the EnumPair corresponding to the specified mem-
    * bers.
    *
-   * @param   member1   member1  of the pair
-   * @param   member2   member2  of the pair
-   * @return  EnumPair           the EnumPair correspon-
-   *                             ding to these members
+   * @param   Object   member1  of the pair
+   * @param   Object   member2  of the pair
+   * @return  EnumPair          the EnumPair correspon-
+   *                            ding to these members
    */  
   static from(member1, member2) {
     const index = this.items.map(item => [item.member1.toString(), item.member2.toString()].toString()).indexOf([member1.toString(), member2.toString()].toString());
