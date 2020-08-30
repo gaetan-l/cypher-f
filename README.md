@@ -5,7 +5,7 @@ Personnal website displaying travels, hobbies, favorite lists, etc.
 ## ToDo list
 
 ### Content
-- Display bug in stacked gallery mode **when entering a date filter**, ie.: 2020-08-30 (the number of column is wrong)
+- ~~*js/collection-view-builder.js*: Display bug in stacked gallery mode **when entering a date filter**, ie.: 2020-08-30 (the number of column is wrong)~~
 - ~~*js/collection-view-builder.js*: **column order**~~
 - Add **windows-install section** with programs to install on a fresh Windows install, grouped by type, and an interface to select which ones to **download in one click**
 - Add a **links section** with my favorite web links and an inteface to **select and export links** in Chrome and Firefox format

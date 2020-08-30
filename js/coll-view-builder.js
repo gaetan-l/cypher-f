@@ -840,7 +840,7 @@ export default class CollViewBuilder {
     if (wrappers.length > 0) {
       let displayWidth = wrappers[0].getBoundingClientRect().width;
       displayWidth = displayWidth - 2 * parseInt((wrappers[0].currentStyle || window.getComputedStyle(wrappers[0])).padding.replace(`px`, ``));
-      const pictureWidth = document.querySelector(`#display img`).getBoundingClientRect().width;
+      const pictureWidth = document.querySelector(`#display .item.relevant img`).getBoundingClientRect().width;
       const maxColumns   = Math.floor(displayWidth / pictureWidth);
       wrappers.forEach(element => {
         const nbItems = element.parentNode.getAttribute(`nb-items`);
