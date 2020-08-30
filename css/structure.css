@@ -646,6 +646,10 @@ body > footer .toolbar:last-child {
   top: var(--tr-height);
 }
 
+.details table {
+  min-width: 100%;
+}
+
 /*
  * ------------- 8.6 Fullscreen view ----------------------
  */
