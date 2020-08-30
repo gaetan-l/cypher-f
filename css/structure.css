@@ -578,13 +578,13 @@ body > footer .toolbar:last-child {
   height: calc(var(--gallery-image-size) + 2 * var(--polaroid-item-padding) + 2 * var(--border-width));
   width:  calc(var(--gallery-image-size) + 2 * var(--polaroid-item-padding) + 2 * var(--border-width));
   margin: calc(0.5 * var(--polaroid-frame-margin));
-  border-width: var(--border-width);
 }
 
 /* .polaroid .item { */
 .polaroid .wrapped {
   display: flex;
   padding: var(--polaroid-item-padding);
+  border-width: var(--border-width);
 }
 
 .polaroid img {

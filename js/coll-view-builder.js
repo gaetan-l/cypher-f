@@ -65,49 +65,6 @@ export default class CollViewBuilder {
      * translated.
      */
     this._needsTranslation    = [CollUtil.COUNTRY, CollUtil.TAGS, CollUtil.TYPE];
-
-
-
-    
-    let getParametersRaw = location.search.substr(1).split("&");
-    let getParameters = [];
-    /*
-     * Using `itemFilter` instead of `filter` cause the
-     * former is a function in the array prototype.
-     */
-    let validKeys = [`displayMode`, `sortingAttribute`, `sortingDirection`, `grouping`, `dateDirection`, `itemFilter`];
-    for (let i = 0 ; i < getParametersRaw.length ; i++) {
-      let keyValue = getParametersRaw[i].split("=");
-      if (keyValue.length = 2) {
-        let key   = keyValue[0];
-        let value = keyValue[1];
-
-        if (validKeys.includes(key)) {
-          getParameters[key] = value;
-        }
-      }
-    }
-
-    /*
-     * Initializing display mode, sorting and filtering
-     * with default values.
-     */
-    this._currDisplayMode      = CollUtil.DisplayMode.POLAROID_GALLERY;
-    this._currSortingAttribute = CollUtil.DATE;
-    this._currSortingDirection = CollUtil.Direction.DESC;
-    this._currGrouping         = CollUtil.Grouping.NOT_GROUPED;
-    this._currDateDirection    = CollUtil.Direction.ASC;
-
-    /*
-     * Updating display mode, sorting and filtering with
-     * GET parameters if possible.
-     */
-    try {this._currDisplayMode      = CollUtil.DisplayMode.from(getParameters[`displayMode`     ]);} catch {}
-    try {this._currSortingAttribute = CollUtil.Attribute  .from(getParameters[`sortingAttribute`]);} catch {}
-    try {this._currSortingDirection = CollUtil.Direction  .from(getParameters[`sortingDirection`]);} catch {}
-    try {this._currGrouping         = CollUtil.Grouping   .from(getParameters[`grouping`        ]);} catch {}
-    try {this._currDateDirection    = CollUtil.Direction  .from(getParameters[`dateDirection`   ]);} catch {}
-    this._currFilter = getParameters[`itemFilter`] ?? "";
   }
 
   get name()                  {return this._name;}
@@ -205,8 +162,53 @@ export default class CollViewBuilder {
    *                                        grouped or not
    * @param  Direction    dateDirection     the chronologi-
    *                                        cal sorting
+   * @param  String       itemFilter        string to fil-
+   *                                        ter the results
    */
-  async asyncDrawAll(container, displayMode, sortingAttribute, sortingDirection, grouping, dateDirection) {
+  async asyncDrawAll(container, displayMode, sortingAttribute, sortingDirection, grouping, dateDirection, itemFilter) {
+    
+    /*
+     * Initializing display mode, sorting and filtering
+     * with the values passed to asyncDrawAll or default
+     * values.
+     */
+    this._currDisplayMode      = displayMode      ?? CollUtil.DisplayMode.DETAILS;
+    this._currSortingAttribute = sortingAttribute ?? CollUtil.DATE;
+    this._currSortingDirection = sortingDirection ?? CollUtil.Direction.DESC;
+    this._currGrouping         = grouping         ?? CollUtil.Grouping.NOT_GROUPED;
+    this._currDateDirection    = dateDirection    ?? CollUtil.Direction.DESC;
+    this._currFilter           = itemFilter       ?? "";
+
+    /*
+     * Updating display mode, sorting and filtering with
+     * GET parameters if possible
+     */
+    let getParametersRaw = location.search.substr(1).split("&");
+    let getParameters = [];
+    /*
+     * Using `itemFilter` instead of `filter` cause the
+     * former is a function in the array prototype.
+     */
+    let validKeys = [`displayMode`, `sortingAttribute`, `sortingDirection`, `grouping`, `dateDirection`, `itemFilter`];
+    for (let i = 0 ; i < getParametersRaw.length ; i++) {
+      let keyValue = getParametersRaw[i].split("=");
+      if (keyValue.length = 2) {
+        let key   = keyValue[0];
+        let value = keyValue[1];
+
+        if (validKeys.includes(key)) {
+          getParameters[key] = value;
+        }
+      }
+    }
+
+    try {this.currDisplayMode      = CollUtil.DisplayMode.from(getParameters[`displayMode`]);}      catch {}
+    try {this.currSortingAttribute = CollUtil.Attribute  .from(getParameters[`sortingAttribute`]);} catch {}
+    try {this.currSortingDirection = CollUtil.Direction  .from(getParameters[`sortingDirection`]);} catch {}
+    try {this.currGrouping         = CollUtil.Grouping   .from(getParameters[`grouping`]);}         catch {}
+    try {this.currDateDirection    = CollUtil.Direction  .from(getParameters[`dateDirection`]);}    catch {}
+    this.currFilter = getParameters[`itemFilter`] ?? this._currFilter;
+
     /*
      * Initializes the collection before anything is done.
      */
@@ -215,7 +217,7 @@ export default class CollViewBuilder {
     await this._asyncDrawToolbarView(container);
     document.getElementById(`inp-filter`).value = this.currFilter;
 
-    await this._asyncRedraw(container, displayMode, sortingAttribute, sortingDirection, grouping, dateDirection);
+    await this._asyncRedraw(container, this.currDisplayMode, this.currSortingAttribute, this.currSortingDirection, this.currGrouping, this.currDateDirection);
 
     PageUtil.fadeIn(`#main-panel`);
   }

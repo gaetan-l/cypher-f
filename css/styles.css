@@ -449,7 +449,7 @@ tbody tr.even td {
 /*
  * ------------- 8.3 Polaroid gallery view ----------------
  */
-.polaroid .item {
+.polaroid .wrapped {
   background-color: rgba(var(--color-clear), 1.0);
   border-style: solid;
   border-color: rgba(var(--color-neutral-light), 1.0);
@@ -457,7 +457,7 @@ tbody tr.even td {
   transition: all 0.25s ease-in-out;
 }
 
-.polaroid .item:hover {
+.polaroid .wrapped:hover {
   box-shadow: 2px 2px 2px;
 }
 
