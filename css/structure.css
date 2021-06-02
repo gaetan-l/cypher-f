@@ -244,7 +244,7 @@ body > footer {
 
 @media (max-height: 500px) {
   #collection .toolbar {
-    flex-flow: row nowrap;      
+    /*flex-flow: row nowrap;*/
   }
 }
 
