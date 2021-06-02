@@ -1,0 +1,10 @@
+git config --global user.name "Gaetan L"
+git config --global user.email gaetan.l@protonmail.com
+
+Open git bash in .../Workspace/
+git clone https://github.com/gaetan-l/cypher-f.git
+
+Add modifications, commit and push
+git add .
+git commit -m "Commit comment"
+git push origin master
