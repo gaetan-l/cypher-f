@@ -1169,7 +1169,7 @@ export default class CollViewBuilder {
    * @access  private
    * @param   String     attributeName  the name of the at-
    *                                    tribute
-   * @param   String     value          the unformatted va-
+   * @param   String     uValue         the unformatted va-
    *                                    lue
    * @param   Boolean    flatten        if the value has to
    *                                    be flattened (lower
@@ -1194,9 +1194,9 @@ export default class CollViewBuilder {
    *                                    processed
    * @return  String                    the formatted value
    */
-  async _asyncBeautify(attributeName, value, flatten = false, transMode = CollUtil.TransMode.NONE, display = CollUtil.TagsMode.NONE) {
+  async _asyncBeautify(attributeName, uValue, flatten = false, transMode = CollUtil.TransMode.NONE, display = CollUtil.TagsMode.NONE) {
     const split = this.needsJoining.includes(attributeName) || this.needsHashtag.includes(attributeName);
-    const splitted = split ? value.split(`;`) : [value];
+    const splitted = split ? uValue.split(`;`) : [uValue];
     let allValues = [];
 
     /*
@@ -1245,18 +1245,18 @@ export default class CollViewBuilder {
      */
     allValues = [...new Set(allValues)];
 
-    var value = ``;
+    var fValue = ``;
     if (this.needsHashtag.includes(attributeName)) {
-      value = allValues.map(val => `#${val}`).join(" ");
+      fValue = allValues.map(val => `#${val}`).join(" ");
     }
     else {
-      value = allValues.join(`, `);
+      fValue = allValues.join(`, `);
     }
 
     if (flatten) {
-      value = TextUtil.flattenString(value);
+      fValue = TextUtil.flattenString(fValue);
     }
 
-    return value;
+    return fValue;
   }
 }
